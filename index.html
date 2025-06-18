@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Honest Casino</title>
+    <title>Honest Casino Lite</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Base styles for a modern, dark theme */
+      /* Base styles for a modern, light theme */
       body {
         font-family: 'Inter', sans-serif; /* Modern, clean font */
-        background-color: #1A202C; /* Deep charcoal */
-        color: #E2E8F0; /* Soft light gray for text */
+        background-color: #F8FAFC; /* Light background */
+        color: #1A202C; /* Dark text */
         margin: 0;
         padding: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background-image: linear-gradient(to bottom right, #1A202C, #0F172A); /* Subtle gradient background */
+        background-image: linear-gradient(to bottom right, #F8FAFC, #E2E8F0); /* Subtle gradient background */
         background-size: cover;
         background-position: center;
         overflow-x: hidden; /* Prevent horizontal scroll */
@@ -29,11 +29,11 @@
         width: 95%;
         max-width: 900px; /* Wider for a more spacious feel */
         padding: 2.5rem; /* Increased padding */
-        background-color: rgba(26, 32, 44, 0.98); /* Near-solid dark background */
+        background-color: rgba(255, 255, 255, 0.98); /* Near-solid light background */
         border-radius: 1.5rem; /* More rounded corners */
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7); /* Softer, deeper shadow */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Softer, lighter shadow */
         text-align: center;
-        border: 1px solid #4A5568; /* Muted border color */
+        border: 1px solid #CBD5E0; /* Muted border color */
         backdrop-filter: blur(8px); /* More pronounced blur effect */
       }
 
@@ -41,15 +41,15 @@
       h1 {
         font-size: 2.8rem; /* Larger, more impactful heading */
         margin-bottom: 1.8rem;
-        color: #EF4444; /* Vibrant red accent */
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* Softer text shadow */
+        color: #3B82F6; /* Vibrant blue accent */
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Softer text shadow */
         font-weight: 700; /* Bold */
       }
       h2{
         font-size: 2rem; /* Slightly larger subheadings */
         margin-bottom: 1.2rem;
-        color: #F87171; /* Lighter red for subheadings */
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Softer text shadow */
+        color: #2563EB; /* Lighter blue for subheadings */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08); /* Softer text shadow */
         font-weight: 600; /* Semi-bold */
       }
 
@@ -57,7 +57,7 @@
       p {
         font-size: 1rem; /* Improved readability */
         margin-bottom: 1.5rem;
-        color: #CBD5E0; /* Slightly lighter text for contrast */
+        color: #4A5568; /* Slightly darker text for contrast */
         line-height: 1.7; /* Enhanced line height */
         font-weight: 400; /* Regular weight */
       }
@@ -70,27 +70,27 @@
         cursor: pointer;
         border-radius: 1rem; /* More rounded */
         transition: all 0.3s ease-in-out; /* Smooth transitions for all properties */
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); /* Modern button shadow */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Modern button shadow */
         border: none;
         font-weight: 600; /* Semi-bold */
         text-transform: uppercase; /* Slight text transformation */
         letter-spacing: 0.08em; /* Spaced out letters */
-        background-color: #EF4444; /* Default red for primary actions */
+        background-color: #3B82F6; /* Default blue for primary actions */
         color: #FFFFFF;
       }
 
       button:hover {
-        background-color: #DC2626; /* Darker red on hover */
+        background-color: #2563EB; /* Darker blue on hover */
         transform: translateY(-4px) scale(1.03); /* More pronounced lift and slight scale */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Enhanced shadow on hover */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
       }
       button:disabled{
-        background-color: #4B5563; /* Muted gray for disabled */
+        background-color: #A0AEC0; /* Muted gray for disabled */
         cursor: not-allowed;
         opacity: 0.6;
         transform: none;
         box-shadow: none;
-        color: #A0AEC0;
+        color: #F7FAFC;
       }
 
       /* Input fields */
@@ -98,33 +98,33 @@
         padding: 1rem; /* Consistent padding */
         font-size: 1.1rem; /* Larger font size */
         border-radius: 0.75rem; /* More rounded */
-        border: 1px solid #4A5568; /* Muted border */
+        border: 1px solid #CBD5E0; /* Muted border */
         margin: 0.75rem;
         width: 80%; /* Slightly wider */
         max-width: 400px; /* Increased max-width */
-        background-color: #2D3748; /* Darker input background */
-        color: #F7FAFC; /* Light input text */
-        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
+        background-color: #F7FAFC; /* Lighter input background */
+        color: #1A202C; /* Dark input text */
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05); /* Inner shadow for depth */
         font-weight: 400;
       }
 
       input:focus {
         outline: none;
-        border-color: #EF4444; /* Vibrant red border on focus */
-        box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.4); /* Soft red glow on focus */
+        border-color: #3B82F6; /* Vibrant blue border on focus */
+        box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2); /* Soft blue glow on focus */
       }
 
       /* Message box */
       .message-box {
         margin-top: 2rem;
         padding: 1.5rem;
-        background-color: rgba(255, 255, 255, 0.08); /* More subtle background */
+        background-color: rgba(0, 0, 0, 0.05); /* More subtle background */
         border-radius: 1rem;
-        border: 1px solid #4A5568;
+        border: 1px solid #CBD5E0;
         text-align: center;
         font-size: 1.05rem;
-        color: #ffffff;
-        box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05); /* Inner glow */
+        color: #1A202C;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02); /* Inner glow */
         font-weight: 400;
       }
        .hidden {
@@ -141,7 +141,7 @@
 
       .game-button {
         background-color: #10B981; /* Green for game selection */
-        color: #1A202C; /* Dark text for contrast */
+        color: #FFFFFF; /* Light text for contrast */
       }
 
       .game-button:hover {
@@ -149,17 +149,17 @@
       }
 
       .winning-message {
-        color: #FACC15; /* Gold-yellow for wins */
+        color: #059669; /* Green for wins */
         font-size: 1.5rem;
         font-weight: 700;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* Softer text shadow */
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1); /* Softer text shadow */
       }
 
       .losing-message {
         color: #EF4444; /* Strong red for losses */
         font-size: 1.5rem;
         font-weight: 700;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* Softer text shadow */
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1); /* Softer text shadow */
       }
 
       /* Red or Black card display */
@@ -173,7 +173,7 @@
         width: 90px; /* Larger cards */
         height: 120px;
         border-radius: 12px; /* More rounded */
-        border: 2px solid #64748B; /* Soft gray border */
+        border: 2px solid #94A3B8; /* Soft gray border */
         margin: 15px;
         display: flex;
         flex-direction: column;
@@ -181,9 +181,9 @@
         align-items: center;
         font-size: 1.6rem; /* Larger font */
         font-weight: 700;
-        background-color: #F8FAFC; /* Near white card background */
-        color: #0F172A; /* Dark text */
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        background-color: #FFFFFF; /* White card background */
+        color: #1A202C; /* Dark text */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         padding: 8px;
       }
       .card .value {
@@ -198,7 +198,7 @@
       }
 
       .black {
-        color: #0F172A; /* Black color */
+        color: #1A202C; /* Black color */
       }
 
       /* Blackjack cards */
@@ -206,7 +206,7 @@
         width: 70px; /* Larger */
         height: 100px;
         border-radius: 10px;
-        border: 1px solid #64748B;
+        border: 1px solid #94A3B8;
         margin: 8px;
         display: flex;
         flex-direction: column;
@@ -214,9 +214,9 @@
         align-items: center;
         font-size: 1rem;
         font-weight: 600;
-        background-color: #F8FAFC;
-        color: #0F172A;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+        background-color: #FFFFFF;
+        color: #1A202C;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
         overflow: hidden;
         padding: 6px;
       }
@@ -233,7 +233,7 @@
       }
 
       .blackjack-black {
-          color: #0F172A;
+          color: #1A202C;
       }
 
       #blackjack-hand-player, #blackjack-hand-dealer {
@@ -250,29 +250,29 @@
         width: 40px; /* Larger */
         height: 40px;
         border-radius: 8px;
-        border: 1px solid #64748B;
+        border: 1px solid #94A3B8;
         margin: 4px;
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 0.8rem;
         font-weight: 600;
-        background-color: #F8FAFC;
-        color: #0F172A;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        background-color: #FFFFFF;
+        color: #1A202C;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         overflow: hidden;
       }
 
       /* Ledger styling */
       #ledger-container {
         margin-top: 3rem;
-        background-color: rgba(45, 55, 72, 0.85); /* Darker, slightly transparent */
+        background-color: rgba(226, 232, 240, 0.85); /* Lighter, slightly transparent */
         border-radius: 1.25rem; /* More rounded */
         padding: 2rem;
         max-height: 400px; /* Taller ledger */
         overflow-y: auto;
-        border: 1px solid #4A5568;
-        box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.3);
+        border: 1px solid #CBD5E0;
+        box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.05);
       }
 
       .ledger-entry {
@@ -280,7 +280,7 @@
         justify-content: space-between;
         align-items: center; /* Vertically align items */
         padding: 0.9rem 0; /* More padding */
-        border-bottom: 1px dashed #4A5568; /* Softer dashed border */
+        border-bottom: 1px dashed #A0AEC0; /* Softer dashed border */
         font-size: 0.95rem; /* Larger font */
         font-weight: 400;
       }
@@ -290,7 +290,7 @@
       }
 
       .ledger-entry .timestamp {
-        color: #A0AEC0; /* Muted timestamp */
+        color: #718096; /* Muted timestamp */
         width: 160px; /* Wider timestamp column */
         text-align: left;
       }
@@ -300,7 +300,7 @@
         text-align: left;
         margin-left: 20px; /* More spacing */
         margin-right: 20px;
-        color: #E2E8F0;
+        color: #1A202C;
       }
 
       .ledger-entry .amount {
@@ -310,11 +310,11 @@
       }
 
       .ledger-entry.positive .amount {
-        color: #34D399; /* Brighter green for positive */
+        color: #059669; /* Brighter green for positive */
       }
 
       .ledger-entry.negative .amount {
-        color: #EF4444; /* Stronger red for negative */
+        color: #DC2626; /* Stronger red for negative */
       }
 
       /* Loan Approval Modal */
@@ -324,7 +324,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
+        background-color: rgba(0, 0, 0, 0.5);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -332,20 +332,20 @@
       }
 
       .modal-content {
-        background-color: #2D3748;
+        background-color: #F7FAFC;
         padding: 2rem;
         border-radius: 1rem;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         max-width: 500px;
         width: 90%;
-        color: #E2E8F0;
+        color: #1A202C;
         text-align: center;
       }
 
       .modal-content h3 {
         font-size: 1.5rem;
         margin-bottom: 1rem;
-        color: #F87171;
+        color: #2563EB;
       }
 
       .modal-content p {
@@ -359,15 +359,15 @@
 
       /* Market Event Modal */
       #market-event-modal .modal-content {
-          background-color: #3B82F6; /* Blue for market events */
+          background-color: #60A5FA; /* Light Blue for market events */
           color: #FFFFFF;
-          border: 1px solid #2563EB;
+          border: 1px solid #3B82F6;
       }
       #market-event-modal h3 {
-          color: #BFDBFE;
+          color: #DBEAFE;
       }
       #market-event-modal p {
-          color: #DBEAFE;
+          color: #EFF6FF;
       }
 
 
@@ -490,16 +490,16 @@
       }
     </style>
 </head>
-<body class="bg-gray-800 text-gray-100">
+<body class="bg-gray-100 text-gray-900">
     <div class="container">
-        <h1>Honest Casino</h1>
+        <h1>Honest Casino Lite</h1>
         <p>Welcome, comrade, to the Honest Casino! A place where the collective good is always in mind. We operate under the principles of fair gameplay and redistribution of wealth.</p>
         <p>Please enter your initial deposit to start playing.</p>
 
-        <input type="number" id="initial-deposit" placeholder="Enter Deposit Amount" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
-        <button id="deposit-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Deposit Funds</button>
+        <input type="number" id="initial-deposit" placeholder="Enter Deposit Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button id="deposit-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Deposit Funds</button>
 
-        <div id="balance-info" class="mt-4 text-lg text-green-400 hidden">
+        <div id="balance-info" class="mt-4 text-lg text-green-600 hidden">
             <p>Your Player Account Balance: $<span id="player-balance">0</span></p>
             <p>Tariff Fund Balance: $<span id="tariff-balance">0</span></p>
             <p>Hardship Fund Balance: $<span id="hardship-balance">0</span></p>
@@ -510,7 +510,6 @@
         <div id="game-selection" class="mt-6 hidden">
             <h2>Select a Game</h2>
             <button class="game-button" id="blackjack-button">Blackjack</button>
-            <button class="game-button" id="roulette-button">Roulette</button>
             <button class="game-button" id="red-black-button">Red or Black</button>
             <button class="game-button" id="deal-or-no-deal-button">Deal or No Deal</button>
         </div>
@@ -525,15 +524,15 @@
                     <p>Your Hand:</p>
                 </div>
                 <p>Your Bet:</p>
-                <input type="number" id="blackjack-bet" placeholder="Enter Bet Amount" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <input type="number" id="blackjack-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="blackjack-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="blackjack-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 10% of bet, full refund on loss)</label>
+                    <label for="blackjack-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
                 </div>
                 <div id="blackjack-buttons">
-                    <button id="blackjack-hit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Hit</button>
-                    <button id="blackjack-stand" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Stand</button>
-                    <button id="blackjack-play" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Play Hand</button>
+                    <button id="blackjack-hit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Hit</button>
+                    <button id="blackjack-stand" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Stand</button>
+                    <button id="blackjack-play" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Play Hand</button>
                 </div>
                 <div id="blackjack-result" class="mt-4 text-lg"></div>
             </div>
@@ -541,24 +540,24 @@
             <div id="roulette-game" class="hidden">
                 <h2>Roulette</h2>
                 <p>Choose your bet:</p>
-                 <input type="number" id="roulette-bet-amount" placeholder="Enter Bet Amount" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
+                 <input type="number" id="roulette-bet-amount" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="roulette-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="roulette-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 10% of bet, full refund on loss)</label>
+                    <label for="roulette-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
                 </div>
                 <p>Select a number (0-36):</p>
-                <input type="number" id="roulette-number" placeholder="Enter Number (0-36)" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
-                <button id="spin-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Spin the Wheel</button>
+                <input type="number" id="roulette-number" placeholder="Enter Number (0-36)" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="spin-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Spin the Wheel</button>
                 <div id="roulette-result" class="mt-4 text-lg"></div>
             </div>
 
             <div id="red-black-game" class="hidden">
                 <h2>Red or Black</h2>
                 <p>Place your bet:</p>
-                <input type="number" id="red-black-bet" placeholder="Enter Bet Amount" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <input type="number" id="red-black-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="red-black-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="red-black-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 10% of bet, full refund on loss)</label>
+                    <label for="red-black-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
                 </div>
                 <p>Choose a color:</p>
                 <button id="red-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Red</button>
@@ -568,14 +567,14 @@
             <div id="deal-or-no-deal-game" class="hidden">
                 <h2>Deal or No Deal Game</h2>
                 <p>Choose your number (1-20):</p>
-                <input type="number" id="deal-or-no-deal-number" placeholder="Enter Number (1-20)" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <input type="number" id="deal-or-no-deal-number" placeholder="Enter Number (1-20)" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                  <p>Place your bet:</p>
-                <input type="number" id="deal-or-no-deal-bet" placeholder="Enter Bet Amount" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <input type="number" id="deal-or-no-deal-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="dond-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="dond-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 10% of bet, full refund on loss)</label>
+                    <label for="dond-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
                 </div>
-                <button id="start-sequence-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start</button>
+                <button id="start-sequence-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start</button>
                 <div id="sequence-container" class="mt-4 flex flex-wrap justify-center">
                     </div>
                 <div id="deal-or-no-deal-result" class="mt-4 text-lg"></div>
@@ -590,7 +589,7 @@
             
             <div id="emergency-loan-request-section" class="mt-4">
                 <button id="emergency-loan-request-button" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Request Emergency Loan</button>
-                <input type="number" id="emergency-loan-amount-input" placeholder="Desired Loan Amount" class="bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 hidden">
+                <input type="number" id="emergency-loan-amount-input" placeholder="Desired Loan Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 hidden">
                 <button id="propose-loan-terms-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hidden">Propose Terms</button>
             </div>
 
@@ -601,11 +600,11 @@
 
             <div id="extra-payment-section" class="mt-4 hidden">
                 <p>Make Extra Loan Payment:</p>
-                <input type="number" id="extra-payment-amount" placeholder="Amount" class="bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="number" id="extra-payment-amount" placeholder="Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <button id="make-extra-payment-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Pay Extra</button>
             </div>
 
-            <input type="text" id="secret-code" placeholder="Enter Secret Code" class="bg-gray-700 text-white rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500">
+            <input type="text" id="secret-code" placeholder="Enter Secret Code" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div id="message-box" class="mt-6 text-center"></div>
@@ -769,7 +768,7 @@
             blackjackHandPlayerDisplay.innerHTML = '<p>Your Hand:</p>';
             blackjackHandDealerDisplay.innerHTML = '<p>Dealer Hand:</p>';
         });
-        rouletteButton.addEventListener('click', () => showGame('roulette'));
+        // rouletteButton.addEventListener('click', () => showGame('roulette')); // Removed Roulette button event listener
         redBlackButton.addEventListener('click', () => showGame('red-black'));
         dealOrNoDealButton.addEventListener('click', () => showGame('deal-or-no-deal')); 
         withdrawHardshipFundsButton.addEventListener('click', withdrawHardshipFunds);
@@ -807,22 +806,22 @@
 
             if (playerNetProfitLoss > 0) {
                 netProfitLossDisplay.classList.remove('text-red-400');
-                netProfitLossDisplay.classList.add('text-green-400');
+                netProfitLossDisplay.classList.add('text-green-600'); /* Changed to green-600 for light theme */
             } else if (playerNetProfitLoss < 0) {
                 netProfitLossDisplay.classList.remove('text-green-400');
-                netProfitLossDisplay.classList.add('text-red-400');
+                netProfitLossDisplay.classList.add('text-red-600'); /* Changed to red-600 for light theme */
             } else {
-                netProfitLossDisplay.classList.remove('text-green-400', 'text-red-400');
+                netProfitLossDisplay.classList.remove('text-green-600', 'text-red-600');
             }
             
             if (totalCasinoProfit > 0) {
                 casinoTotalProfitDisplay.classList.remove('text-red-400');
-                casinoTotalProfitDisplay.classList.add('text-green-400');
+                casinoTotalProfitDisplay.classList.add('text-green-600'); /* Changed to green-600 for light theme */
             } else if (totalCasinoProfit < 0) {
                 casinoTotalProfitDisplay.classList.remove('text-green-400');
-                casinoTotalProfitDisplay.classList.add('text-red-400');
+                casinoTotalProfitDisplay.classList.add('text-red-600'); /* Changed to red-600 for light theme */
             } else {
-                casinoTotalProfitDisplay.classList.remove('text-green-400', 'text-red-400');
+                casinoTotalProfitDisplay.classList.remove('text-green-600', 'text-red-600');
             }
 
 
@@ -880,7 +879,7 @@
         function showGame(gameName) {
             gameActive = true;
             blackjackGameContainer.classList.add('hidden');
-            rouletteGameContainer.classList.add('hidden');
+            rouletteGameContainer.classList.add('hidden'); // This will remain hidden in Lite version
             redBlackGameContainer.classList.add('hidden');
             dealOrNoDealGameContainer.classList.add('hidden'); 
             actionButtons.classList.remove('hidden');
@@ -898,8 +897,9 @@
                     blackjackHandDealerDisplay.innerHTML = '<p>Dealer Hand:</p>';
                     break;
                 case 'roulette':
-                    rouletteGameContainer.classList.remove('hidden');
+                    rouletteGameContainer.classList.add('hidden'); // Ensure roulette is always hidden
                     rouletteResultDisplay.textContent = '';
+                    messageBox.textContent = 'Roulette is not available in Honest Casino Lite.';
                     break;
                 case 'red-black':
                     redBlackGameContainer.classList.remove('hidden');
@@ -986,7 +986,7 @@
             if (autoPlay) {
                 setTimeout(() => {
                     if (gameName === 'Blackjack') playBlackjackHand();
-                    else if (gameName === 'Roulette') playRoulette();
+                    // else if (gameName === 'Roulette') playRoulette(); // Removed Roulette from auto-play
                     else if (gameName === 'Red or Black') playRedOrBlack(); 
                     else if (gameName === 'Deal or No Deal') startDealOrNoDealGame(); 
                 }, 2000);
@@ -1095,7 +1095,7 @@
             }
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
             
-            const insuranceCost = currentHandInsured ? betAmount * 0.10 : 0;
+            const insuranceCost = currentHandInsured ? betAmount * 0.25 : 0; // Insurance 25%
             if (betAmount + insuranceCost > playerBalance) { 
                 messageBox.textContent = `You do not have enough funds for this bet and insurance. Total cost: $${(betAmount + insuranceCost).toFixed(2)}.`; 
                 return; 
@@ -1190,56 +1190,11 @@
             handleGameEnd('Blackjack', playerWon, winnings, profit, currentWager, currentHandInsured);
         }
 
-        // --- Roulette Game functions ---
+        // --- Roulette Game functions (Modified to be hidden and show message) ---
         function playRoulette() {
-            const betAmount = parseFloat(rouletteBetInput.value);
-            const chosenNumber = parseInt(rouletteNumberInput.value);
-            const insuranceSelected = document.getElementById('roulette-insurance-checkbox').checked;
-
-            if (isNaN(betAmount) || betAmount <= 0 || isNaN(chosenNumber) || chosenNumber < 0 || chosenNumber > 36) {
-                messageBox.textContent = 'Invalid bet amount or number. Please enter a positive amount and a number between 0 and 36.'; return;
-            }
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-            
-            const insuranceCost = insuranceSelected ? betAmount * 0.10 : 0;
-            if (betAmount + insuranceCost > playerBalance) { 
-                messageBox.textContent = `You do not have enough funds for this bet and insurance. Total cost: $${(betAmount + insuranceCost).toFixed(2)}.`; 
-                return; 
-            }
-
-            let houseFeeRate = specialFeatures444Active ? 0 : (marketEventActive && marketEventType === 'production' ? 0.05 : 0.15);
-            let houseFee = betAmount * houseFeeRate;
-
-            playerBalance -= (betAmount + insuranceCost);
-            playerNetProfitLoss -= (betAmount + insuranceCost);
-            addTransaction('bet_placement', -betAmount, `Roulette bet placed: $${betAmount.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Roulette house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(insuranceSelected) {
-                addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Roulette for $${insuranceCost.toFixed(2)}`);
-                totalCasinoProfit += insuranceCost;
-            }
-            updateBalanceDisplays();
-
-            currentBet = betAmount;
-            currentWager = betAmount - houseFee;
-            totalCasinoProfit += houseFee;
-
-            const winningNumber = Math.floor(Math.random() * 37);
-            let resultMessage = `The wheel landed on ${winningNumber}. `;
-            let playerWon = false;
-            let winnings = 0;
-            let profit = 0;
-
-            if (winningNumber === chosenNumber) {
-                winnings = currentWager * 36;
-                profit = currentWager * 35;
-                resultMessage += `You win $${winnings.toFixed(2)}!`;
-                playerWon = true;
-            } else {
-                resultMessage += 'You lose!';
-            }
-            rouletteResultDisplay.textContent = resultMessage;
-            handleGameEnd('Roulette', playerWon, winnings, profit, currentWager, insuranceSelected);
+            // This function will now simply display a message that Roulette is not available.
+            rouletteResultDisplay.textContent = 'Roulette is not available in Honest Casino Lite.';
+            messageBox.textContent = 'Roulette is not available in Honest Casino Lite.';
         }
 
         // --- Red or Black Game functions ---
@@ -1251,7 +1206,7 @@
             }
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
 
-            const insuranceCost = insuranceSelected ? betAmount * 0.10 : 0;
+            const insuranceCost = insuranceSelected ? betAmount * 0.25 : 0; // Insurance 25%
             if (betAmount + insuranceCost > playerBalance) { 
                 messageBox.textContent = `You do not have enough funds for this bet and insurance. Total cost: $${(betAmount + insuranceCost).toFixed(2)}.`; 
                 return; 
@@ -1314,7 +1269,7 @@
                 if (i < revealedSequence.length) {
                     numDiv.textContent = revealedSequence[i];
                     if(revealedSequence[i] === sequenceNumber){
-                        numDiv.style.backgroundColor = '#EF4444';
+                        numDiv.style.backgroundColor = '#3B82F6'; /* Changed to blue for light theme */
                         numDiv.style.color = '#FFFFFF';
                     }
                 } else {
@@ -1337,7 +1292,7 @@
             }
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
 
-            const insuranceCost = insuranceSelected ? sequenceBet * 0.10 : 0;
+            const insuranceCost = insuranceSelected ? sequenceBet * 0.25 : 0; // Insurance 25%
             if (sequenceBet + insuranceCost > playerBalance) { 
                 messageBox.textContent = `You do not have enough funds for this bet and insurance. Total cost: $${(sequenceBet + insuranceCost).toFixed(2)}.`; 
                 return; 
