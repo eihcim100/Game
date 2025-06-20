@@ -527,7 +527,7 @@
                 <input type="number" id="blackjack-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="blackjack-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="blackjack-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
+                    <label for="blackjack-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
                 </div>
                 <div id="blackjack-buttons">
                     <button id="blackjack-hit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Hit</button>
@@ -543,7 +543,7 @@
                  <input type="number" id="roulette-bet-amount" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="roulette-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="roulette-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
+                    <label for="roulette-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
                 </div>
                 <p>Select a number (0-36):</p>
                 <input type="number" id="roulette-number" placeholder="Enter Number (0-36)" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -557,7 +557,7 @@
                 <input type="number" id="red-black-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="red-black-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="red-black-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
+                    <label for="red-black-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
                 </div>
                 <p>Choose a color:</p>
                 <button id="red-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Red</button>
@@ -572,7 +572,7 @@
                 <input type="number" id="deal-or-no-deal-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="dond-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="dond-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 25% of bet, full refund on loss)</label>
+                    <label for="dond-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
                 </div>
                 <button id="start-sequence-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start</button>
                 <div id="sequence-container" class="mt-4 flex flex-wrap justify-center">
@@ -640,27 +640,27 @@
         let playerBalance = 0;
         let tariffBalance = 0;
         let hardshipBalance = 0;
-        let playerNetProfitLoss = 0; 
+        let playerNetProfitLoss = 0;
         let gameActive = false;
         let autoPlay = false;
-        let currentBet = 0; 
+        let currentBet = 0;
         let currentWager = 0;
         let currentHandInsured = false; // For multi-step games like blackjack
-        let gameHistory = []; 
-        let transactionHistory = []; 
+        let gameHistory = [];
+        let transactionHistory = [];
         let totalCasinoProfit = 0; // Tracks casino's net profit (positive = casino profit, negative = casino loss)
         let isBanned = false;
         let bnplLoanActive = false;
-        let bnplLoanAmount = 0; 
+        let bnplLoanAmount = 0;
         let bnplPaymentsRemaining = 0;
-        let emergencyLoanActive = false; 
-        let emergencyLoanAmount = 0; 
-        let emergencyLoanTotalRepayment = 0; 
+        let emergencyLoanActive = false;
+        let emergencyLoanAmount = 0;
+        let emergencyLoanTotalRepayment = 0;
         let emergencyLoanRepaymentsMade = 0;
 
         // Special Features
         let specialFeatures444Active = false;
-        let tariffFreeRoundsRemaining = 0; 
+        let tariffFreeRoundsRemaining = 0;
 
         // Deal or No Deal specific variables
         let dealOrNoDealGame = null;
@@ -670,7 +670,7 @@
         let sequenceWager = 0;
         let sequenceRound = 0;
         let sequenceIntervalId = null;
-        let chosenNumberIsLast = false; 
+        let chosenNumberIsLast = false;
 
         // Blackjack specific variables
         let playerHand = [];
@@ -678,9 +678,9 @@
 
         // Market Events
         let marketEventActive = false;
-        let marketEventType = null; 
-        let marketEventTimeoutId = null; 
-        let marketEventDurationIntervalId = null; 
+        let marketEventType = null;
+        let marketEventTimeoutId = null;
+        let marketEventDurationIntervalId = null;
 
         // DOM Elements
         const messageBox = document.getElementById('message-box');
@@ -696,7 +696,7 @@
         const blackjackButton = document.getElementById('blackjack-button');
         const rouletteButton = document.getElementById('roulette-button');
         const redBlackButton = document.getElementById('red-black-button');
-        const dealOrNoDealButton = document.getElementById('deal-or-no-deal-button'); 
+        const dealOrNoDealButton = document.getElementById('deal-or-no-deal-button');
         const actionButtons = document.getElementById('action-buttons');
         const withdrawHardshipFundsButton = document.getElementById('withdraw-hardship-funds-button');
         const emergencyLoanRequestSection = document.getElementById('emergency-loan-request-section');
@@ -731,12 +731,12 @@
         const blackButton = document.getElementById('black-button');
         const redBlackResultDisplay = document.getElementById('red-black-result');
 
-        const dealOrNoDealGameContainer = document.getElementById('deal-or-no-deal-game'); 
-        const dealOrNoDealNumberInput = document.getElementById('deal-or-no-deal-number'); 
-        const dealOrNoDealBetInput = document.getElementById('deal-or-no-deal-bet'); 
+        const dealOrNoDealGameContainer = document.getElementById('deal-or-no-deal-game');
+        const dealOrNoDealNumberInput = document.getElementById('deal-or-no-deal-number');
+        const dealOrNoDealBetInput = document.getElementById('deal-or-no-deal-bet');
         const startSequenceButton = document.getElementById('start-sequence-button');
         const sequenceContainer = document.getElementById('sequence-container');
-        const dealOrNoDealResultDisplay = document.getElementById('deal-or-no-deal-result'); 
+        const dealOrNoDealResultDisplay = document.getElementById('deal-or-no-deal-result');
         const dealOrNoDealOptions = document.getElementById('deal-or-no-deal-options');
 
         const ledgerContainer = document.getElementById('ledger-container');
@@ -770,7 +770,7 @@
         });
         // rouletteButton.addEventListener('click', () => showGame('roulette')); // Removed Roulette button event listener
         redBlackButton.addEventListener('click', () => showGame('red-black'));
-        dealOrNoDealButton.addEventListener('click', () => showGame('deal-or-no-deal')); 
+        dealOrNoDealButton.addEventListener('click', () => showGame('deal-or-no-deal'));
         withdrawHardshipFundsButton.addEventListener('click', withdrawHardshipFunds);
         emergencyLoanRequestButton.addEventListener('click', toggleEmergencyLoanInput);
         proposeLoanTermsButton.addEventListener('click', proposeEmergencyLoanTerms);
@@ -793,7 +793,7 @@
         spinButton.addEventListener('click', playRoulette);
         redButton.addEventListener('click', () => playRedOrBlack('red'));
         blackButton.addEventListener('click', () => playRedOrBlack('black'));
-        startSequenceButton.addEventListener('click', startDealOrNoDealGame); 
+        startSequenceButton.addEventListener('click', startDealOrNoDealGame);
 
         // --- Core Functions ---
 
@@ -813,7 +813,7 @@
             } else {
                 netProfitLossDisplay.classList.remove('text-green-600', 'text-red-600');
             }
-            
+
             if (totalCasinoProfit > 0) {
                 casinoTotalProfitDisplay.classList.remove('text-red-400');
                 casinoTotalProfitDisplay.classList.add('text-green-600'); /* Changed to green-600 for light theme */
@@ -881,7 +881,7 @@
             blackjackGameContainer.classList.add('hidden');
             rouletteGameContainer.classList.add('hidden'); // This will remain hidden in Lite version
             redBlackGameContainer.classList.add('hidden');
-            dealOrNoDealGameContainer.classList.add('hidden'); 
+            dealOrNoDealGameContainer.classList.add('hidden');
             actionButtons.classList.remove('hidden');
 
             switch (gameName) {
@@ -905,9 +905,9 @@
                     redBlackGameContainer.classList.remove('hidden');
                     redBlackResultDisplay.textContent = '';
                     break;
-                case 'deal-or-no-deal': 
-                    dealOrNoDealGameContainer.classList.remove('hidden'); 
-                    dealOrNoDealOptions.classList.add('hidden'); 
+                case 'deal-or-no-deal':
+                    dealOrNoDealGameContainer.classList.remove('hidden');
+                    dealOrNoDealOptions.classList.add('hidden');
                     dealOrNoDealResultDisplay.textContent = '';
                     sequenceContainer.innerHTML = '';
                     break;
@@ -923,14 +923,14 @@
         function handleGameEnd(gameName, playerWon, winnings, profit, wager, insurancePurchased, additionalMessage = '') {
             let tariffPercentage;
             if (specialFeatures444Active) {
-                tariffPercentage = 0; 
-            } else if (marketEventActive && marketEventType === 'solidarity') {
-                tariffPercentage = 0; 
-            } else if (tariffFreeRoundsRemaining > 0) { 
                 tariffPercentage = 0;
-                tariffFreeRoundsRemaining--; 
+            } else if (marketEventActive && marketEventType === 'solidarity') {
+                tariffPercentage = 0;
+            } else if (tariffFreeRoundsRemaining > 0) {
+                tariffPercentage = 0;
+                tariffFreeRoundsRemaining--;
             } else {
-                tariffPercentage = Math.floor(Math.random() * 100) + 1; 
+                tariffPercentage = Math.floor(Math.random() * 100) + 1;
             }
 
             let tariffAmount = 0;
@@ -945,12 +945,12 @@
                 if (tariffAmount > 0) {
                     addTransaction('tariff_deduction', -tariffAmount, `${gameName} tariff deduction (${tariffPercentage.toFixed(0)}%) from profit`);
                 }
-                
+
                 netWinnings = winnings - tariffAmount;
                 playerBalance += netWinnings;
                 playerNetProfitLoss += netWinnings;
                 addTransaction('net_payout', netWinnings, `${gameName} net payout`);
-                totalCasinoProfit -= profit; 
+                totalCasinoProfit -= profit;
                 messageBox.textContent = `You ${netWinnings >= 0 ? 'won' : 'lost'} $${Math.abs(netWinnings).toFixed(2)}! (Tariff: $${tariffAmount.toFixed(2)})${additionalMessage}`;
             } else { // Player lost
                 let finalMessage = '';
@@ -964,13 +964,13 @@
                     totalCasinoProfit += wager; // Casino keeps the wager
                     finalMessage = `You lost $${wager.toFixed(2)}!`;
                 }
-                
+
                 // The hardship fund transfer happens on any loss, regardless of insurance.
                 if (tariffBalance > 0) {
                     const potentialPayout = tariffBalance * 0.20;
                     const payoutAmount = Math.min(potentialPayout, tariffBalance);
                     hardshipBalance += payoutAmount;
-                    tariffBalance -= payoutAmount; 
+                    tariffBalance -= payoutAmount;
                     addTransaction('hardship_transfer', payoutAmount, `20% of Tariff Fund transferred to Hardship Fund after loss`);
                     finalMessage += ` 20% of Tariff Fund ($${payoutAmount.toFixed(2)}) transferred to your Hardship Fund.`;
                 }
@@ -982,17 +982,17 @@
             currentBet = 0;
             currentWager = 0;
             currentHandInsured = false;
-            
+
             if (autoPlay) {
                 setTimeout(() => {
                     if (gameName === 'Blackjack') playBlackjackHand();
                     // else if (gameName === 'Roulette') playRoulette(); // Removed Roulette from auto-play
-                    else if (gameName === 'Red or Black') playRedOrBlack(); 
-                    else if (gameName === 'Deal or No Deal') startDealOrNoDealGame(); 
+                    else if (gameName === 'Red or Black') playRedOrBlack();
+                    else if (gameName === 'Deal or No Deal') startDealOrNoDealGame();
                 }, 2000);
             }
 
-            if (totalCasinoProfit <= -50000) { 
+            if (totalCasinoProfit <= -50000) {
                 handleCasinoBankruptcy();
                 return;
             }
@@ -1009,7 +1009,7 @@
                         activeVar = false;
                         amountVar = 0;
                         totalRepayVar = 0;
-                        if (paymentsMadeVar !== undefined) paymentsMadeVar = 0; 
+                        if (paymentsMadeVar !== undefined) paymentsMadeVar = 0;
                         messageBox.textContent = `Your ${loanType} loan has been fully repaid.`;
                         addTransaction('loan_repaid', 0, `${loanType} loan fully repaid`);
                     } else if (playerBalance >= repaymentPerBet) {
@@ -1040,7 +1040,7 @@
             const bnplResult = processLoan('Bet Now Pay Later', bnplLoanActive, bnplLoanAmount, bnplLoanAmount, bnplPaymentsRemaining, undefined, 'bnpl_payment_deduction', `BNPL payment deducted. ${bnplPaymentsRemaining -1} payments remaining.`, `BNPL late fee applied. Balance: $${bnplLoanAmount.toFixed(2)}`);
             bnplLoanActive = bnplResult.active;
             bnplLoanAmount = bnplResult.amount;
-            bnplPaymentsRemaining = bnplResult.remaining; 
+            bnplPaymentsRemaining = bnplResult.remaining;
 
             updateBalanceDisplays();
         }
@@ -1094,29 +1094,116 @@
                 messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
             }
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-            
-            const insuranceCost = currentHandInsured ? betAmount * 0.25 : 0; // Insurance 25%
-            if (betAmount + insuranceCost > playerBalance) { 
-                messageBox.textContent = `You do not have enough funds for this bet and insurance. Total cost: $${(betAmount + insuranceCost).toFixed(2)}.`; 
-                return; 
+
+            const INSURANCE_RATE = 0.45; // 45% insurance
+            const BASE_HOUSE_FEE_RATE = 0.15; // 15% base house fee
+            const INSURED_HOUSE_FEE_RATE = 0.15; // 15% fee when insured to make total 60% with 45% insurance
+
+            let insuranceCost = 0;
+            let houseFeeRate = 0;
+
+            if (specialFeatures444Active) {
+                houseFeeRate = 0;
+            } else if (marketEventActive && marketEventType === 'production') {
+                houseFeeRate = 0.05; // 5% during production boom
+            } else {
+                houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
             }
 
-            let houseFeeRate = specialFeatures444Active ? 0 : (marketEventActive && marketEventType === 'production' ? 0.05 : 0.15);
+            if (currentHandInsured) {
+                insuranceCost = betAmount * INSURANCE_RATE;
+                // If insured, the combined cost (insurance + fee) is 60%.
+                // Since insurance is 45%, the fee portion needs to be 15%.
+                // This overrides standard house fee logic when insurance is taken.
+                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Ensures 15% fee when insured, for a total of 60% (45%+15%)
+                if (specialFeatures444Active) { // Code 444 overrides all fees
+                    houseFeeRate = 0;
+                    insuranceCost = 0;
+                } else if (marketEventActive && marketEventType === 'production') { // Production event overrides base fee, but insurance still applies
+                    // If market event production is active, fee is 5%.
+                    // To get a 60% total, insurance is 45%, so fee should be 15%.
+                    // This means for market production with insurance, it's 45% + 5% = 50%
+                    // We need to decide: does market event reduce the *base* fee, or the *total* fee?
+                    // Original prompt implies 15% + 45% = 60% to get 10% house edge.
+                    // If market event makes fee 5%, then total is 45% + 5% = 50% (less house edge)
+                    // For simplicity, let's assume market event reduces the BASE_HOUSE_FEE_RATE only.
+                    // If insurance is taken, it's 45% insurance + 15% fee.
+                    // If market event is production, it might reduce the 15% to 5%?
+                    // This creates a conflict. For the 10% house edge, 15%+45% is needed.
+                    // Let's assume the 15% is the *minimum* fee when insurance is taken, unless 444 is active.
+                    houseFeeRate = Math.max(INSURED_HOUSE_FEE_RATE, houseFeeRate); // Ensures at least 15% fee if not 444
+                    // Re-evaluating: The prompt says "The 15% + 45% (when insurance is enabled) totals to 60% which is exactly what we need to create a 10% house edge".
+                    // This implies the 15% fee is *specific* to when insurance is enabled.
+                    // So, if insurance is ENABLED, the fee is always 15% unless code 444 is active.
+                    // If insurance is NOT ENABLED, the fee is 15% by default, or 5% if production event.
+                    // Let's adjust the logic slightly:
+                }
+            }
+
             let houseFee = betAmount * houseFeeRate;
 
-            playerBalance -= (betAmount + insuranceCost);
-            playerNetProfitLoss -= (betAmount + insuranceCost);
+            // Re-evaluating the fee structure for clarity and consistency with prompt.
+            // House Fee:
+            // - If 444 is active: 0%
+            // - If marketEvent type is 'production': 5%
+            // - Otherwise (standard): 15%
+            // Insurance Cost:
+            // - If insurance is checked: 45%
+            // - If 444 is active: 0% (overrides insurance cost)
+
+            // Let's re-calculate houseFee and insuranceCost more robustly.
+            let effectiveHouseFeeRate;
+            let effectiveInsuranceCost = 0;
+
+            if (specialFeatures444Active) {
+                effectiveHouseFeeRate = 0;
+            } else if (marketEventActive && marketEventType === 'production') {
+                effectiveHouseFeeRate = 0.05;
+            } else {
+                effectiveHouseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
+            }
+
+            if (currentHandInsured) {
+                if (specialFeatures444Active) {
+                    effectiveInsuranceCost = 0;
+                    // effectiveHouseFeeRate remains 0 from above.
+                } else {
+                    effectiveInsuranceCost = betAmount * INSURANCE_RATE; // 45%
+                    // When insurance is enabled, the prompt says "15% + 45% (when insurance is enabled) totals to 60%".
+                    // This strongly suggests the house fee becomes exactly 15% *when* insurance is taken,
+                    // overriding other base fee logic, unless 444 sets it to 0.
+                    effectiveHouseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured, for the 60% total
+                    if (marketEventActive && marketEventType === 'production') {
+                         // This is where it gets tricky. If market event sets to 5%, but insurance implies 15%.
+                         // For the prompt's condition to be met (60% total when insured),
+                         // the 15% fee must apply when insured.
+                         // So, if insured, it's always 15% fee (unless 444).
+                         // This means production event's 5% fee is only for *uninsured* bets.
+                    }
+                }
+            }
+
+            houseFee = betAmount * effectiveHouseFeeRate;
+
+            if (betAmount + effectiveInsuranceCost + houseFee > playerBalance) {
+                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(betAmount + effectiveInsuranceCost + houseFee).toFixed(2)}.`;
+                return;
+            }
+
+            playerBalance -= (betAmount + effectiveInsuranceCost + houseFee);
+            playerNetProfitLoss -= (betAmount + effectiveInsuranceCost + houseFee);
             addTransaction('bet_placement', -betAmount, `Blackjack bet placed: $${betAmount.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Blackjack house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(currentHandInsured) {
-                addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Blackjack for $${insuranceCost.toFixed(2)}`);
-                totalCasinoProfit += insuranceCost;
+            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Blackjack house fee (${(effectiveHouseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
+            if(currentHandInsured && effectiveInsuranceCost > 0) { // Only add if insurance was actually purchased and cost something
+                addTransaction('insurance_purchase', -effectiveInsuranceCost, `Insurance purchased for Blackjack for $${effectiveInsuranceCost.toFixed(2)}`);
+                totalCasinoProfit += effectiveInsuranceCost;
             }
             updateBalanceDisplays();
 
             currentBet = betAmount;
-            currentWager = betAmount - houseFee;
-            totalCasinoProfit += houseFee;
+            currentWager = betAmount; // Wager is the original bet amount for winning calculation
+            totalCasinoProfit += houseFee; // Casino profits from the house fee
+
 
             blackjackPlayButton.disabled = true;
             blackjackHitButton.disabled = false;
@@ -1167,7 +1254,7 @@
                 displayBlackjackCard(dealerHand[dealerHand.length - 1], blackjackHandDealerDisplay);
                 dealerHandValue = calculateBlackjackHandValue(dealerHand);
             }
-            
+
             let playerWon = false;
             let winnings = 0;
             let profit = 0;
@@ -1206,27 +1293,50 @@
             }
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
 
-            const insuranceCost = insuranceSelected ? betAmount * 0.25 : 0; // Insurance 25%
-            if (betAmount + insuranceCost > playerBalance) { 
-                messageBox.textContent = `You do not have enough funds for this bet and insurance. Total cost: $${(betAmount + insuranceCost).toFixed(2)}.`; 
-                return; 
+            const INSURANCE_RATE = 0.45; // 45% insurance
+            const BASE_HOUSE_FEE_RATE = 0.15; // 15% base house fee
+            const INSURED_HOUSE_FEE_RATE = 0.15; // 15% fee when insured to make total 60% with 45% insurance
+
+            let insuranceCost = 0;
+            let houseFeeRate = 0;
+
+            if (specialFeatures444Active) {
+                houseFeeRate = 0;
+            } else if (marketEventActive && marketEventType === 'production') {
+                houseFeeRate = 0.05; // 5% during production boom
+            } else {
+                houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
             }
-            
-            let houseFeeRate = specialFeatures444Active ? 0 : (marketEventActive && marketEventType === 'production' ? 0.05 : 0.15);
+
+            if (insuranceSelected) {
+                insuranceCost = betAmount * INSURANCE_RATE;
+                if (specialFeatures444Active) {
+                    houseFeeRate = 0;
+                    insuranceCost = 0;
+                } else {
+                    houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
+                }
+            }
+
             let houseFee = betAmount * houseFeeRate;
-            
-            playerBalance -= (betAmount + insuranceCost);
-            playerNetProfitLoss -= (betAmount + insuranceCost);
+
+            if (betAmount + insuranceCost + houseFee > playerBalance) {
+                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(betAmount + insuranceCost + houseFee).toFixed(2)}.`;
+                return;
+            }
+
+            playerBalance -= (betAmount + insuranceCost + houseFee);
+            playerNetProfitLoss -= (betAmount + insuranceCost + houseFee);
             addTransaction('bet_placement', -betAmount, `Red or Black bet placed: $${betAmount.toFixed(2)}`);
             if (houseFee > 0) addTransaction('house_fee', -houseFee, `Red or Black house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(insuranceSelected) {
+            if(insuranceSelected && insuranceCost > 0) {
                 addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Red or Black for $${insuranceCost.toFixed(2)}`);
                 totalCasinoProfit += insuranceCost;
             }
             updateBalanceDisplays();
-            
+
             currentBet = betAmount;
-            currentWager = betAmount - houseFee;
+            currentWager = betAmount; // Wager is the original bet amount for winning calculation
             totalCasinoProfit += houseFee;
 
             const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
@@ -1279,9 +1389,9 @@
             }
         }
 
-        function startDealOrNoDealGame() { 
-            sequenceBet = parseFloat(dealOrNoDealBetInput.value); 
-            sequenceNumber = parseInt(dealOrNoDealNumberInput.value); 
+        function startDealOrNoDealGame() {
+            sequenceBet = parseFloat(dealOrNoDealBetInput.value);
+            sequenceNumber = parseInt(dealOrNoDealNumberInput.value);
             const insuranceSelected = document.getElementById('dond-insurance-checkbox').checked;
 
             if (isNaN(sequenceBet) || sequenceBet <= 0) {
@@ -1292,41 +1402,64 @@
             }
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
 
-            const insuranceCost = insuranceSelected ? sequenceBet * 0.25 : 0; // Insurance 25%
-            if (sequenceBet + insuranceCost > playerBalance) { 
-                messageBox.textContent = `You do not have enough funds for this bet and insurance. Total cost: $${(sequenceBet + insuranceCost).toFixed(2)}.`; 
-                return; 
+            const INSURANCE_RATE = 0.45; // 45% insurance
+            const BASE_HOUSE_FEE_RATE = 0.15; // 15% base house fee
+            const INSURED_HOUSE_FEE_RATE = 0.15; // 15% fee when insured to make total 60% with 45% insurance
+
+            let insuranceCost = 0;
+            let houseFeeRate = 0;
+
+            if (specialFeatures444Active) {
+                houseFeeRate = 0;
+            } else if (marketEventActive && marketEventType === 'production') {
+                houseFeeRate = 0.05; // 5% during production boom
+            } else {
+                houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
             }
 
-            let houseFeeRate = specialFeatures444Active ? 0 : (marketEventActive && marketEventType === 'production' ? 0.05 : 0.15);
+            if (insuranceSelected) {
+                insuranceCost = sequenceBet * INSURANCE_RATE;
+                if (specialFeatures444Active) {
+                    houseFeeRate = 0;
+                    insuranceCost = 0;
+                } else {
+                    houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
+                }
+            }
+
             let houseFee = sequenceBet * houseFeeRate;
 
-            playerBalance -= (sequenceBet + insuranceCost);
-            playerNetProfitLoss -= (sequenceBet + insuranceCost);
-            addTransaction('bet_placement', -sequenceBet, `Deal or No Deal bet placed: $${sequenceBet.toFixed(2)}`); 
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Deal or No Deal house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${sequenceBet.toFixed(2)} bet`); 
-            if(insuranceSelected) {
+            if (sequenceBet + insuranceCost + houseFee > playerBalance) {
+                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(sequenceBet + insuranceCost + houseFee).toFixed(2)}.`;
+                return;
+            }
+
+            playerBalance -= (sequenceBet + insuranceCost + houseFee);
+            playerNetProfitLoss -= (sequenceBet + insuranceCost + houseFee);
+            addTransaction('bet_placement', -sequenceBet, `Deal or No Deal bet placed: $${sequenceBet.toFixed(2)}`);
+            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Deal or No Deal house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${sequenceBet.toFixed(2)} bet`);
+            if(insuranceSelected && insuranceCost > 0) {
                 addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Deal or No Deal for $${insuranceCost.toFixed(2)}`);
                 totalCasinoProfit += insuranceCost;
             }
             updateBalanceDisplays();
 
-            sequenceWager = sequenceBet - houseFee; 
-            totalCasinoProfit += houseFee; 
-            currentBet = sequenceBet; 
+            sequenceWager = sequenceBet; // Wager is the original bet amount for winning calculation
+            totalCasinoProfit += houseFee;
+            currentBet = sequenceBet;
 
             sequenceRound = 0;
             revealedSequence = [];
-            dealOrNoDealResultDisplay.textContent = ''; 
+            dealOrNoDealResultDisplay.textContent = '';
             sequenceContainer.innerHTML = '';
-            dealOrNoDealOptions.innerHTML = ''; 
-            dealOrNoDealOptions.classList.add('hidden'); 
+            dealOrNoDealOptions.innerHTML = '';
+            dealOrNoDealOptions.classList.add('hidden');
 
-            dealOrNoDealGame = { 
+            dealOrNoDealGame = {
                 number: sequenceNumber,
-                bet: sequenceBet, 
-                wager: sequenceWager, 
-                sequence: generateDealOrNoDealSequence(), 
+                bet: sequenceBet,
+                wager: sequenceWager,
+                sequence: generateDealOrNoDealSequence(),
                 round: 0,
                 chosenNumberWasRevealedEarly: false,
                 insurancePurchased: insuranceSelected,
@@ -1338,14 +1471,14 @@
             } else {
                 chosenNumberIsLast = false;
             }
-            
-            startNextDealOrNoDealRound(); 
+
+            startNextDealOrNoDealRound();
         }
 
-        function startNextDealOrNoDealRound() { 
+        function startNextDealOrNoDealRound() {
             if (sequenceIntervalId) clearInterval(sequenceIntervalId);
-            dealOrNoDealOptions.innerHTML = ''; 
-            dealOrNoDealOptions.classList.add('hidden'); 
+            dealOrNoDealOptions.innerHTML = '';
+            dealOrNoDealOptions.classList.add('hidden');
 
             sequenceRound++;
             const startIndex = (sequenceRound - 1) * 5;
@@ -1359,7 +1492,7 @@
                     dealOrNoDealGame.chosenNumberWasRevealedEarly = true;
                 }
             }
-            displayDealOrNoDealSequence(); 
+            displayDealOrNoDealSequence();
 
             if (sequenceRound < 4) {
                 if (dealOrNoDealGame.chosenNumberWasRevealedEarly) {
@@ -1367,49 +1500,49 @@
                     handleGameEnd('Deal or No Deal', false, 0, 0, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
                     return;
                 }
-            } else { 
+            } else {
                 if (chosenNumberIsLast && !dealOrNoDealGame.chosenNumberWasRevealedEarly) {
-                    const finalWinnings = dealOrNoDealGame.bet * 20; 
+                    const finalWinnings = dealOrNoDealGame.bet * 20;
                     const profit = finalWinnings - dealOrNoDealGame.bet;
-                    dealOrNoDealResultDisplay.textContent = `Congratulations! Your number was the very LAST! You win 20x your initial bet!`; 
-                    handleGameEnd('Deal or No Deal', true, finalWinnings, profit, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased); 
+                    dealOrNoDealResultDisplay.textContent = `Congratulations! Your number was the very LAST! You win 20x your initial bet!`;
+                    handleGameEnd('Deal or No Deal', true, finalWinnings, profit, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
                 } else {
                     dealOrNoDealResultDisplay.textContent = `You lose! Your number was revealed, or it was not the very last.`;
-                    handleGameEnd('Deal or No Deal', false, 0, 0, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased); 
+                    handleGameEnd('Deal or No Deal', false, 0, 0, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
                 }
                 return;
             }
 
             let payoutMultiplier = 0;
             let message = '';
-            if (sequenceRound === 1) { payoutMultiplier = 1.25; message = 'Round 1 complete. Your number was not revealed. You can take 1.25x your initial bet or continue.'; } 
-            else if (sequenceRound === 2) { payoutMultiplier = 2; message = 'Round 2 complete. Your number was not revealed. You can take 2x your initial bet or continue.'; } 
+            if (sequenceRound === 1) { payoutMultiplier = 1.25; message = 'Round 1 complete. Your number was not revealed. You can take 1.25x your initial bet or continue.'; }
+            else if (sequenceRound === 2) { payoutMultiplier = 2; message = 'Round 2 complete. Your number was not revealed. You can take 2x your initial bet or continue.'; }
             else if (sequenceRound === 3) { payoutMultiplier = 2.5; message = 'Round 3 complete. Your number was not revealed. You can take 2.5x your initial bet or continue.'; }
 
-            const currentPayout = dealOrNoDealGame.bet * payoutMultiplier; 
-            const profitOnDeal = currentPayout - dealOrNoDealGame.bet; 
+            const currentPayout = dealOrNoDealGame.bet * payoutMultiplier;
+            const profitOnDeal = currentPayout - dealOrNoDealGame.bet;
             messageBox.textContent = message;
-            dealOrNoDealOptions.classList.remove('hidden'); 
+            dealOrNoDealOptions.classList.remove('hidden');
 
             const takeButton = document.createElement('button');
-            takeButton.textContent = `Take ${payoutMultiplier}x Bet ($${currentPayout.toFixed(2)})`; 
+            takeButton.textContent = `Take ${payoutMultiplier}x Bet ($${currentPayout.toFixed(2)})`;
             takeButton.className = 'bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline';
             takeButton.onclick = () => {
-                dealOrNoDealOptions.innerHTML = ''; 
-                dealOrNoDealOptions.classList.add('hidden'); 
-                handleGameEnd('Deal or No Deal', true, currentPayout, profitOnDeal, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased); 
+                dealOrNoDealOptions.innerHTML = '';
+                dealOrNoDealOptions.classList.add('hidden');
+                handleGameEnd('Deal or No Deal', true, currentPayout, profitOnDeal, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
             };
-            dealOrNoDealOptions.appendChild(takeButton); 
+            dealOrNoDealOptions.appendChild(takeButton);
 
             const continueButton = document.createElement('button');
             continueButton.textContent = 'Continue';
             continueButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline';
             continueButton.onclick = () => {
-                dealOrNoDealOptions.innerHTML = ''; 
-                dealOrNoDealOptions.classList.add('hidden'); 
-                startNextDealOrNoDealRound(); 
+                dealOrNoDealOptions.innerHTML = '';
+                dealOrNoDealOptions.classList.add('hidden');
+                startNextDealOrNoDealRound();
             };
-            dealOrNoDealOptions.appendChild(continueButton); 
+            dealOrNoDealOptions.appendChild(continueButton);
         }
 
         // --- Action button functions ---
@@ -1510,7 +1643,7 @@
                 emergencyLoanRequestButton.textContent = "Request Emergency Loan";
                 emergencyLoanAmountInput.value = '';
             } else if (loanType === 'bnpl') {
-                bnplLoanAmount = totalRepayment; 
+                bnplLoanAmount = totalRepayment;
                 bnplPaymentsRemaining = 10;
                 bnplLoanActive = true;
                 playerBalance += loanAmount;
@@ -1632,12 +1765,12 @@
                     case '888':
                         if (isBanned) { messageBox.textContent = "You are currently banned from the casino and cannot use this code."; break; }
                         messageBox.textContent = "You have unlocked 5 rounds of 0% tariff and a $5000 loan at 0% interest, repayable after 1 bet!";
-                        tariffFreeRoundsRemaining = 5; 
+                        tariffFreeRoundsRemaining = 5;
                         const zeroInterestLoanAmount = 5000;
 
                         playerBalance += zeroInterestLoanAmount; playerNetProfitLoss += zeroInterestLoanAmount;
                         addTransaction('loan_received_0_interest', zeroInterestLoanAmount, `Secret code 888: 0% interest loan received: $${zeroInterestLoanAmount.toFixed(2)}`);
-                        
+
                         document.addEventListener('gameEnded', function loanRepayCheckOnce() {
                             if (playerBalance >= zeroInterestLoanAmount) {
                                 playerBalance -= zeroInterestLoanAmount; playerNetProfitLoss -= zeroInterestLoanAmount;
@@ -1664,7 +1797,7 @@
                         messageBox.textContent = `Code 444 Deactivated. Standard fees and tariffs are now active.`;
                         break;
                     case 'STOPTARIFFS':
-                        if (isBanned) { messageBox.textContent = "You are currently banned from the casino and cannot use this code."; break; }
+                        if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; break; }
                         if (tariffFreeRoundsRemaining > 0) { messageBox.textContent = `You already have ${tariffFreeRoundsRemaining} tariff-free rounds remaining.`; break; }
                         tariffFreeRoundsRemaining = 5;
                         messageBox.textContent = `Code "STOPTARIFFS" Activated! Your next 5 game profits will be 100% tariff-free!`;
