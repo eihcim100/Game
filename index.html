@@ -370,6 +370,33 @@
           color: #EFF6FF;
       }
 
+      /* Tariff Ticker Specific Styles */
+      .tariff-ticker {
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          color: #1A202C;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+      .tariff-ticker .rate {
+          margin-right: 0.5rem;
+      }
+      .tariff-ticker .trend-arrow {
+          font-size: 1.2rem;
+          margin-left: 0.2rem;
+      }
+      .tariff-ticker .up {
+          color: #059669; /* Green for up */
+      }
+      .tariff-ticker .down {
+          color: #EF4444; /* Red for down */
+      }
+      .tariff-ticker .neutral {
+          color: #4A5568; /* Gray for no change */
+      }
+
 
       /* Responsive adjustments */
       @media (max-width: 768px) {
@@ -505,6 +532,10 @@
             <p>Hardship Fund Balance: $<span id="hardship-balance">0</span></p>
             <p>Net Profit/Loss: $<span id="net-profit-loss">0</span></p>
             <p>Casino Total Profit: $<span id="casino-total-profit">0</span></p>
+            <div id="tariff-ticker" class="tariff-ticker">
+                Current Tariff Rate: <span id="current-tariff-rate">--</span>%
+                <span id="tariff-trend" class="trend-arrow"></span>
+            </div>
         </div>
 
         <div id="game-selection" class="mt-6 hidden">
@@ -586,7 +617,7 @@
         <div id="action-buttons" class="mt-6 hidden">
             <h2>Special Actions</h2>
             <button id="withdraw-hardship-funds-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Withdraw Hardship Funds</button>
-            
+
             <div id="emergency-loan-request-section" class="mt-4">
                 <button id="emergency-loan-request-button" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Request Emergency Loan</button>
                 <input type="number" id="emergency-loan-amount-input" placeholder="Desired Loan Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 hidden">
@@ -682,6 +713,11 @@
         let marketEventTimeoutId = null;
         let marketEventDurationIntervalId = null;
 
+        // Tariff Ticker Variables
+        let currentTariffRate = 0;
+        let previousTariffRate = 0;
+
+
         // DOM Elements
         const messageBox = document.getElementById('message-box');
         const depositButton = document.getElementById('deposit-button');
@@ -754,6 +790,11 @@
         const marketEventTitle = document.getElementById('market-event-title');
         const marketEventDetails = document.getElementById('market-event-details');
         const closeMarketEventModalButton = document.getElementById('close-market-event-modal');
+
+        // Tariff Ticker DOM Elements
+        const currentTariffRateDisplay = document.getElementById('current-tariff-rate');
+        const tariffTrendDisplay = document.getElementById('tariff-trend');
+
 
         // Event Listeners
         depositButton.addEventListener('click', handleDeposit);
@@ -874,6 +915,7 @@
             messageBox.textContent = `Deposit of $${depositAmount.toFixed(2)} successful!`;
             initialDepositInput.value = '';
             startMarketEventTimer();
+            startTariffTicker(); // Start the tariff ticker on deposit
         }
 
         function showGame(gameName) {
@@ -930,7 +972,7 @@
                 tariffPercentage = 0;
                 tariffFreeRoundsRemaining--;
             } else {
-                tariffPercentage = Math.floor(Math.random() * 100) + 1;
+                tariffPercentage = currentTariffRate; // Use the current tariff rate from the ticker
             }
 
             let tariffAmount = 0;
@@ -1104,99 +1146,34 @@
 
             if (specialFeatures444Active) {
                 houseFeeRate = 0;
-            } else if (marketEventActive && marketEventType === 'production') {
+            } else if (currentHandInsured) {
+                 // When insurance is enabled, the prompt says "15% + 45% (when insurance is enabled) totals to 60%".
+                 // This strongly suggests the house fee becomes exactly 15% *when* insurance is taken,
+                 // overriding other base fee logic, unless 444 sets it to 0.
+                insuranceCost = betAmount * INSURANCE_RATE; // 45%
+                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
+            }
+            else if (marketEventActive && marketEventType === 'production') {
                 houseFeeRate = 0.05; // 5% during production boom
             } else {
                 houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
             }
 
-            if (currentHandInsured) {
-                insuranceCost = betAmount * INSURANCE_RATE;
-                // If insured, the combined cost (insurance + fee) is 60%.
-                // Since insurance is 45%, the fee portion needs to be 15%.
-                // This overrides standard house fee logic when insurance is taken.
-                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Ensures 15% fee when insured, for a total of 60% (45%+15%)
-                if (specialFeatures444Active) { // Code 444 overrides all fees
-                    houseFeeRate = 0;
-                    insuranceCost = 0;
-                } else if (marketEventActive && marketEventType === 'production') { // Production event overrides base fee, but insurance still applies
-                    // If market event production is active, fee is 5%.
-                    // To get a 60% total, insurance is 45%, so fee should be 15%.
-                    // This means for market production with insurance, it's 45% + 5% = 50%
-                    // We need to decide: does market event reduce the *base* fee, or the *total* fee?
-                    // Original prompt implies 15% + 45% = 60% to get 10% house edge.
-                    // If market event makes fee 5%, then total is 45% + 5% = 50% (less house edge)
-                    // For simplicity, let's assume market event reduces the BASE_HOUSE_FEE_RATE only.
-                    // If insurance is taken, it's 45% insurance + 15% fee.
-                    // If market event is production, it might reduce the 15% to 5%?
-                    // This creates a conflict. For the 10% house edge, 15%+45% is needed.
-                    // Let's assume the 15% is the *minimum* fee when insurance is taken, unless 444 is active.
-                    houseFeeRate = Math.max(INSURED_HOUSE_FEE_RATE, houseFeeRate); // Ensures at least 15% fee if not 444
-                    // Re-evaluating: The prompt says "The 15% + 45% (when insurance is enabled) totals to 60% which is exactly what we need to create a 10% house edge".
-                    // This implies the 15% fee is *specific* to when insurance is enabled.
-                    // So, if insurance is ENABLED, the fee is always 15% unless code 444 is active.
-                    // If insurance is NOT ENABLED, the fee is 15% by default, or 5% if production event.
-                    // Let's adjust the logic slightly:
-                }
-            }
 
             let houseFee = betAmount * houseFeeRate;
 
-            // Re-evaluating the fee structure for clarity and consistency with prompt.
-            // House Fee:
-            // - If 444 is active: 0%
-            // - If marketEvent type is 'production': 5%
-            // - Otherwise (standard): 15%
-            // Insurance Cost:
-            // - If insurance is checked: 45%
-            // - If 444 is active: 0% (overrides insurance cost)
-
-            // Let's re-calculate houseFee and insuranceCost more robustly.
-            let effectiveHouseFeeRate;
-            let effectiveInsuranceCost = 0;
-
-            if (specialFeatures444Active) {
-                effectiveHouseFeeRate = 0;
-            } else if (marketEventActive && marketEventType === 'production') {
-                effectiveHouseFeeRate = 0.05;
-            } else {
-                effectiveHouseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
-            }
-
-            if (currentHandInsured) {
-                if (specialFeatures444Active) {
-                    effectiveInsuranceCost = 0;
-                    // effectiveHouseFeeRate remains 0 from above.
-                } else {
-                    effectiveInsuranceCost = betAmount * INSURANCE_RATE; // 45%
-                    // When insurance is enabled, the prompt says "15% + 45% (when insurance is enabled) totals to 60%".
-                    // This strongly suggests the house fee becomes exactly 15% *when* insurance is taken,
-                    // overriding other base fee logic, unless 444 sets it to 0.
-                    effectiveHouseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured, for the 60% total
-                    if (marketEventActive && marketEventType === 'production') {
-                         // This is where it gets tricky. If market event sets to 5%, but insurance implies 15%.
-                         // For the prompt's condition to be met (60% total when insured),
-                         // the 15% fee must apply when insured.
-                         // So, if insured, it's always 15% fee (unless 444).
-                         // This means production event's 5% fee is only for *uninsured* bets.
-                    }
-                }
-            }
-
-            houseFee = betAmount * effectiveHouseFeeRate;
-
-            if (betAmount + effectiveInsuranceCost + houseFee > playerBalance) {
-                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(betAmount + effectiveInsuranceCost + houseFee).toFixed(2)}.`;
+            if (betAmount + insuranceCost + houseFee > playerBalance) {
+                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(betAmount + insuranceCost + houseFee).toFixed(2)}.`;
                 return;
             }
 
-            playerBalance -= (betAmount + effectiveInsuranceCost + houseFee);
-            playerNetProfitLoss -= (betAmount + effectiveInsuranceCost + houseFee);
+            playerBalance -= (betAmount + insuranceCost + houseFee);
+            playerNetProfitLoss -= (betAmount + insuranceCost + houseFee);
             addTransaction('bet_placement', -betAmount, `Blackjack bet placed: $${betAmount.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Blackjack house fee (${(effectiveHouseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(currentHandInsured && effectiveInsuranceCost > 0) { // Only add if insurance was actually purchased and cost something
-                addTransaction('insurance_purchase', -effectiveInsuranceCost, `Insurance purchased for Blackjack for $${effectiveInsuranceCost.toFixed(2)}`);
-                totalCasinoProfit += effectiveInsuranceCost;
+            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Blackjack house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
+            if(currentHandInsured && insuranceCost > 0) { // Only add if insurance was actually purchased and cost something
+                addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Blackjack for $${insuranceCost.toFixed(2)}`);
+                totalCasinoProfit += insuranceCost;
             }
             updateBalanceDisplays();
 
@@ -1302,20 +1279,14 @@
 
             if (specialFeatures444Active) {
                 houseFeeRate = 0;
-            } else if (marketEventActive && marketEventType === 'production') {
+            } else if (insuranceSelected) {
+                insuranceCost = betAmount * INSURANCE_RATE;
+                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
+            }
+            else if (marketEventActive && marketEventType === 'production') {
                 houseFeeRate = 0.05; // 5% during production boom
             } else {
                 houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
-            }
-
-            if (insuranceSelected) {
-                insuranceCost = betAmount * INSURANCE_RATE;
-                if (specialFeatures444Active) {
-                    houseFeeRate = 0;
-                    insuranceCost = 0;
-                } else {
-                    houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
-                }
             }
 
             let houseFee = betAmount * houseFeeRate;
@@ -1411,21 +1382,16 @@
 
             if (specialFeatures444Active) {
                 houseFeeRate = 0;
-            } else if (marketEventActive && marketEventType === 'production') {
+            } else if (insuranceSelected) {
+                insuranceCost = sequenceBet * INSURANCE_RATE;
+                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
+            }
+            else if (marketEventActive && marketEventType === 'production') {
                 houseFeeRate = 0.05; // 5% during production boom
             } else {
                 houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
             }
 
-            if (insuranceSelected) {
-                insuranceCost = sequenceBet * INSURANCE_RATE;
-                if (specialFeatures444Active) {
-                    houseFeeRate = 0;
-                    insuranceCost = 0;
-                } else {
-                    houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
-                }
-            }
 
             let houseFee = sequenceBet * houseFeeRate;
 
@@ -1875,10 +1841,42 @@
             startMarketEventTimer();
         }
 
+        // --- Tariff Ticker Functions ---
+        function startTariffTicker() {
+            // Initial display
+            updateTariffRate();
+            // Update every 5 seconds
+            setInterval(updateTariffRate, 5000);
+        }
+
+        function updateTariffRate() {
+            previousTariffRate = currentTariffRate;
+            currentTariffRate = Math.floor(Math.random() * 100) + 1; // Random rate between 1 and 100
+            displayTariffTicker();
+        }
+
+        function displayTariffTicker() {
+            currentTariffRateDisplay.textContent = currentTariffRate;
+            tariffTrendDisplay.classList.remove('up', 'down', 'neutral');
+
+            if (currentTariffRate > previousTariffRate) {
+                tariffTrendDisplay.textContent = '▲';
+                tariffTrendDisplay.classList.add('up');
+            } else if (currentTariffRate < previousTariffRate) {
+                tariffTrendDisplay.textContent = '▼';
+                tariffTrendDisplay.classList.add('down');
+            } else {
+                tariffTrendDisplay.textContent = '●';
+                tariffTrendDisplay.classList.add('neutral');
+            }
+        }
+
+
         // Initialize display on load
         window.onload = () => {
             updateBalanceDisplays();
             peopleAssistanceFundRequestButton.dataset.count = 0;
+            // The tariff ticker will start once the user makes an initial deposit.
         };
     </script>
 </body>
