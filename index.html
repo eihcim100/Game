@@ -629,6 +629,11 @@
             <button id="auto-play-mode" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Enable Auto Play Mode</button>
             <button id="withdraw-button" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Withdraw Funds</button>
 
+            <div class="mt-4 mb-2">
+                <input type="checkbox" id="all-in-super-safe-bet-checkbox" class="mr-2 align-middle">
+                <label for="all-in-super-safe-bet-checkbox" class="align-middle font-bold text-blue-700">All-in Super Safe Bet (deducts 15% house fee + 45% insurance from total)</label>
+            </div>
+
             <div id="extra-payment-section" class="mt-4 hidden">
                 <p>Make Extra Loan Payment:</p>
                 <input type="number" id="extra-payment-amount" placeholder="Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -795,6 +800,9 @@
         const currentTariffRateDisplay = document.getElementById('current-tariff-rate');
         const tariffTrendDisplay = document.getElementById('tariff-trend');
 
+        // New DOM element for All-in Super Safe Bet
+        const allInSuperSafeBetCheckbox = document.getElementById('all-in-super-safe-bet-checkbox');
+
 
         // Event Listeners
         depositButton.addEventListener('click', handleDeposit);
@@ -835,6 +843,9 @@
         redButton.addEventListener('click', () => playRedOrBlack('red'));
         blackButton.addEventListener('click', () => playRedOrBlack('black'));
         startSequenceButton.addEventListener('click', startDealOrNoDealGame);
+
+        // Event listener for the new All-in Super Safe Bet checkbox
+        allInSuperSafeBetCheckbox.addEventListener('change', toggleAllInSuperSafeBet);
 
         // --- Core Functions ---
 
@@ -925,6 +936,10 @@
             redBlackGameContainer.classList.add('hidden');
             dealOrNoDealGameContainer.classList.add('hidden');
             actionButtons.classList.remove('hidden');
+
+            // Reset all-in checkbox and inputs when switching games
+            allInSuperSafeBetCheckbox.checked = false;
+            toggleAllInSuperSafeBet();
 
             switch (gameName) {
                 case 'blackjack':
@@ -1130,57 +1145,77 @@
         }
 
         function playBlackjackHand() {
-            const betAmount = parseFloat(blackjackBetInput.value);
-            currentHandInsured = document.getElementById('blackjack-insurance-checkbox').checked;
-            if (isNaN(betAmount) || betAmount <= 0) {
-                messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
-            }
+            let betAmount;
+            let insuranceSelected;
+            let houseFeeRateForCalc;
+            let insuranceCostForCalc;
+
+            const BASE_HOUSE_FEE_RATE = 0.15;
+            const INSURANCE_RATE = 0.45;
+            const INSURED_HOUSE_FEE_RATE = 0.15; // This is the house fee WHEN insurance is taken, making total 60% with insurance
+
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
 
-            const INSURANCE_RATE = 0.45; // 45% insurance
-            const BASE_HOUSE_FEE_RATE = 0.15; // 15% base house fee
-            const INSURED_HOUSE_FEE_RATE = 0.15; // 15% fee when insured to make total 60% with 45% insurance
+            if (allInSuperSafeBetCheckbox.checked) {
+                // All-in Super Safe Bet overrides all other fee/insurance settings
+                // totalCost = playerBalance
+                // totalCost = betAmount + (betAmount * BASE_HOUSE_FEE_RATE) + (betAmount * INSURANCE_RATE)
+                // totalCost = betAmount * (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)
+                betAmount = playerBalance / (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE);
+                insuranceSelected = true;
+                houseFeeRateForCalc = BASE_HOUSE_FEE_RATE; // Force 15% house fee
+                insuranceCostForCalc = betAmount * INSURANCE_RATE; // Force 45% insurance cost
 
-            let insuranceCost = 0;
-            let houseFeeRate = 0;
-
-            if (specialFeatures444Active) {
-                houseFeeRate = 0;
-            } else if (currentHandInsured) {
-                 // When insurance is enabled, the prompt says "15% + 45% (when insurance is enabled) totals to 60%".
-                 // This strongly suggests the house fee becomes exactly 15% *when* insurance is taken,
-                 // overriding other base fee logic, unless 444 sets it to 0.
-                insuranceCost = betAmount * INSURANCE_RATE; // 45%
-                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
-            }
-            else if (marketEventActive && marketEventType === 'production') {
-                houseFeeRate = 0.05; // 5% during production boom
+                if (playerBalance < (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)) { // Check if player balance is enough to make at least 1 unit of bet
+                    messageBox.textContent = `Your balance ($${playerBalance.toFixed(2)}) is too low for an All-in Super Safe Bet. Minimum required effective funds for a wager is at least $1.00 (which means total balance of $${(1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE).toFixed(2)}).`;
+                    return;
+                }
             } else {
-                houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
+                betAmount = parseFloat(blackjackBetInput.value);
+                insuranceSelected = document.getElementById('blackjack-insurance-checkbox').checked;
+
+                if (isNaN(betAmount) || betAmount <= 0) {
+                    messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
+                }
+
+                // Apply special features or market events for normal bets
+                if (specialFeatures444Active) {
+                    houseFeeRateForCalc = 0;
+                    insuranceCostForCalc = 0; // No insurance cost if 444 is active
+                } else if (marketEventActive && marketEventType === 'production') {
+                    houseFeeRateForCalc = 0.05; // 5% during production boom
+                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
+                } else {
+                    houseFeeRateForCalc = insuranceSelected ? INSURED_HOUSE_FEE_RATE : BASE_HOUSE_FEE_RATE;
+                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
+                }
             }
 
+            let houseFee = betAmount * houseFeeRateForCalc;
+            let totalCost = betAmount + insuranceCostForCalc + houseFee;
 
-            let houseFee = betAmount * houseFeeRate;
-
-            if (betAmount + insuranceCost + houseFee > playerBalance) {
-                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(betAmount + insuranceCost + houseFee).toFixed(2)}.`;
+            // This check is crucial: ensure totalCost doesn't exceed playerBalance *after* all calculations
+            // For all-in, totalCost should ideally equal playerBalance (or be very close due to floating point)
+            if (totalCost > playerBalance + 0.01) { // Add a small epsilon for floating point inaccuracies
+                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${totalCost.toFixed(2)}. Current balance: $${playerBalance.toFixed(2)}.`;
                 return;
             }
 
-            playerBalance -= (betAmount + insuranceCost + houseFee);
-            playerNetProfitLoss -= (betAmount + insuranceCost + houseFee);
+
+            playerBalance -= totalCost;
+            playerNetProfitLoss -= totalCost;
             addTransaction('bet_placement', -betAmount, `Blackjack bet placed: $${betAmount.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Blackjack house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(currentHandInsured && insuranceCost > 0) { // Only add if insurance was actually purchased and cost something
-                addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Blackjack for $${insuranceCost.toFixed(2)}`);
-                totalCasinoProfit += insuranceCost;
+            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Blackjack house fee (${(houseFeeRateForCalc * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
+            if(insuranceCostForCalc > 0) {
+                addTransaction('insurance_purchase', -insuranceCostForCalc, `Insurance purchased for Blackjack for $${insuranceCostForCalc.toFixed(2)}`);
+                totalCasinoProfit += insuranceCostForCalc;
             }
             updateBalanceDisplays();
 
             currentBet = betAmount;
-            currentWager = betAmount; // Wager is the original bet amount for winning calculation
-            totalCasinoProfit += houseFee; // Casino profits from the house fee
-
+            currentWager = betAmount; // This is the amount for payout calculation
+            currentHandInsured = insuranceSelected; // Whether insurance was active for this specific bet
+            totalCasinoProfit += houseFee;
 
             blackjackPlayButton.disabled = true;
             blackjackHitButton.disabled = false;
@@ -1263,51 +1298,66 @@
 
         // --- Red or Black Game functions ---
         function playRedOrBlack(color) {
-            const betAmount = parseFloat(redBlackBetInput.value);
-            const insuranceSelected = document.getElementById('red-black-insurance-checkbox').checked;
-            if (isNaN(betAmount) || betAmount <= 0) {
-                messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
-            }
+            let betAmount;
+            let insuranceSelected;
+            let houseFeeRateForCalc;
+            let insuranceCostForCalc;
+
+            const BASE_HOUSE_FEE_RATE = 0.15;
+            const INSURANCE_RATE = 0.45;
+
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
 
-            const INSURANCE_RATE = 0.45; // 45% insurance
-            const BASE_HOUSE_FEE_RATE = 0.15; // 15% base house fee
-            const INSURED_HOUSE_FEE_RATE = 0.15; // 15% fee when insured to make total 60% with 45% insurance
-
-            let insuranceCost = 0;
-            let houseFeeRate = 0;
-
-            if (specialFeatures444Active) {
-                houseFeeRate = 0;
-            } else if (insuranceSelected) {
-                insuranceCost = betAmount * INSURANCE_RATE;
-                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
-            }
-            else if (marketEventActive && marketEventType === 'production') {
-                houseFeeRate = 0.05; // 5% during production boom
+            if (allInSuperSafeBetCheckbox.checked) {
+                betAmount = playerBalance / (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE);
+                insuranceSelected = true;
+                houseFeeRateForCalc = BASE_HOUSE_FEE_RATE;
+                insuranceCostForCalc = betAmount * INSURANCE_RATE;
+                if (playerBalance < (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)) {
+                    messageBox.textContent = `Your balance ($${playerBalance.toFixed(2)}) is too low for an All-in Super Safe Bet. Minimum required effective funds for a wager is at least $1.00 (which means total balance of $${(1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE).toFixed(2)}).`;
+                    return;
+                }
             } else {
-                houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
+                betAmount = parseFloat(redBlackBetInput.value);
+                insuranceSelected = document.getElementById('red-black-insurance-checkbox').checked;
+
+                if (isNaN(betAmount) || betAmount <= 0) {
+                    messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
+                }
+
+                if (specialFeatures444Active) {
+                    houseFeeRateForCalc = 0;
+                    insuranceCostForCalc = 0;
+                } else if (marketEventActive && marketEventType === 'production') {
+                    houseFeeRateForCalc = 0.05;
+                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
+                } else {
+                    houseFeeRateForCalc = insuranceSelected ? INSURED_HOUSE_FEE_RATE : BASE_HOUSE_FEE_RATE;
+                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
+                }
             }
 
-            let houseFee = betAmount * houseFeeRate;
+            let houseFee = betAmount * houseFeeRateForCalc;
+            let totalCost = betAmount + insuranceCostForCalc + houseFee;
 
-            if (betAmount + insuranceCost + houseFee > playerBalance) {
-                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(betAmount + insuranceCost + houseFee).toFixed(2)}.`;
+            if (totalCost > playerBalance + 0.01) {
+                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${totalCost.toFixed(2)}. Current balance: $${playerBalance.toFixed(2)}.`;
                 return;
             }
 
-            playerBalance -= (betAmount + insuranceCost + houseFee);
-            playerNetProfitLoss -= (betAmount + insuranceCost + houseFee);
+            playerBalance -= totalCost;
+            playerNetProfitLoss -= totalCost;
             addTransaction('bet_placement', -betAmount, `Red or Black bet placed: $${betAmount.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Red or Black house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(insuranceSelected && insuranceCost > 0) {
-                addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Red or Black for $${insuranceCost.toFixed(2)}`);
-                totalCasinoProfit += insuranceCost;
+            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Red or Black house fee (${(houseFeeRateForCalc * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
+            if(insuranceCostForCalc > 0) {
+                addTransaction('insurance_purchase', -insuranceCostForCalc, `Insurance purchased for Red or Black for $${insuranceCostForCalc.toFixed(2)}`);
+                totalCasinoProfit += insuranceCostForCalc;
             }
             updateBalanceDisplays();
 
             currentBet = betAmount;
-            currentWager = betAmount; // Wager is the original bet amount for winning calculation
+            currentWager = betAmount;
+            currentHandInsured = insuranceSelected;
             totalCasinoProfit += houseFee;
 
             const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
@@ -1329,7 +1379,7 @@
                 resultMessage += 'You lose!';
             }
             redBlackResultDisplay.textContent = resultMessage;
-            handleGameEnd('Red or Black', playerWon, winnings, profit, currentWager, insuranceSelected);
+            handleGameEnd('Red or Black', playerWon, winnings, profit, currentWager, currentHandInsured);
         }
 
         // --- Deal or No Deal Game functions ---
@@ -1361,58 +1411,84 @@
         }
 
         function startDealOrNoDealGame() {
-            sequenceBet = parseFloat(dealOrNoDealBetInput.value);
-            sequenceNumber = parseInt(dealOrNoDealNumberInput.value);
-            const insuranceSelected = document.getElementById('dond-insurance-checkbox').checked;
+            let sequenceBetValue;
+            let insuranceSelected;
+            let houseFeeRateForCalc;
+            let insuranceCostForCalc;
 
-            if (isNaN(sequenceBet) || sequenceBet <= 0) {
-                messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
-            }
+            const BASE_HOUSE_FEE_RATE = 0.15;
+            const INSURANCE_RATE = 0.45;
+
+            sequenceNumber = parseInt(dealOrNoDealNumberInput.value);
+
             if (isNaN(sequenceNumber) || sequenceNumber < 1 || sequenceNumber > 20) {
                 messageBox.textContent = 'Invalid chosen number. Please enter a number between 1 and 20.'; return;
             }
             if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
 
-            const INSURANCE_RATE = 0.45; // 45% insurance
-            const BASE_HOUSE_FEE_RATE = 0.15; // 15% base house fee
-            const INSURED_HOUSE_FEE_RATE = 0.15; // 15% fee when insured to make total 60% with 45% insurance
 
-            let insuranceCost = 0;
-            let houseFeeRate = 0;
-
-            if (specialFeatures444Active) {
-                houseFeeRate = 0;
-            } else if (insuranceSelected) {
-                insuranceCost = sequenceBet * INSURANCE_RATE;
-                houseFeeRate = INSURED_HOUSE_FEE_RATE; // Forces 15% fee when insured
-            }
-            else if (marketEventActive && marketEventType === 'production') {
-                houseFeeRate = 0.05; // 5% during production boom
+            if (allInSuperSafeBetCheckbox.checked) {
+                sequenceBetValue = playerBalance / (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE);
+                insuranceSelected = true;
+                houseFeeRateForCalc = BASE_HOUSE_FEE_RATE;
+                insuranceCostForCalc = sequenceBetValue * INSURANCE_RATE;
+                if (playerBalance < (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)) {
+                    messageBox.textContent = `Your balance ($${playerBalance.toFixed(2)}) is too low for an All-in Super Safe Bet. Minimum required effective funds for a wager is at least $1.00 (which means total balance of $${(1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE).toFixed(2)}).`;
+                    return;
+                }
             } else {
-                houseFeeRate = BASE_HOUSE_FEE_RATE; // Default 15%
+                sequenceBetValue = parseFloat(dealOrNoDealBetInput.value);
+                insuranceSelected = document.getElementById('dond-insurance-checkbox').checked;
+
+                if (isNaN(sequenceBetValue) || sequenceBetValue <= 0) {
+                    messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
+                }
+
+                if (specialFeatures444Active) {
+                    houseFeeRateForCalc = 0;
+                    insuranceCostForCalc = 0;
+                } else if (marketEventActive && marketEventType === 'production') {
+                    houseFeeRateForCalc = 0.05;
+                    insuranceCostForCalc = insuranceSelected ? sequenceBetValue * INSURANCE_RATE : 0;
+                } else {
+                    houseFeeRateForCalc = insuranceSelected ? INSURED_HOUSE_FEE_RATE : BASE_HOUSE_FEE_RATE;
+                    insuranceCostForCalc = insuranceSelected ? sequenceBetValue * INSURANCE_RATE : 0;
+                }
             }
 
+            let houseFee = sequenceBetValue * houseFeeRateForCalc;
+            let totalCost = sequenceBetValue + insuranceCostForCalc + houseFee;
 
-            let houseFee = sequenceBet * houseFeeRate;
-
-            if (sequenceBet + insuranceCost + houseFee > playerBalance) {
-                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${(sequenceBet + insuranceCost + houseFee).toFixed(2)}.`;
+            if (totalCost > playerBalance + 0.01) {
+                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${totalCost.toFixed(2)}. Current balance: $${playerBalance.toFixed(2)}.`;
                 return;
             }
 
-            playerBalance -= (sequenceBet + insuranceCost + houseFee);
-            playerNetProfitLoss -= (sequenceBet + insuranceCost + houseFee);
-            addTransaction('bet_placement', -sequenceBet, `Deal or No Deal bet placed: $${sequenceBet.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Deal or No Deal house fee (${(houseFeeRate * 100).toFixed(0)}%) for $${sequenceBet.toFixed(2)} bet`);
-            if(insuranceSelected && insuranceCost > 0) {
-                addTransaction('insurance_purchase', -insuranceCost, `Insurance purchased for Deal or No Deal for $${insuranceCost.toFixed(2)}`);
-                totalCasinoProfit += insuranceCost;
+            playerBalance -= totalCost;
+            playerNetProfitLoss -= totalCost;
+            addTransaction('bet_placement', -sequenceBetValue, `Deal or No Deal bet placed: $${sequenceBetValue.toFixed(2)}`);
+            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Deal or No Deal house fee (${(houseFeeRateForCalc * 100).toFixed(0)}%) for $${sequenceBetValue.toFixed(2)} bet`);
+            if(insuranceCostForCalc > 0) {
+                addTransaction('insurance_purchase', -insuranceCostForCalc, `Insurance purchased for Deal or No Deal for $${insuranceCostForCalc.toFixed(2)}`);
+                totalCasinoProfit += insuranceCostForCalc;
             }
             updateBalanceDisplays();
 
-            sequenceWager = sequenceBet; // Wager is the original bet amount for winning calculation
+            sequenceBet = sequenceBetValue; // Update global for DOND game
+            sequenceWager = sequenceBetValue; // Wager is the original bet amount for winning calculation
             totalCasinoProfit += houseFee;
-            currentBet = sequenceBet;
+            currentBet = sequenceBetValue; // Update global for other game functions using currentBet
+
+            dealOrNoDealGame = {
+                number: sequenceNumber,
+                bet: sequenceBetValue, // Use sequenceBetValue as the bet for internal DOND logic
+                wager: sequenceBetValue, // Wager for handleGameEnd
+                sequence: generateDealOrNoDealSequence(),
+                round: 0,
+                chosenNumberWasRevealedEarly: false,
+                insurancePurchased: insuranceSelected, // Pass insurance status
+                winnings: 0
+            };
 
             sequenceRound = 0;
             revealedSequence = [];
@@ -1421,16 +1497,6 @@
             dealOrNoDealOptions.innerHTML = '';
             dealOrNoDealOptions.classList.add('hidden');
 
-            dealOrNoDealGame = {
-                number: sequenceNumber,
-                bet: sequenceBet,
-                wager: sequenceWager,
-                sequence: generateDealOrNoDealSequence(),
-                round: 0,
-                chosenNumberWasRevealedEarly: false,
-                insurancePurchased: insuranceSelected,
-                winnings: 0
-            };
 
             if (dealOrNoDealGame.sequence[19] === sequenceNumber) {
                 chosenNumberIsLast = true;
@@ -1871,12 +1937,49 @@
             }
         }
 
+        // --- All-in Super Safe Bet Functionality ---
+        function toggleAllInSuperSafeBet() {
+            const isAllIn = allInSuperSafeBetCheckbox.checked;
+
+            // Get all bet inputs and insurance checkboxes by their IDs or a common class if they had one
+            const betInputs = [
+                blackjackBetInput,
+                redBlackBetInput,
+                dealOrNoDealBetInput
+            ];
+            const insuranceCheckboxes = [
+                document.getElementById('blackjack-insurance-checkbox'),
+                document.getElementById('red-black-insurance-checkbox'),
+                document.getElementById('dond-insurance-checkbox')
+            ];
+
+            betInputs.forEach(input => {
+                input.disabled = isAllIn;
+                if (isAllIn) {
+                    input.value = ''; // Clear the value when all-in is active
+                }
+            });
+
+            insuranceCheckboxes.forEach(checkbox => {
+                checkbox.disabled = isAllIn;
+                if (isAllIn) {
+                    checkbox.checked = false; // Uncheck when all-in is active
+                }
+            });
+
+            if (isAllIn) {
+                messageBox.textContent = "All-in Super Safe Bet is active. Your entire balance (after fees) will be wagered.";
+            } else {
+                messageBox.textContent = "All-in Super Safe Bet is deactivated. Enter your custom bet.";
+            }
+        }
 
         // Initialize display on load
         window.onload = () => {
             updateBalanceDisplays();
             peopleAssistanceFundRequestButton.dataset.count = 0;
             // The tariff ticker will start once the user makes an initial deposit.
+            toggleAllInSuperSafeBet(); // Initialize state of bet inputs based on checkbox
         };
     </script>
 </body>
