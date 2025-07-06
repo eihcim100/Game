@@ -3,210 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Honest Casino Lite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>The Golden Spade Casino</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Base styles for a modern, light theme */
+      /*-- Casino Theme Styles --*/
       body {
-        font-family: 'Inter', sans-serif; /* Modern, clean font */
-        background-color: #F8FAFC; /* Light background */
-        color: #1A202C; /* Dark text */
+        font-family: 'Lato', sans-serif;
+        background-color: #1a1a1a;
+        color: #e0e0e0;
         margin: 0;
         padding: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background-image: linear-gradient(to bottom right, #F8FAFC, #E2E8F0); /* Subtle gradient background */
-        background-size: cover;
-        background-position: center;
-        overflow-x: hidden; /* Prevent horizontal scroll */
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233a3a3a' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        overflow-x: hidden;
       }
 
-      /* Main container for the game */
       .container {
         width: 95%;
-        max-width: 900px; /* Wider for a more spacious feel */
-        padding: 2.5rem; /* Increased padding */
-        background-color: rgba(255, 255, 255, 0.98); /* Near-solid light background */
-        border-radius: 1.5rem; /* More rounded corners */
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Softer, lighter shadow */
+        max-width: 900px;
+        padding: 2.5rem;
+        background-color: rgba(10, 10, 10, 0.85);
+        border-radius: 1.5rem;
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
         text-align: center;
-        border: 1px solid #CBD5E0; /* Muted border color */
-        backdrop-filter: blur(8px); /* More pronounced blur effect */
+        border: 2px solid #D4AF37; /* Gold border */
+        backdrop-filter: blur(10px);
       }
 
-      /* Headings */
+      .logo-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 1.5rem;
+      }
+
+      .logo-icon {
+          width: 60px;
+          height: 60px;
+          margin-right: 1rem;
+          filter: drop-shadow(0 0 10px #D4AF37);
+      }
+
+      h1, h2, h3 {
+        font-family: 'Cinzel', serif;
+        color: #D4AF37; /* Gold color */
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+      }
+
       h1 {
-        font-size: 2.8rem; /* Larger, more impactful heading */
-        margin-bottom: 1.8rem;
-        color: #3B82F6; /* Vibrant blue accent */
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* Softer text shadow */
-        font-weight: 700; /* Bold */
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
       }
-      h2{
-        font-size: 2rem; /* Slightly larger subheadings */
-        margin-bottom: 1.2rem;
-        color: #2563EB; /* Lighter blue for subheadings */
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.08); /* Softer text shadow */
-        font-weight: 600; /* Semi-bold */
-      }
-
-      /* Paragraph text */
-      p {
-        font-size: 1rem; /* Improved readability */
+      h2 {
+        font-size: 2.2rem;
         margin-bottom: 1.5rem;
-        color: #4A5568; /* Slightly darker text for contrast */
-        line-height: 1.7; /* Enhanced line height */
-        font-weight: 400; /* Regular weight */
+      }
+       h3 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
       }
 
-      /* Buttons - general styling */
+
+      p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        color: #c7c7c7;
+        line-height: 1.7;
+      }
+
       button {
-        padding: 1rem 2rem; /* Generous padding */
-        font-size: 1.1rem; /* Clearer font size */
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
         margin: 0.75rem;
         cursor: pointer;
-        border-radius: 1rem; /* More rounded */
-        transition: all 0.3s ease-in-out; /* Smooth transitions for all properties */
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Modern button shadow */
-        border: none;
-        font-weight: 600; /* Semi-bold */
-        text-transform: uppercase; /* Slight text transformation */
-        letter-spacing: 0.08em; /* Spaced out letters */
-        background-color: #3B82F6; /* Default blue for primary actions */
+        border-radius: 0.75rem;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 -2px 5px rgba(0,0,0,0.4);
+        border: 2px solid #D4AF37;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: linear-gradient(145deg, #c81e1e, #991414);
         color: #FFFFFF;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
       button:hover {
-        background-color: #2563EB; /* Darker blue on hover */
-        transform: translateY(-4px) scale(1.03); /* More pronounced lift and slight scale */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+        background: linear-gradient(145deg, #e02d2d, #b01a1a);
+        transform: translateY(-4px) scale(1.03);
+        box-shadow: 0 8px 25px rgba(255, 0, 0, 0.3), inset 0 -2px 5px rgba(0,0,0,0.4);
       }
       button:disabled{
-        background-color: #A0AEC0; /* Muted gray for disabled */
+        background: #555;
+        border-color: #444;
         cursor: not-allowed;
         opacity: 0.6;
         transform: none;
         box-shadow: none;
-        color: #F7FAFC;
+        color: #999;
+      }
+      
+      button .icon {
+          margin-right: 0.75rem;
+          width: 24px;
+          height: 24px;
       }
 
-      /* Input fields */
       input[type="number"], input[type="text"] {
-        padding: 1rem; /* Consistent padding */
-        font-size: 1.1rem; /* Larger font size */
-        border-radius: 0.75rem; /* More rounded */
-        border: 1px solid #CBD5E0; /* Muted border */
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 0.75rem;
+        border: 2px solid #555;
         margin: 0.75rem;
-        width: 80%; /* Slightly wider */
-        max-width: 400px; /* Increased max-width */
-        background-color: #F7FAFC; /* Lighter input background */
-        color: #1A202C; /* Dark input text */
-        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.05); /* Inner shadow for depth */
-        font-weight: 400;
+        width: 80%;
+        max-width: 400px;
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
       }
 
       input:focus {
         outline: none;
-        border-color: #3B82F6; /* Vibrant blue border on focus */
-        box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2); /* Soft blue glow on focus */
+        border-color: #D4AF37;
+        box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.2);
       }
 
-      /* Message box */
       .message-box {
         margin-top: 2rem;
         padding: 1.5rem;
-        background-color: rgba(0, 0, 0, 0.05); /* More subtle background */
+        background-color: rgba(0, 0, 0, 0.2);
         border-radius: 1rem;
-        border: 1px solid #CBD5E0;
+        border: 1px solid #444;
         text-align: center;
-        font-size: 1.05rem;
-        color: #1A202C;
-        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02); /* Inner glow */
-        font-weight: 400;
+        font-size: 1.1rem;
+        color: #D4AF37;
+        font-weight: 700;
+        min-height: 50px;
       }
        .hidden {
         display: none;
       }
 
-      /* Game specific elements */
-      #game-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 2rem;
-      }
-
       .game-button {
-        background-color: #10B981; /* Green for game selection */
-        color: #FFFFFF; /* Light text for contrast */
+        background: linear-gradient(145deg, #1e63c8, #144299);
+        border-color: #3b82f6;
       }
 
       .game-button:hover {
-        background-color: #059669; /* Darker green on hover */
+        background: linear-gradient(145deg, #2d73e0, #1a52b0);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3), inset 0 -2px 5px rgba(0,0,0,0.4);
       }
+      
+      .winning-message { color: #22c55e; }
+      .losing-message { color: #ef4444; }
 
-      .winning-message {
-        color: #059669; /* Green for wins */
-        font-size: 1.5rem;
-        font-weight: 700;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1); /* Softer text shadow */
-      }
-
-      .losing-message {
-        color: #EF4444; /* Strong red for losses */
-        font-size: 1.5rem;
-        font-weight: 700;
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1); /* Softer text shadow */
-      }
-
-      /* Red or Black card display */
-      #red-black-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 1.5rem;
-      }
       .card {
-        width: 90px; /* Larger cards */
+        width: 90px;
         height: 120px;
-        border-radius: 12px; /* More rounded */
-        border: 2px solid #94A3B8; /* Soft gray border */
+        border-radius: 12px;
+        border: 2px solid #999;
         margin: 15px;
+        font-size: 1.6rem;
+        font-weight: 700;
+        background-color: #f0f0f0;
+        color: #1a1a1a;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+        padding: 8px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
-        font-size: 1.6rem; /* Larger font */
-        font-weight: 700;
-        background-color: #FFFFFF; /* White card background */
-        color: #1A202C; /* Dark text */
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        padding: 8px;
       }
-      .card .value {
-          font-size: 2rem;
-          line-height: 1;
-      }
-      .card .suit {
-          font-size: 1.4rem;
-      }
-      .red {
-        color: #EF4444; /* Red color */
-      }
+      .card .value { font-size: 2rem; line-height: 1; }
+      .card .suit { font-size: 1.4rem; }
+      .red { color: #ef4444; }
+      .black { color: #1a1a1a; }
 
-      .black {
-        color: #1A202C; /* Black color */
-      }
-
-      /* Blackjack cards */
       .blackjack-card {
-        width: 70px; /* Larger */
+        width: 70px;
         height: 100px;
         border-radius: 10px;
-        border: 1px solid #94A3B8;
+        border: 1px solid #999;
         margin: 8px;
         display: flex;
         flex-direction: column;
@@ -214,27 +199,15 @@
         align-items: center;
         font-size: 1rem;
         font-weight: 600;
-        background-color: #FFFFFF;
-        color: #1A202C;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
+        background-color: #f0f0f0;
+        color: #1a1a1a;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
         padding: 6px;
       }
-      .blackjack-card .value {
-          font-size: 1.4rem;
-          line-height: 1;
-      }
-      .blackjack-card .suit {
-          font-size: 1rem;
-      }
-
-      .blackjack-red {
-          color: #EF4444;
-      }
-
-      .blackjack-black {
-          color: #1A202C;
-      }
+      .blackjack-card .value { font-size: 1.4rem; line-height: 1; }
+      .blackjack-card .suit { font-size: 1rem; }
+      .blackjack-red { color: #ef4444; }
+      .blackjack-black { color: #1a1a1a; }
 
       #blackjack-hand-player, #blackjack-hand-dealer {
           display: flex;
@@ -242,89 +215,46 @@
           justify-content: center;
           margin-bottom: 20px;
           min-height: 110px;
-          gap: 10px; /* Spacing between cards */
+          gap: 10px;
+          padding: 1rem;
+          background: rgba(0, 100, 0, 0.3);
+          border-radius: 1rem;
+          border: 1px solid #006400;
       }
 
-      /* Deal or No Deal sequence cards */
-      .sequence-card {
-        width: 40px; /* Larger */
-        height: 40px;
-        border-radius: 8px;
-        border: 1px solid #94A3B8;
-        margin: 4px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 0.8rem;
-        font-weight: 600;
-        background-color: #FFFFFF;
-        color: #1A202C;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-      }
-
-      /* Ledger styling */
       #ledger-container {
         margin-top: 3rem;
-        background-color: rgba(226, 232, 240, 0.85); /* Lighter, slightly transparent */
-        border-radius: 1.25rem; /* More rounded */
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 1.25rem;
         padding: 2rem;
-        max-height: 400px; /* Taller ledger */
+        max-height: 400px;
         overflow-y: auto;
-        border: 1px solid #CBD5E0;
-        box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.05);
+        border: 1px solid #444;
+        box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.5);
       }
 
       .ledger-entry {
         display: flex;
         justify-content: space-between;
-        align-items: center; /* Vertically align items */
-        padding: 0.9rem 0; /* More padding */
-        border-bottom: 1px dashed #A0AEC0; /* Softer dashed border */
-        font-size: 0.95rem; /* Larger font */
-        font-weight: 400;
+        align-items: center;
+        padding: 0.9rem 0;
+        border-bottom: 1px dashed #555;
+        font-size: 0.95rem;
       }
+      .ledger-entry:last-child { border-bottom: none; }
+      .ledger-entry .timestamp { color: #888; width: 160px; text-align: left; }
+      .ledger-entry .description { flex-grow: 1; text-align: left; margin-left: 20px; margin-right: 20px; color: #ccc; }
+      .ledger-entry .amount { font-weight: 700; width: 100px; text-align: right; }
+      .ledger-entry.positive .amount { color: #22c55e; }
+      .ledger-entry.negative .amount { color: #ef4444; }
 
-      .ledger-entry:last-child {
-        border-bottom: none;
-      }
-
-      .ledger-entry .timestamp {
-        color: #718096; /* Muted timestamp */
-        width: 160px; /* Wider timestamp column */
-        text-align: left;
-      }
-
-      .ledger-entry .description {
-        flex-grow: 1;
-        text-align: left;
-        margin-left: 20px; /* More spacing */
-        margin-right: 20px;
-        color: #1A202C;
-      }
-
-      .ledger-entry .amount {
-        font-weight: 700; /* Bold amount */
-        width: 100px; /* Wider amount column */
-        text-align: right;
-      }
-
-      .ledger-entry.positive .amount {
-        color: #059669; /* Brighter green for positive */
-      }
-
-      .ledger-entry.negative .amount {
-        color: #DC2626; /* Stronger red for negative */
-      }
-
-      /* Loan Approval Modal */
       .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.7);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -332,217 +262,106 @@
       }
 
       .modal-content {
-        background-color: #F7FAFC;
-        padding: 2rem;
+        background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+        padding: 2.5rem;
         border-radius: 1rem;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         max-width: 500px;
         width: 90%;
-        color: #1A202C;
+        color: #e0e0e0;
         text-align: center;
+        border: 2px solid #D4AF37;
       }
-
-      .modal-content h3 {
+      
+      #balance-info p {
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+      #balance-info #player-balance {
         font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: #2563EB;
+        font-weight: 700;
+        color: #22c55e;
+      }
+      
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .info-box {
+        background: rgba(255,255,255,0.05);
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        border: 1px solid #444;
+      }
+      
+      .info-box p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #aaa;
+      }
+      
+      .info-box span {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #D4AF37;
       }
 
-      .modal-content p {
-        margin-bottom: 0.75rem;
-        font-size: 0.95rem;
+      .disclaimer {
+        font-family: 'Lato', sans-serif;
+        font-size: 0.75rem;
+        color: #777;
+        text-align: center;
+        margin: 0;
+        padding: 0;
       }
 
-      .modal-buttons {
-        margin-top: 1.5rem;
-      }
-
-      /* Market Event Modal */
-      #market-event-modal .modal-content {
-          background-color: #60A5FA; /* Light Blue for market events */
-          color: #FFFFFF;
-          border: 1px solid #3B82F6;
-      }
-      #market-event-modal h3 {
-          color: #DBEAFE;
-      }
-      #market-event-modal p {
-          color: #EFF6FF;
-      }
-
-      /* Tariff Ticker Specific Styles */
-      .tariff-ticker {
-          font-size: 1.1rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          color: #1A202C;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-      }
-      .tariff-ticker .rate {
-          margin-right: 0.5rem;
-      }
-      .tariff-ticker .trend-arrow {
-          font-size: 1.2rem;
-          margin-left: 0.2rem;
-      }
-      .tariff-ticker .up {
-          color: #059669; /* Green for up */
-      }
-      .tariff-ticker .down {
-          color: #EF4444; /* Red for down */
-      }
-      .tariff-ticker .neutral {
-          color: #4A5568; /* Gray for no change */
-      }
-
-
-      /* Responsive adjustments */
       @media (max-width: 768px) {
-        .container {
-            padding: 1.5rem;
-            max-width: 90%;
-            border-radius: 1rem;
-        }
-        h1 {
-            font-size: 2.2rem;
-        }
-        h2 {
-            font-size: 1.6rem;
-        }
-        p {
-            font-size: 0.9rem;
-        }
-        button {
-            font-size: 1rem;
-            padding: 0.8rem 1.5rem;
-            margin: 0.5rem;
-        }
-        input {
-            font-size: 1rem;
-            padding: 0.8rem;
-            width: 90%;
-            max-width: none;
-        }
-        .game-button{
-          font-size: 1rem;
-          padding: 0.8rem 1.5rem;
-        }
-        .card {
-            width: 80px;
-            height: 110px;
-            font-size: 1.3rem;
-            margin: 10px;
-        }
-        .blackjack-card {
-            width: 60px;
-            height: 85px;
-            font-size: 0.9rem;
-            margin: 6px;
-        }
-        .sequence-card{
-          width: 35px;
-          height: 35px;
-          font-size: 0.7rem;
-          margin: 3px;
-        }
-        .ledger-entry {
-            flex-direction: column;
-            align-items: flex-start;
-            font-size: 0.85rem;
-            padding: 0.6rem 0;
-        }
-        .ledger-entry .timestamp, .ledger-entry .amount {
-            width: auto;
-            text-align: left;
-        }
-        .ledger-entry .description {
-            margin-left: 0;
-            margin-right: 0;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .container {
-            padding: 1rem;
-            border-radius: 0; /* No rounded corners on very small screens */
-            box-shadow: none;
-            border: none;
-        }
-        h1 {
-            font-size: 1.8rem;
-        }
-        h2 {
-            font-size: 1.4rem;
-        }
-        p {
-            font-size: 0.8rem;
-        }
-        button {
-            font-size: 0.9rem;
-            padding: 0.7rem 1.2rem;
-            margin: 0.4rem;
-        }
-        input {
-            font-size: 0.9rem;
-            padding: 0.7rem;
-            width: 95%;
-        }
-        .game-button{
-          font-size: 0.9rem;
-          padding: 0.7rem 1.2rem;
-        }
-        .card {
-            width: 70px;
-            height: 95px;
-            font-size: 1.1rem;
-            margin: 8px;
-        }
-        .blackjack-card {
-            width: 50px;
-            height: 70px;
-            font-size: 0.8rem;
-            margin: 4px;
-        }
-        .sequence-card{
-          width: 30px;
-          height: 30px;
-          font-size: 0.6rem;
-          margin: 2px;
-        }
-        .ledger-entry {
-            font-size: 0.75rem;
-        }
+        h1 { font-size: 2.5rem; }
+        .logo-icon { width: 40px; height: 40px; }
+        .container { padding: 1.5rem; }
+        button { font-size: 1rem; padding: 0.8rem 1.5rem; }
       }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body>
     <div class="container">
-        <h1>Honest Casino Lite</h1>
-        <p>Welcome, comrade, to the Honest Casino! A place where the collective good is always in mind. We operate under the principles of fair gameplay and redistribution of wealth.</p>
+        <div class="logo-container">
+            <svg class="logo-icon" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#D4AF37"><path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm-54.3 128h108.6c13.3 0 24 10.7 24 24v23.4c0 16.2-13.2 29.4-29.4 29.4h-10.2c-16.2 0-29.4 13.2-29.4 29.4v34.8c0 16.2-13.2 29.4-29.4 29.4S182.3 305.2 182.3 289V152c0-13.3 10.7-24 24-24zm112.6 256H197.7c-13.3 0-24-10.7-24-24v-23.4c0-16.2 13.2-29.4 29.4-29.4h10.2c16.2 0 29.4-13.2 29.4-29.4v-34.8c0-16.2 13.2-29.4 29.4-29.4s29.4 13.2 29.4 29.4V360c0 13.3-10.7 24-24 24z"/></svg>
+            <h1>The Golden Spade</h1>
+        </div>
+        <p>Welcome to the most exclusive casino on the web. Fortune favors the bold. Are you bold enough?</p>
         <p>Please enter your initial deposit to start playing.</p>
 
-        <input type="number" id="initial-deposit" placeholder="Enter Deposit Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button id="deposit-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Deposit Funds</button>
+        <input type="number" id="initial-deposit" placeholder="Enter Deposit Amount">
+        <button id="deposit-button">
+            <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
+            Deposit Funds
+        </button>
 
-        <div id="balance-info" class="mt-4 text-lg text-green-600 hidden">
-            <p>Your Player Account Balance: $<span id="player-balance">0</span></p>
-            <p>Tariff Fund Balance: $<span id="tariff-balance">0</span></p>
-            <p>Hardship Fund Balance: $<span id="hardship-balance">0</span></p>
-            <p>Net Profit/Loss: $<span id="net-profit-loss">0</span></p>
-            <p>Casino Total Profit: $<span id="casino-total-profit">0</span></p>
-            <div id="tariff-ticker" class="tariff-ticker">
-                Current Tariff Rate: <span id="current-tariff-rate">--</span>%
-                <span id="tariff-trend" class="trend-arrow"></span>
-            </div>
+        <div id="balance-info" class="mt-8 hidden">
+             <p>Player Balance: <span id="player-balance">$0.00</span></p>
+             <div class="info-grid mt-4">
+                <div class="info-box"><p>Tariff Fund</p><span id="tariff-balance">$0.00</span></div>
+                <div class="info-box"><p>Hardship Fund</p><span id="hardship-balance">$0.00</span></div>
+                <div class="info-box"><p>Net P/L</p><span id="net-profit-loss">$0.00</span></div>
+                <div class="info-box"><p>Casino Profit</p><span id="casino-total-profit">$0.00</span></div>
+             </div>
         </div>
 
         <div id="game-selection" class="mt-6 hidden">
             <h2>Select a Game</h2>
-            <button class="game-button" id="blackjack-button">Blackjack</button>
-            <button class="game-button" id="red-black-button">Red or Black</button>
-            <button class="game-button" id="deal-or-no-deal-button">Deal or No Deal</button>
+            <button class="game-button" id="blackjack-button">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 15.536A9.004 9.004 0 0112 15c-2.485 0-4.735.994-6.364 2.636M12 9a4 4 0 100 8 4 4 0 000-8zM12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z"></path></svg>
+                Blackjack
+            </button>
+            <button class="game-button" id="red-black-button">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                Red or Black
+            </button>
         </div>
 
         <div id="game-container" class="mt-6">
@@ -554,121 +373,52 @@
                 <div id="blackjack-hand-player">
                     <p>Your Hand:</p>
                 </div>
-                <p>Your Bet:</p>
-                <input type="number" id="blackjack-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <p>Place your bet:</p>
+                <input type="number" id="blackjack-bet" placeholder="Enter Total Bet Amount">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="blackjack-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="blackjack-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
+                    <label for="blackjack-insurance-checkbox" class="align-middle">Buy Insurance (45% of wager, built into bet)</label>
                 </div>
                 <div id="blackjack-buttons">
-                    <button id="blackjack-hit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Hit</button>
-                    <button id="blackjack-stand" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Stand</button>
-                    <button id="blackjack-play" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Play Hand</button>
+                    <button id="blackjack-hit">Hit</button>
+                    <button id="blackjack-stand">Stand</button>
+                    <button id="blackjack-play">Play Hand</button>
                 </div>
                 <div id="blackjack-result" class="mt-4 text-lg"></div>
-            </div>
-
-            <div id="roulette-game" class="hidden">
-                <h2>Roulette</h2>
-                <p>Choose your bet:</p>
-                 <input type="number" id="roulette-bet-amount" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <div class="mt-2 mb-2">
-                    <input type="checkbox" id="roulette-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="roulette-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
-                </div>
-                <p>Select a number (0-36):</p>
-                <input type="number" id="roulette-number" placeholder="Enter Number (0-36)" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button id="spin-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Spin the Wheel</button>
-                <div id="roulette-result" class="mt-4 text-lg"></div>
             </div>
 
             <div id="red-black-game" class="hidden">
                 <h2>Red or Black</h2>
                 <p>Place your bet:</p>
-                <input type="number" id="red-black-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="number" id="red-black-bet" placeholder="Enter Total Bet Amount">
                 <div class="mt-2 mb-2">
                     <input type="checkbox" id="red-black-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="red-black-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
+                    <label for="red-black-insurance-checkbox" class="align-middle">Buy Insurance (45% of wager, built into bet)</label>
                 </div>
                 <p>Choose a color:</p>
-                <button id="red-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Red</button>
-                <button id="black-button" class="bg-gray-700 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Black</button>
+                <button id="red-button" style="background: linear-gradient(145deg, #c81e1e, #991414); border-color: #ef4444;">Red</button>
+                <button id="black-button" style="background: linear-gradient(145deg, #333, #111); border-color: #555;">Black</button>
                 <div id="red-black-result" class="mt-4 text-lg"></div>
-            </div>
-            <div id="deal-or-no-deal-game" class="hidden">
-                <h2>Deal or No Deal Game</h2>
-                <p>Choose your number (1-20):</p>
-                <input type="number" id="deal-or-no-deal-number" placeholder="Enter Number (1-20)" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                 <p>Place your bet:</p>
-                <input type="number" id="deal-or-no-deal-bet" placeholder="Enter Bet Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <div class="mt-2 mb-2">
-                    <input type="checkbox" id="dond-insurance-checkbox" class="mr-2 align-middle">
-                    <label for="dond-insurance-checkbox" class="align-middle">Buy Insurance (Cost: 45% of bet, full refund on loss)</label>
-                </div>
-                <button id="start-sequence-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start</button>
-                <div id="sequence-container" class="mt-4 flex flex-wrap justify-center">
-                    </div>
-                <div id="deal-or-no-deal-result" class="mt-4 text-lg"></div>
-                <div id="deal-or-no-deal-options" class="mt-4 hidden">
-                    </div>
             </div>
         </div>
 
         <div id="action-buttons" class="mt-6 hidden">
             <h2>Special Actions</h2>
-            <button id="withdraw-hardship-funds-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Withdraw Hardship Funds</button>
-
-            <div id="emergency-loan-request-section" class="mt-4">
-                <button id="emergency-loan-request-button" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Request Emergency Loan</button>
-                <input type="number" id="emergency-loan-amount-input" placeholder="Desired Loan Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-yellow-500 hidden">
-                <button id="propose-loan-terms-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hidden">Propose Terms</button>
-            </div>
-
-             <button id="bnpl-request-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Request Bet Now Pay Later Loan</button>
-            <button id="people-assistance-fund-request" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Request Peoples Assistance Fund ($5 Freeplay)</button>
-            <button id="auto-play-mode" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Enable Auto Play Mode</button>
-            <button id="withdraw-button" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Withdraw Funds</button>
-
-            <div class="mt-4 mb-2">
-                <input type="checkbox" id="all-in-super-safe-bet-checkbox" class="mr-2 align-middle">
-                <label for="all-in-super-safe-bet-checkbox" class="align-middle font-bold text-blue-700">All-in Super Safe Bet (deducts 15% house fee + 45% insurance from total)</label>
-            </div>
-
-            <div id="extra-payment-section" class="mt-4 hidden">
-                <p>Make Extra Loan Payment:</p>
-                <input type="number" id="extra-payment-amount" placeholder="Amount" class="bg-gray-100 text-gray-800 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button id="make-extra-payment-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Pay Extra</button>
-            </div>
-
-            <input type="text" id="secret-code" placeholder="Enter Secret Code" class="bg-gray-100 text-gray-800 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="withdraw-button">
+                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                Withdraw Funds
+            </button>
         </div>
 
         <div id="message-box" class="mt-6 text-center"></div>
 
         <div id="ledger-container" class="hidden">
             <h2>Transaction Ledger</h2>
-            <div id="ledger-display">
-                </div>
+            <div id="ledger-display"></div>
         </div>
-    </div>
 
-    <div id="loan-approval-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3 id="loan-terms-title">Loan Offer</h3>
-            <p id="loan-terms-details"></p>
-            <div class="modal-buttons">
-                <button id="accept-loan-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Accept Loan</button>
-                <button id="decline-loan-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Decline</button>
-            </div>
-        </div>
-    </div>
+        <p class="disclaimer mt-8">(This casino is not real, and is for entertainment purposes only)</p>
 
-    <div id="market-event-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3 id="market-event-title">Market Fluctuation!</h3>
-            <p id="market-event-details"></p>
-            <button id="close-market-event-modal" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Understood!</button>
-        </div>
     </div>
 
     <script>
@@ -678,50 +428,8 @@
         let hardshipBalance = 0;
         let playerNetProfitLoss = 0;
         let gameActive = false;
-        let autoPlay = false;
-        let currentBet = 0;
-        let currentWager = 0;
-        let currentHandInsured = false; // For multi-step games like blackjack
-        let gameHistory = [];
+        let totalCasinoProfit = 0;
         let transactionHistory = [];
-        let totalCasinoProfit = 0; // Tracks casino's net profit (positive = casino profit, negative = casino loss)
-        let isBanned = false;
-        let bnplLoanActive = false;
-        let bnplLoanAmount = 0;
-        let bnplPaymentsRemaining = 0;
-        let emergencyLoanActive = false;
-        let emergencyLoanAmount = 0;
-        let emergencyLoanTotalRepayment = 0;
-        let emergencyLoanRepaymentsMade = 0;
-
-        // Special Features
-        let specialFeatures444Active = false;
-        let tariffFreeRoundsRemaining = 0;
-
-        // Deal or No Deal specific variables
-        let dealOrNoDealGame = null;
-        let revealedSequence = [];
-        let sequenceNumber = 0;
-        let sequenceBet = 0;
-        let sequenceWager = 0;
-        let sequenceRound = 0;
-        let sequenceIntervalId = null;
-        let chosenNumberIsLast = false;
-
-        // Blackjack specific variables
-        let playerHand = [];
-        let dealerHand = [];
-
-        // Market Events
-        let marketEventActive = false;
-        let marketEventType = null;
-        let marketEventTimeoutId = null;
-        let marketEventDurationIntervalId = null;
-
-        // Tariff Ticker Variables
-        let currentTariffRate = 0;
-        let previousTariffRate = 0;
-
 
         // DOM Elements
         const messageBox = document.getElementById('message-box');
@@ -735,22 +443,10 @@
         const casinoTotalProfitDisplay = document.getElementById('casino-total-profit');
         const gameSelection = document.getElementById('game-selection');
         const blackjackButton = document.getElementById('blackjack-button');
-        const rouletteButton = document.getElementById('roulette-button');
         const redBlackButton = document.getElementById('red-black-button');
-        const dealOrNoDealButton = document.getElementById('deal-or-no-deal-button');
         const actionButtons = document.getElementById('action-buttons');
-        const withdrawHardshipFundsButton = document.getElementById('withdraw-hardship-funds-button');
-        const emergencyLoanRequestSection = document.getElementById('emergency-loan-request-section');
-        const emergencyLoanRequestButton = document.getElementById('emergency-loan-request-button');
-        const emergencyLoanAmountInput = document.getElementById('emergency-loan-amount-input');
-        const proposeLoanTermsButton = document.getElementById('propose-loan-terms-button');
-        const bnplRequestButton = document.getElementById('bnpl-request-button');
-        const peopleAssistanceFundRequestButton = document.getElementById('people-assistance-fund-request');
-        const autoPlayModeButton = document.getElementById('auto-play-mode');
         const withdrawButton = document.getElementById('withdraw-button');
-        const secretCodeInput = document.getElementById('secret-code');
 
-        // Game Specific Containers & Controls
         const blackjackGameContainer = document.getElementById('blackjack-game');
         const blackjackHandDealerDisplay = document.getElementById('blackjack-hand-dealer');
         const blackjackHandPlayerDisplay = document.getElementById('blackjack-hand-player');
@@ -760,154 +456,57 @@
         const blackjackPlayButton = document.getElementById('blackjack-play');
         const blackjackResultDisplay = document.getElementById('blackjack-result');
 
-        const rouletteGameContainer = document.getElementById('roulette-game');
-        const rouletteBetInput = document.getElementById('roulette-bet-amount');
-        const rouletteNumberInput = document.getElementById('roulette-number');
-        const spinButton = document.getElementById('spin-button');
-        const rouletteResultDisplay = document.getElementById('roulette-result');
-
         const redBlackGameContainer = document.getElementById('red-black-game');
         const redBlackBetInput = document.getElementById('red-black-bet');
         const redButton = document.getElementById('red-button');
         const blackButton = document.getElementById('black-button');
         const redBlackResultDisplay = document.getElementById('red-black-result');
 
-        const dealOrNoDealGameContainer = document.getElementById('deal-or-no-deal-game');
-        const dealOrNoDealNumberInput = document.getElementById('deal-or-no-deal-number');
-        const dealOrNoDealBetInput = document.getElementById('deal-or-no-deal-bet');
-        const startSequenceButton = document.getElementById('start-sequence-button');
-        const sequenceContainer = document.getElementById('sequence-container');
-        const dealOrNoDealResultDisplay = document.getElementById('deal-or-no-deal-result');
-        const dealOrNoDealOptions = document.getElementById('deal-or-no-deal-options');
-
         const ledgerContainer = document.getElementById('ledger-container');
         const ledgerDisplay = document.getElementById('ledger-display');
-        const extraPaymentSection = document.getElementById('extra-payment-section');
-        const extraPaymentAmountInput = document.getElementById('extra-payment-amount');
-        const makeExtraPaymentButton = document.getElementById('make-extra-payment-button');
-
-        const loanApprovalModal = document.getElementById('loan-approval-modal');
-        const loanTermsTitle = document.getElementById('loan-terms-title');
-        const loanTermsDetails = document.getElementById('loan-terms-details');
-        const acceptLoanButton = document.getElementById('accept-loan-button');
-        const declineLoanButton = document.getElementById('decline-loan-button');
-        const marketEventModal = document.getElementById('market-event-modal');
-        const marketEventTitle = document.getElementById('market-event-title');
-        const marketEventDetails = document.getElementById('market-event-details');
-        const closeMarketEventModalButton = document.getElementById('close-market-event-modal');
-
-        // Tariff Ticker DOM Elements
-        const currentTariffRateDisplay = document.getElementById('current-tariff-rate');
-        const tariffTrendDisplay = document.getElementById('tariff-trend');
-
-        // New DOM element for All-in Super Safe Bet
-        const allInSuperSafeBetCheckbox = document.getElementById('all-in-super-safe-bet-checkbox');
-
-
+        
         // Event Listeners
         depositButton.addEventListener('click', handleDeposit);
-        blackjackButton.addEventListener('click', () => {
-            showGame('blackjack');
-            blackjackPlayButton.disabled = false;
-            blackjackHitButton.disabled = true;
-            blackjackStandButton.disabled = true;
-            blackjackResultDisplay.textContent = '';
-            playerHand = [];
-            dealerHand = [];
-            blackjackHandPlayerDisplay.innerHTML = '<p>Your Hand:</p>';
-            blackjackHandDealerDisplay.innerHTML = '<p>Dealer Hand:</p>';
-        });
-        // rouletteButton.addEventListener('click', () => showGame('roulette')); // Removed Roulette button event listener
+        blackjackButton.addEventListener('click', () => showGame('blackjack'));
         redBlackButton.addEventListener('click', () => showGame('red-black'));
-        dealOrNoDealButton.addEventListener('click', () => showGame('deal-or-no-deal'));
-        withdrawHardshipFundsButton.addEventListener('click', withdrawHardshipFunds);
-        emergencyLoanRequestButton.addEventListener('click', toggleEmergencyLoanInput);
-        proposeLoanTermsButton.addEventListener('click', proposeEmergencyLoanTerms);
-        bnplRequestButton.addEventListener('click', proposeBNPLoanTerms);
-        peopleAssistanceFundRequestButton.addEventListener('click', requestPeopleAssistanceFund);
-        autoPlayModeButton.addEventListener('click', toggleAutoPlay);
         withdrawButton.addEventListener('click', withdrawFunds);
-        secretCodeInput.addEventListener('keypress', handleSecretCode);
-        makeExtraPaymentButton.addEventListener('click', makeExtraLoanPayment);
-        acceptLoanButton.addEventListener('click', handleAcceptLoan);
-        declineLoanButton.addEventListener('click', handleDeclineLoan);
-        closeMarketEventModalButton.addEventListener('click', () => {
-            marketEventModal.classList.add('hidden');
-        });
 
-        // Game Specific Event Listeners
         blackjackPlayButton.addEventListener('click', playBlackjackHand);
         blackjackHitButton.addEventListener('click', blackjackHit);
         blackjackStandButton.addEventListener('click', blackjackStand);
-        spinButton.addEventListener('click', playRoulette);
         redButton.addEventListener('click', () => playRedOrBlack('red'));
         blackButton.addEventListener('click', () => playRedOrBlack('black'));
-        startSequenceButton.addEventListener('click', startDealOrNoDealGame);
-
-        // Event listener for the new All-in Super Safe Bet checkbox
-        allInSuperSafeBetCheckbox.addEventListener('change', toggleAllInSuperSafeBet);
 
         // --- Core Functions ---
 
         function updateBalanceDisplays() {
-            playerBalanceDisplay.textContent = playerBalance.toFixed(2);
-            tariffBalanceDisplay.textContent = tariffBalance.toFixed(2);
-            hardshipBalanceDisplay.textContent = hardshipBalance.toFixed(2);
-            netProfitLossDisplay.textContent = playerNetProfitLoss.toFixed(2);
-            casinoTotalProfitDisplay.textContent = totalCasinoProfit.toFixed(2);
+            playerBalanceDisplay.textContent = `$${playerBalance.toFixed(2)}`;
+            tariffBalanceDisplay.textContent = `$${tariffBalance.toFixed(2)}`;
+            hardshipBalanceDisplay.textContent = `$${hardshipBalance.toFixed(2)}`;
+            netProfitLossDisplay.textContent = `$${playerNetProfitLoss.toFixed(2)}`;
+            casinoTotalProfitDisplay.textContent = `$${totalCasinoProfit.toFixed(2)}`;
 
-            if (playerNetProfitLoss > 0) {
-                netProfitLossDisplay.classList.remove('text-red-400');
-                netProfitLossDisplay.classList.add('text-green-600'); /* Changed to green-600 for light theme */
-            } else if (playerNetProfitLoss < 0) {
-                netProfitLossDisplay.classList.remove('text-green-400');
-                netProfitLossDisplay.classList.add('text-red-600'); /* Changed to red-600 for light theme */
-            } else {
-                netProfitLossDisplay.classList.remove('text-green-600', 'text-red-600');
-            }
-
-            if (totalCasinoProfit > 0) {
-                casinoTotalProfitDisplay.classList.remove('text-red-400');
-                casinoTotalProfitDisplay.classList.add('text-green-600'); /* Changed to green-600 for light theme */
-            } else if (totalCasinoProfit < 0) {
-                casinoTotalProfitDisplay.classList.remove('text-green-400');
-                casinoTotalProfitDisplay.classList.add('text-red-600'); /* Changed to red-600 for light theme */
-            } else {
-                casinoTotalProfitDisplay.classList.remove('text-green-600', 'text-red-600');
-            }
-
-
-            extraPaymentSection.classList.toggle('hidden', !(emergencyLoanActive || bnplLoanActive));
-            withdrawHardshipFundsButton.disabled = hardshipBalance <= 0;
+            netProfitLossDisplay.style.color = playerNetProfitLoss >= 0 ? '#22c55e' : '#ef4444';
+            casinoTotalProfitDisplay.style.color = totalCasinoProfit >= 0 ? '#22c55e' : '#ef4444';
         }
 
         function addTransaction(type, amount, description) {
             const timestamp = new Date().toLocaleString();
-            transactionHistory.push({
-                timestamp,
-                type,
-                amount,
-                description,
-                playerBalance: playerBalance.toFixed(2),
-                tariffBalance: tariffBalance.toFixed(2),
-                hardshipBalance: hardshipBalance.toFixed(2),
-                casinoProfit: totalCasinoProfit.toFixed(2)
-            });
+            transactionHistory.push({ timestamp, type, amount, description });
             updateLedgerDisplay();
         }
 
         function updateLedgerDisplay() {
             ledgerDisplay.innerHTML = '';
-            transactionHistory.forEach(entry => {
+            transactionHistory.slice().reverse().forEach(entry => {
                 const entryDiv = document.createElement('div');
-                entryDiv.classList.add('ledger-entry');
-                entryDiv.classList.add(entry.amount >= 0 ? 'positive' : 'negative');
+                entryDiv.classList.add('ledger-entry', entry.amount >= 0 ? 'positive' : 'negative');
                 entryDiv.innerHTML = `
                     <span class="timestamp">${entry.timestamp}</span>
-                    <span class="description">${entry.description} (Player: $${entry.playerBalance}, Tariff: $${entry.tariffBalance}, Hardship: $${entry.hardshipBalance}, Casino: $${entry.casinoProfit})</span>
-                    <span class="amount">${entry.amount >= 0 ? '+' : '-'}$${Math.abs(entry.amount).toFixed(2)}</span>
+                    <span class="description">${entry.description}</span>
+                    <span class="amount">${entry.amount >= 0 ? '+' : ''}$${entry.amount.toFixed(2)}</span>
                 `;
-                ledgerDisplay.prepend(entryDiv);
+                ledgerDisplay.appendChild(entryDiv);
             });
             ledgerContainer.classList.remove('hidden');
         }
@@ -915,200 +514,130 @@
         function handleDeposit() {
             const depositAmount = parseFloat(initialDepositInput.value);
             if (isNaN(depositAmount) || depositAmount <= 0) {
-                messageBox.textContent = 'Invalid deposit amount. Please enter a positive number.';
+                messageBox.textContent = 'Invalid deposit amount.';
                 return;
             }
             playerBalance += depositAmount;
-            addTransaction('deposit', depositAmount, `Initial deposit of $${depositAmount.toFixed(2)}`);
+            addTransaction('deposit', depositAmount, `Initial deposit`);
             balanceDisplay.classList.remove('hidden');
             gameSelection.classList.remove('hidden');
+            actionButtons.classList.remove('hidden');
             updateBalanceDisplays();
             messageBox.textContent = `Deposit of $${depositAmount.toFixed(2)} successful!`;
             initialDepositInput.value = '';
-            startMarketEventTimer();
-            startTariffTicker(); // Start the tariff ticker on deposit
+            depositButton.classList.add('hidden');
+            initialDepositInput.classList.add('hidden');
+            document.querySelector('p:nth-of-type(2)').classList.add('hidden');
         }
 
         function showGame(gameName) {
             gameActive = true;
             blackjackGameContainer.classList.add('hidden');
-            rouletteGameContainer.classList.add('hidden'); // This will remain hidden in Lite version
             redBlackGameContainer.classList.add('hidden');
-            dealOrNoDealGameContainer.classList.add('hidden');
-            actionButtons.classList.remove('hidden');
-
-            // Reset all-in checkbox and inputs when switching games
-            allInSuperSafeBetCheckbox.checked = false;
-            toggleAllInSuperSafeBet();
 
             switch (gameName) {
                 case 'blackjack':
                     blackjackGameContainer.classList.remove('hidden');
-                    blackjackPlayButton.disabled = false;
-                    blackjackHitButton.disabled = true;
-                    blackjackStandButton.disabled = true;
-                    blackjackResultDisplay.textContent = '';
-                    playerHand = [];
-                    dealerHand = [];
-                    blackjackHandPlayerDisplay.innerHTML = '<p>Your Hand:</p>';
-                    blackjackHandDealerDisplay.innerHTML = '<p>Dealer Hand:</p>';
-                    break;
-                case 'roulette':
-                    rouletteGameContainer.classList.add('hidden'); // Ensure roulette is always hidden
-                    rouletteResultDisplay.textContent = '';
-                    messageBox.textContent = 'Roulette is not available in Honest Casino Lite.';
+                    resetBlackjackUI();
                     break;
                 case 'red-black':
                     redBlackGameContainer.classList.remove('hidden');
                     redBlackResultDisplay.textContent = '';
                     break;
-                case 'deal-or-no-deal':
-                    dealOrNoDealGameContainer.classList.remove('hidden');
-                    dealOrNoDealOptions.classList.add('hidden');
-                    dealOrNoDealResultDisplay.textContent = '';
-                    sequenceContainer.innerHTML = '';
-                    break;
-                default:
-                    gameActive = false;
-                    actionButtons.classList.add('hidden');
-                    messageBox.textContent = 'Invalid game selection.';
             }
             messageBox.textContent = '';
         }
+        
+        function resetBlackjackUI() {
+            blackjackPlayButton.disabled = false;
+            blackjackHitButton.disabled = true;
+            blackjackStandButton.disabled = true;
+            blackjackResultDisplay.textContent = '';
+            blackjackHandPlayerDisplay.innerHTML = '<p>Your Hand:</p>';
+            blackjackHandDealerDisplay.innerHTML = '<p>Dealer Hand:</p>';
+        }
 
-        // --- Game End Helper ---
-        function handleGameEnd(gameName, playerWon, winnings, profit, wager, insurancePurchased, additionalMessage = '') {
-            let tariffPercentage;
-            if (specialFeatures444Active) {
-                tariffPercentage = 0;
-            } else if (marketEventActive && marketEventType === 'solidarity') {
-                tariffPercentage = 0;
-            } else if (tariffFreeRoundsRemaining > 0) {
-                tariffPercentage = 0;
-                tariffFreeRoundsRemaining--;
-            } else {
-                tariffPercentage = currentTariffRate; // Use the current tariff rate from the ticker
+        /**
+         * NEW: Calculates wager components from a total risk amount.
+         * @param {number} totalRiskAmount - The total amount the player is betting.
+         * @param {boolean} insuranceSelected - Whether insurance is active.
+         * @returns {object|null} An object with wager, houseFee, insuranceCost, or null if invalid.
+         */
+        function calculateWagerFromTotalRisk(totalRiskAmount, insuranceSelected) {
+            const BASE_HOUSE_FEE_RATE = 0.15; // 15%
+            const INSURANCE_RATE = 0.45;      // 45%
+
+            let divisor = 1 + BASE_HOUSE_FEE_RATE;
+            if (insuranceSelected) {
+                divisor += INSURANCE_RATE;
             }
 
+            if (totalRiskAmount <= 0 || isNaN(totalRiskAmount)) return null;
+
+            const wager = totalRiskAmount / divisor;
+            const houseFee = wager * BASE_HOUSE_FEE_RATE;
+            const insuranceCost = insuranceSelected ? wager * INSURANCE_RATE : 0;
+
+            return { wager, houseFee, insuranceCost };
+        }
+
+        function handleGameEnd(gameName, playerWon, winnings, wager, insurancePurchased) {
+            const TARIFF_RATE = 0.10; // 10% tariff on profits
             let tariffAmount = 0;
             let netWinnings = 0;
+            let profit = winnings - wager;
 
-            if (playerWon) {
-                tariffAmount = profit * (tariffPercentage / 100);
-                if (tariffAmount < 0) tariffAmount = 0;
-
+            if (playerWon && profit > 0) {
+                tariffAmount = profit * TARIFF_RATE;
                 tariffBalance += tariffAmount;
-                addTransaction('win_payout', winnings, `${gameName} gross winnings`);
-                if (tariffAmount > 0) {
-                    addTransaction('tariff_deduction', -tariffAmount, `${gameName} tariff deduction (${tariffPercentage.toFixed(0)}%) from profit`);
-                }
-
                 netWinnings = winnings - tariffAmount;
+                
                 playerBalance += netWinnings;
-                playerNetProfitLoss += netWinnings;
-                addTransaction('net_payout', netWinnings, `${gameName} net payout`);
+                playerNetProfitLoss += (netWinnings - wager);
                 totalCasinoProfit -= profit;
-                messageBox.textContent = `You ${netWinnings >= 0 ? 'won' : 'lost'} $${Math.abs(netWinnings).toFixed(2)}! (Tariff: $${tariffAmount.toFixed(2)})${additionalMessage}`;
+
+                addTransaction('win_payout', winnings, `${gameName} gross winnings`);
+                addTransaction('tariff_deduction', -tariffAmount, `Tariff (${(TARIFF_RATE*100)}%)`);
+                messageBox.textContent = `You won! Net Payout: $${(netWinnings-wager).toFixed(2)} (after $${tariffAmount.toFixed(2)} tariff).`;
+
+            } else if (playerWon && profit === 0) { // Push
+                 playerBalance += wager; // Return original wager
+                 // No change to P/L or casino profit
+                 messageBox.textContent = `It's a push! Your wager of $${wager.toFixed(2)} is returned.`;
+                 addTransaction('push_return', wager, `${gameName} push, wager returned.`);
+
             } else { // Player lost
-                let finalMessage = '';
+                totalCasinoProfit += wager;
+                let finalMessage = `You lost $${wager.toFixed(2)}.`;
+
                 if (insurancePurchased) {
                     playerBalance += wager; // Refund the wager
                     playerNetProfitLoss += wager; // Nullify the loss of the wager on the P/L
-                    addTransaction('insurance_payout', wager, `Insurance refund for ${gameName} loss.`);
-                    // Casino does not profit from the wager itself, as it's refunded. Profit from premium was already taken at bet time.
+                    totalCasinoProfit -= wager; // Casino doesn't profit from wager, only premium
                     finalMessage = `You lost, but insurance refunded your wager of $${wager.toFixed(2)}!`;
-                } else {
-                    totalCasinoProfit += wager; // Casino keeps the wager
-                    finalMessage = `You lost $${wager.toFixed(2)}!`;
+                    addTransaction('insurance_payout', wager, `Insurance refund for ${gameName} loss.`);
                 }
-
-                // The hardship fund transfer happens on any loss, regardless of insurance.
-                if (tariffBalance > 0) {
-                    const potentialPayout = tariffBalance * 0.20;
-                    const payoutAmount = Math.min(potentialPayout, tariffBalance);
+                
+                // Hardship fund contribution on any non-insured loss
+                if (tariffBalance > 0 && !insurancePurchased) {
+                    const payoutAmount = Math.min(tariffBalance * 0.20, tariffBalance);
                     hardshipBalance += payoutAmount;
                     tariffBalance -= payoutAmount;
-                    addTransaction('hardship_transfer', payoutAmount, `20% of Tariff Fund transferred to Hardship Fund after loss`);
-                    finalMessage += ` 20% of Tariff Fund ($${payoutAmount.toFixed(2)}) transferred to your Hardship Fund.`;
+                    addTransaction('hardship_transfer', payoutAmount, `20% of Tariff Fund to Hardship Fund`);
+                    finalMessage += ` $${payoutAmount.toFixed(2)} moved to your Hardship Fund.`;
                 }
-                messageBox.textContent = finalMessage + additionalMessage;
+                messageBox.textContent = finalMessage;
             }
 
             updateBalanceDisplays();
             gameActive = false;
-            currentBet = 0;
-            currentWager = 0;
-            currentHandInsured = false;
-
-            if (autoPlay) {
-                setTimeout(() => {
-                    if (gameName === 'Blackjack') playBlackjackHand();
-                    // else if (gameName === 'Roulette') playRoulette(); // Removed Roulette from auto-play
-                    else if (gameName === 'Red or Black') playRedOrBlack();
-                    else if (gameName === 'Deal or No Deal') startDealOrNoDealGame();
-                }, 2000);
-            }
-
-            if (totalCasinoProfit <= -50000) {
-                handleCasinoBankruptcy();
-                return;
-            }
-            handleLoanPaymentsAfterBet();
-            document.dispatchEvent(new Event('gameEnded'));
-        }
-
-        // --- Loan Payment Handler ---
-        function handleLoanPaymentsAfterBet() {
-            const processLoan = (loanType, activeVar, amountVar, totalRepayVar, remainingVar, paymentsMadeVar, paymentType, repaymentDesc, lateFeeDesc) => {
-                if (activeVar) {
-                    const repaymentPerBet = totalRepayVar / 10;
-                    if (amountVar <= 0.01) {
-                        activeVar = false;
-                        amountVar = 0;
-                        totalRepayVar = 0;
-                        if (paymentsMadeVar !== undefined) paymentsMadeVar = 0;
-                        messageBox.textContent = `Your ${loanType} loan has been fully repaid.`;
-                        addTransaction('loan_repaid', 0, `${loanType} loan fully repaid`);
-                    } else if (playerBalance >= repaymentPerBet) {
-                        playerBalance -= repaymentPerBet;
-                        playerNetProfitLoss -= repaymentPerBet;
-                        amountVar -= repaymentPerBet;
-                        if (paymentsMadeVar !== undefined) paymentsMadeVar++;
-                        addTransaction(paymentType, -repaymentPerBet, `${repaymentDesc} Remaining: $${amountVar.toFixed(2)}`);
-                        messageBox.textContent = `Automatic payment of $${repaymentPerBet.toFixed(2)} deducted for ${loanType} Loan. Remaining: $${amountVar.toFixed(2)}.`;
-                    } else {
-                        const lateFee = 10;
-                        playerBalance -= lateFee;
-                        playerNetProfitLoss -= lateFee;
-                        amountVar += lateFee;
-                        addTransaction('loan_late_fee', -lateFee, lateFeeDesc);
-                        messageBox.textContent = `You owe $${amountVar.toFixed(2)} on your ${loanType} loan. A $${lateFee.toFixed(2)} late fee has been applied. Please deposit funds to make your payment of $${repaymentPerBet.toFixed(2)}.`;
-                    }
-                }
-                return { active: activeVar, amount: amountVar, totalRepay: totalRepayVar, remaining: remainingVar, paymentsMade: paymentsMadeVar };
-            };
-
-            const emergencyResult = processLoan('emergency', emergencyLoanActive, emergencyLoanAmount, emergencyLoanTotalRepayment, undefined, emergencyLoanRepaymentsMade, 'loan_repayment_deduction', `Automatic Emergency loan payment (${emergencyLoanRepaymentsMade + 1}/10).`, `Emergency loan late fee applied. Balance: $${emergencyLoanAmount.toFixed(2)}`);
-            emergencyLoanActive = emergencyResult.active;
-            emergencyLoanAmount = emergencyResult.amount;
-            emergencyLoanTotalRepayment = emergencyResult.totalRepay;
-            emergencyLoanRepaymentsMade = emergencyResult.paymentsMade;
-
-            const bnplResult = processLoan('Bet Now Pay Later', bnplLoanActive, bnplLoanAmount, bnplLoanAmount, bnplPaymentsRemaining, undefined, 'bnpl_payment_deduction', `BNPL payment deducted. ${bnplPaymentsRemaining -1} payments remaining.`, `BNPL late fee applied. Balance: $${bnplLoanAmount.toFixed(2)}`);
-            bnplLoanActive = bnplResult.active;
-            bnplLoanAmount = bnplResult.amount;
-            bnplPaymentsRemaining = bnplResult.remaining;
-
-            updateBalanceDisplays();
         }
 
         // --- Blackjack Game functions ---
         function generateBlackjackCard() {
             const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
             const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-            const suit = suits[Math.floor(Math.random() * suits.length)];
-            const value = values[Math.floor(Math.random() * values.length)];
-            return { suit, value };
+            return { suit: suits[Math.floor(Math.random() * suits.length)], value: values[Math.floor(Math.random() * values.length)] };
         }
 
         function getBlackjackCardValue(card) {
@@ -1135,118 +664,67 @@
         }
 
         function getSuitSymbol(suit) {
-            switch (suit) {
-                case 'Hearts': return '♥';
-                case 'Diamonds': return '♦';
-                case 'Clubs': return '♣';
-                case 'Spades': return '♠';
-                default: return '';
-            }
+            return { 'Hearts': '♥', 'Diamonds': '♦', 'Clubs': '♣', 'Spades': '♠' }[suit] || '';
         }
 
         function playBlackjackHand() {
-            let betAmount;
-            let insuranceSelected;
-            let houseFeeRateForCalc;
-            let insuranceCostForCalc;
+            const totalBetAmount = parseFloat(blackjackBetInput.value);
+            const insuranceSelected = document.getElementById('blackjack-insurance-checkbox').checked;
 
-            const BASE_HOUSE_FEE_RATE = 0.15;
-            const INSURANCE_RATE = 0.45;
-            const INSURED_HOUSE_FEE_RATE = 0.15; // This is the house fee WHEN insurance is taken, making total 60% with insurance
-
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-            if (allInSuperSafeBetCheckbox.checked) {
-                // All-in Super Safe Bet overrides all other fee/insurance settings
-                // totalCost = playerBalance
-                // totalCost = betAmount + (betAmount * BASE_HOUSE_FEE_RATE) + (betAmount * INSURANCE_RATE)
-                // totalCost = betAmount * (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)
-                betAmount = playerBalance / (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE);
-                insuranceSelected = true;
-                houseFeeRateForCalc = BASE_HOUSE_FEE_RATE; // Force 15% house fee
-                insuranceCostForCalc = betAmount * INSURANCE_RATE; // Force 45% insurance cost
-
-                if (playerBalance < (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)) { // Check if player balance is enough to make at least 1 unit of bet
-                    messageBox.textContent = `Your balance ($${playerBalance.toFixed(2)}) is too low for an All-in Super Safe Bet. Minimum required effective funds for a wager is at least $1.00 (which means total balance of $${(1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE).toFixed(2)}).`;
-                    return;
-                }
-            } else {
-                betAmount = parseFloat(blackjackBetInput.value);
-                insuranceSelected = document.getElementById('blackjack-insurance-checkbox').checked;
-
-                if (isNaN(betAmount) || betAmount <= 0) {
-                    messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
-                }
-
-                // Apply special features or market events for normal bets
-                if (specialFeatures444Active) {
-                    houseFeeRateForCalc = 0;
-                    insuranceCostForCalc = 0; // No insurance cost if 444 is active
-                } else if (marketEventActive && marketEventType === 'production') {
-                    houseFeeRateForCalc = 0.05; // 5% during production boom
-                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
-                } else {
-                    houseFeeRateForCalc = insuranceSelected ? INSURED_HOUSE_FEE_RATE : BASE_HOUSE_FEE_RATE;
-                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
-                }
-            }
-
-            let houseFee = betAmount * houseFeeRateForCalc;
-            let totalCost = betAmount + insuranceCostForCalc + houseFee;
-
-            // This check is crucial: ensure totalCost doesn't exceed playerBalance *after* all calculations
-            // For all-in, totalCost should ideally equal playerBalance (or be very close due to floating point)
-            if (totalCost > playerBalance + 0.01) { // Add a small epsilon for floating point inaccuracies
-                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${totalCost.toFixed(2)}. Current balance: $${playerBalance.toFixed(2)}.`;
+            if (totalBetAmount > playerBalance) {
+                messageBox.textContent = `Insufficient funds. Your bet of $${totalBetAmount.toFixed(2)} exceeds your balance of $${playerBalance.toFixed(2)}.`;
                 return;
             }
 
+            const betComponents = calculateWagerFromTotalRisk(totalBetAmount, insuranceSelected);
 
-            playerBalance -= totalCost;
-            playerNetProfitLoss -= totalCost;
-            addTransaction('bet_placement', -betAmount, `Blackjack bet placed: $${betAmount.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Blackjack house fee (${(houseFeeRateForCalc * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(insuranceCostForCalc > 0) {
-                addTransaction('insurance_purchase', -insuranceCostForCalc, `Insurance purchased for Blackjack for $${insuranceCostForCalc.toFixed(2)}`);
-                totalCasinoProfit += insuranceCostForCalc;
+            if (!betComponents) {
+                messageBox.textContent = 'Invalid bet amount.';
+                return;
             }
-            updateBalanceDisplays();
 
-            currentBet = betAmount;
-            currentWager = betAmount; // This is the amount for payout calculation
-            currentHandInsured = insuranceSelected; // Whether insurance was active for this specific bet
-            totalCasinoProfit += houseFee;
+            const { wager, houseFee, insuranceCost } = betComponents;
+
+            playerBalance -= totalBetAmount;
+            playerNetProfitLoss -= totalBetAmount;
+            totalCasinoProfit += houseFee + insuranceCost;
+
+            addTransaction('bet_placement', -totalBetAmount, `Blackjack Bet: $${wager.toFixed(2)} (Fee: $${houseFee.toFixed(2)}, Ins: $${insuranceCost.toFixed(2)})`);
+            updateBalanceDisplays();
+            
+            window.currentBlackjackGame = { wager, insurancePurchased: insuranceSelected };
 
             blackjackPlayButton.disabled = true;
             blackjackHitButton.disabled = false;
             blackjackStandButton.disabled = false;
             blackjackResultDisplay.textContent = '';
-            playerHand = [];
-            dealerHand = [];
             blackjackHandPlayerDisplay.innerHTML = '<p>Your Hand:</p>';
             blackjackHandDealerDisplay.innerHTML = '<p>Dealer Hand:</p>';
 
-            playerHand.push(generateBlackjackCard(), generateBlackjackCard());
-            dealerHand.push(generateBlackjackCard(), generateBlackjackCard());
+            window.playerHand = [generateBlackjackCard(), generateBlackjackCard()];
+            window.dealerHand = [generateBlackjackCard(), generateBlackjackCard()];
 
-            displayBlackjackCard(playerHand[0], blackjackHandPlayerDisplay);
-            displayBlackjackCard(playerHand[1], blackjackHandPlayerDisplay);
-            displayBlackjackCard(dealerHand[0], blackjackHandDealerDisplay);
+            displayBlackjackCard(window.playerHand[0], blackjackHandPlayerDisplay);
+            displayBlackjackCard(window.playerHand[1], blackjackHandPlayerDisplay);
+            displayBlackjackCard(window.dealerHand[0], blackjackHandDealerDisplay);
+            
             const hiddenCardDiv = document.createElement('div');
             hiddenCardDiv.classList.add('blackjack-card');
             hiddenCardDiv.innerHTML = `<div class="value">?</div><div class="suit">🃏</div>`;
             blackjackHandDealerDisplay.appendChild(hiddenCardDiv);
 
-            if(calculateBlackjackHandValue(playerHand) === 21){
+            if (calculateBlackjackHandValue(window.playerHand) === 21) {
                 blackjackResultDisplay.textContent = 'Blackjack! You win!';
-                handleGameEnd('Blackjack', true, currentWager * 1.5, currentWager * 0.5, currentWager, currentHandInsured);
+                const winnings = window.currentBlackjackGame.wager * 2.5; // 3:2 payout
+                handleGameEnd('Blackjack', true, winnings, window.currentBlackjackGame.wager, window.currentBlackjackGame.insurancePurchased);
+                resetBlackjackUI();
             }
         }
 
         function blackjackHit() {
-            playerHand.push(generateBlackjackCard());
-            displayBlackjackCard(playerHand[playerHand.length - 1], blackjackHandPlayerDisplay);
-            if (calculateBlackjackHandValue(playerHand) >= 21) {
+            window.playerHand.push(generateBlackjackCard());
+            displayBlackjackCard(window.playerHand[window.playerHand.length - 1], blackjackHandPlayerDisplay);
+            if (calculateBlackjackHandValue(window.playerHand) >= 21) {
                 blackjackStand();
             }
         }
@@ -1256,730 +734,96 @@
             blackjackStandButton.disabled = true;
 
             blackjackHandDealerDisplay.lastChild.remove();
-            displayBlackjackCard(dealerHand[1], blackjackHandDealerDisplay);
+            displayBlackjackCard(window.dealerHand[1], blackjackHandDealerDisplay);
 
-            let playerHandValue = calculateBlackjackHandValue(playerHand);
-            let dealerHandValue = calculateBlackjackHandValue(dealerHand);
-
+            let dealerHandValue = calculateBlackjackHandValue(window.dealerHand);
             while (dealerHandValue < 17) {
-                dealerHand.push(generateBlackjackCard());
-                displayBlackjackCard(dealerHand[dealerHand.length - 1], blackjackHandDealerDisplay);
-                dealerHandValue = calculateBlackjackHandValue(dealerHand);
+                window.dealerHand.push(generateBlackjackCard());
+                displayBlackjackCard(window.dealerHand[window.dealerHand.length - 1], blackjackHandDealerDisplay);
+                dealerHandValue = calculateBlackjackHandValue(window.dealerHand);
             }
 
+            const playerHandValue = calculateBlackjackHandValue(window.playerHand);
+            const { wager, insurancePurchased } = window.currentBlackjackGame;
             let playerWon = false;
             let winnings = 0;
-            let profit = 0;
 
             if (playerHandValue > 21) {
                 blackjackResultDisplay.textContent = 'You Bust! House wins!';
             } else if (dealerHandValue > 21 || playerHandValue > dealerHandValue) {
                 blackjackResultDisplay.textContent = 'You win!';
                 playerWon = true;
-                winnings = currentWager * 2;
-                profit = currentWager;
+                winnings = wager * 2;
             } else if (playerHandValue === dealerHandValue) {
-                blackjackResultDisplay.textContent = 'Its a tie!';
-                playerWon = true; // Push is considered a win to return bet
-                winnings = currentWager;
-                profit = 0;
+                blackjackResultDisplay.textContent = 'It\'s a push!';
+                playerWon = true; // Push is a "win" to return bet
+                winnings = wager; // Return original wager
             } else {
                 blackjackResultDisplay.textContent = 'House wins!';
             }
-            handleGameEnd('Blackjack', playerWon, winnings, profit, currentWager, currentHandInsured);
-        }
-
-        // --- Roulette Game functions (Modified to be hidden and show message) ---
-        function playRoulette() {
-            // This function will now simply display a message that Roulette is not available.
-            rouletteResultDisplay.textContent = 'Roulette is not available in Honest Casino Lite.';
-            messageBox.textContent = 'Roulette is not available in Honest Casino Lite.';
+            handleGameEnd('Blackjack', playerWon, winnings, wager, insurancePurchased);
+            resetBlackjackUI();
         }
 
         // --- Red or Black Game functions ---
         function playRedOrBlack(color) {
-            let betAmount;
-            let insuranceSelected;
-            let houseFeeRateForCalc;
-            let insuranceCostForCalc;
+            const totalBetAmount = parseFloat(redBlackBetInput.value);
+            const insuranceSelected = document.getElementById('red-black-insurance-checkbox').checked;
 
-            const BASE_HOUSE_FEE_RATE = 0.15;
-            const INSURANCE_RATE = 0.45;
-
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-            if (allInSuperSafeBetCheckbox.checked) {
-                betAmount = playerBalance / (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE);
-                insuranceSelected = true;
-                houseFeeRateForCalc = BASE_HOUSE_FEE_RATE;
-                insuranceCostForCalc = betAmount * INSURANCE_RATE;
-                if (playerBalance < (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)) {
-                    messageBox.textContent = `Your balance ($${playerBalance.toFixed(2)}) is too low for an All-in Super Safe Bet. Minimum required effective funds for a wager is at least $1.00 (which means total balance of $${(1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE).toFixed(2)}).`;
-                    return;
-                }
-            } else {
-                betAmount = parseFloat(redBlackBetInput.value);
-                insuranceSelected = document.getElementById('red-black-insurance-checkbox').checked;
-
-                if (isNaN(betAmount) || betAmount <= 0) {
-                    messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
-                }
-
-                if (specialFeatures444Active) {
-                    houseFeeRateForCalc = 0;
-                    insuranceCostForCalc = 0;
-                } else if (marketEventActive && marketEventType === 'production') {
-                    houseFeeRateForCalc = 0.05;
-                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
-                } else {
-                    houseFeeRateForCalc = insuranceSelected ? INSURED_HOUSE_FEE_RATE : BASE_HOUSE_FEE_RATE;
-                    insuranceCostForCalc = insuranceSelected ? betAmount * INSURANCE_RATE : 0;
-                }
-            }
-
-            let houseFee = betAmount * houseFeeRateForCalc;
-            let totalCost = betAmount + insuranceCostForCalc + houseFee;
-
-            if (totalCost > playerBalance + 0.01) {
-                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${totalCost.toFixed(2)}. Current balance: $${playerBalance.toFixed(2)}.`;
+            if (totalBetAmount > playerBalance) {
+                messageBox.textContent = `Insufficient funds. Your bet of $${totalBetAmount.toFixed(2)} exceeds your balance of $${playerBalance.toFixed(2)}.`;
                 return;
             }
 
-            playerBalance -= totalCost;
-            playerNetProfitLoss -= totalCost;
-            addTransaction('bet_placement', -betAmount, `Red or Black bet placed: $${betAmount.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Red or Black house fee (${(houseFeeRateForCalc * 100).toFixed(0)}%) for $${betAmount.toFixed(2)} bet`);
-            if(insuranceCostForCalc > 0) {
-                addTransaction('insurance_purchase', -insuranceCostForCalc, `Insurance purchased for Red or Black for $${insuranceCostForCalc.toFixed(2)}`);
-                totalCasinoProfit += insuranceCostForCalc;
+            const betComponents = calculateWagerFromTotalRisk(totalBetAmount, insuranceSelected);
+            if (!betComponents) {
+                messageBox.textContent = 'Invalid bet amount.';
+                return;
             }
+
+            const { wager, houseFee, insuranceCost } = betComponents;
+
+            playerBalance -= totalBetAmount;
+            playerNetProfitLoss -= totalBetAmount;
+            totalCasinoProfit += houseFee + insuranceCost;
+            addTransaction('bet_placement', -totalBetAmount, `Red/Black Bet: $${wager.toFixed(2)} (Fee: $${houseFee.toFixed(2)}, Ins: $${insuranceCost.toFixed(2)})`);
             updateBalanceDisplays();
 
-            currentBet = betAmount;
-            currentWager = betAmount;
-            currentHandInsured = insuranceSelected;
-            totalCasinoProfit += houseFee;
+            const card = generateBlackjackCard(); // Re-using card generation logic
+            const cardColor = ['Hearts', 'Diamonds'].includes(card.suit) ? 'red' : 'black';
+            
+            redBlackResultDisplay.innerHTML = ''; // Clear previous result
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('card', cardColor);
+            cardDiv.innerHTML = `<div class="value">${card.value}</div><div class="suit">${getSuitSymbol(card.suit)}</div>`;
+            redBlackResultDisplay.appendChild(cardDiv);
 
-            const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-            const deck = suits.flatMap(suit => values.map(value => ({ suit, value })));
-            const card = deck[Math.floor(Math.random() * deck.length)];
-            const cardColor = card.suit === 'Hearts' || card.suit === 'Diamonds' ? 'red' : 'black';
-            let resultMessage = `The card drawn was a ${cardColor} ${card.value} of ${card.suit}. `;
-            let playerWon = false;
-            let winnings = 0;
-            let profit = 0;
-
-            if (cardColor === color) {
-                winnings = currentWager * 2;
-                profit = currentWager;
-                resultMessage += `You win!`;
-                playerWon = true;
-            } else {
-                resultMessage += 'You lose!';
-            }
-            redBlackResultDisplay.textContent = resultMessage;
-            handleGameEnd('Red or Black', playerWon, winnings, profit, currentWager, currentHandInsured);
-        }
-
-        // --- Deal or No Deal Game functions ---
-        function generateDealOrNoDealSequence() {
-            const numbers = Array.from({length: 20}, (_, i) => i + 1);
-            for (let i = numbers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-            }
-            return numbers;
-        }
-
-        function displayDealOrNoDealSequence() {
-            sequenceContainer.innerHTML = '';
-            for (let i = 0; i < 20; i++) {
-                const numDiv = document.createElement('div');
-                numDiv.classList.add('sequence-card');
-                if (i < revealedSequence.length) {
-                    numDiv.textContent = revealedSequence[i];
-                    if(revealedSequence[i] === sequenceNumber){
-                        numDiv.style.backgroundColor = '#3B82F6'; /* Changed to blue for light theme */
-                        numDiv.style.color = '#FFFFFF';
-                    }
-                } else {
-                    numDiv.textContent = '?';
-                }
-                sequenceContainer.appendChild(numDiv);
-            }
-        }
-
-        function startDealOrNoDealGame() {
-            let sequenceBetValue;
-            let insuranceSelected;
-            let houseFeeRateForCalc;
-            let insuranceCostForCalc;
-
-            const BASE_HOUSE_FEE_RATE = 0.15;
-            const INSURANCE_RATE = 0.45;
-
-            sequenceNumber = parseInt(dealOrNoDealNumberInput.value);
-
-            if (isNaN(sequenceNumber) || sequenceNumber < 1 || sequenceNumber > 20) {
-                messageBox.textContent = 'Invalid chosen number. Please enter a number between 1 and 20.'; return;
-            }
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-
-            if (allInSuperSafeBetCheckbox.checked) {
-                sequenceBetValue = playerBalance / (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE);
-                insuranceSelected = true;
-                houseFeeRateForCalc = BASE_HOUSE_FEE_RATE;
-                insuranceCostForCalc = sequenceBetValue * INSURANCE_RATE;
-                if (playerBalance < (1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE)) {
-                    messageBox.textContent = `Your balance ($${playerBalance.toFixed(2)}) is too low for an All-in Super Safe Bet. Minimum required effective funds for a wager is at least $1.00 (which means total balance of $${(1 + BASE_HOUSE_FEE_RATE + INSURANCE_RATE).toFixed(2)}).`;
-                    return;
-                }
-            } else {
-                sequenceBetValue = parseFloat(dealOrNoDealBetInput.value);
-                insuranceSelected = document.getElementById('dond-insurance-checkbox').checked;
-
-                if (isNaN(sequenceBetValue) || sequenceBetValue <= 0) {
-                    messageBox.textContent = 'Invalid bet amount. Please enter a positive number.'; return;
-                }
-
-                if (specialFeatures444Active) {
-                    houseFeeRateForCalc = 0;
-                    insuranceCostForCalc = 0;
-                } else if (marketEventActive && marketEventType === 'production') {
-                    houseFeeRateForCalc = 0.05;
-                    insuranceCostForCalc = insuranceSelected ? sequenceBetValue * INSURANCE_RATE : 0;
-                } else {
-                    houseFeeRateForCalc = insuranceSelected ? INSURED_HOUSE_FEE_RATE : BASE_HOUSE_FEE_RATE;
-                    insuranceCostForCalc = insuranceSelected ? sequenceBetValue * INSURANCE_RATE : 0;
-                }
-            }
-
-            let houseFee = sequenceBetValue * houseFeeRateForCalc;
-            let totalCost = sequenceBetValue + insuranceCostForCalc + houseFee;
-
-            if (totalCost > playerBalance + 0.01) {
-                messageBox.textContent = `You do not have enough funds for this bet, insurance, and fees. Total cost: $${totalCost.toFixed(2)}. Current balance: $${playerBalance.toFixed(2)}.`;
-                return;
-            }
-
-            playerBalance -= totalCost;
-            playerNetProfitLoss -= totalCost;
-            addTransaction('bet_placement', -sequenceBetValue, `Deal or No Deal bet placed: $${sequenceBetValue.toFixed(2)}`);
-            if (houseFee > 0) addTransaction('house_fee', -houseFee, `Deal or No Deal house fee (${(houseFeeRateForCalc * 100).toFixed(0)}%) for $${sequenceBetValue.toFixed(2)} bet`);
-            if(insuranceCostForCalc > 0) {
-                addTransaction('insurance_purchase', -insuranceCostForCalc, `Insurance purchased for Deal or No Deal for $${insuranceCostForCalc.toFixed(2)}`);
-                totalCasinoProfit += insuranceCostForCalc;
-            }
-            updateBalanceDisplays();
-
-            sequenceBet = sequenceBetValue; // Update global for DOND game
-            sequenceWager = sequenceBetValue; // Wager is the original bet amount for winning calculation
-            totalCasinoProfit += houseFee;
-            currentBet = sequenceBetValue; // Update global for other game functions using currentBet
-
-            dealOrNoDealGame = {
-                number: sequenceNumber,
-                bet: sequenceBetValue, // Use sequenceBetValue as the bet for internal DOND logic
-                wager: sequenceBetValue, // Wager for handleGameEnd
-                sequence: generateDealOrNoDealSequence(),
-                round: 0,
-                chosenNumberWasRevealedEarly: false,
-                insurancePurchased: insuranceSelected, // Pass insurance status
-                winnings: 0
-            };
-
-            sequenceRound = 0;
-            revealedSequence = [];
-            dealOrNoDealResultDisplay.textContent = '';
-            sequenceContainer.innerHTML = '';
-            dealOrNoDealOptions.innerHTML = '';
-            dealOrNoDealOptions.classList.add('hidden');
-
-
-            if (dealOrNoDealGame.sequence[19] === sequenceNumber) {
-                chosenNumberIsLast = true;
-            } else {
-                chosenNumberIsLast = false;
-            }
-
-            startNextDealOrNoDealRound();
-        }
-
-        function startNextDealOrNoDealRound() {
-            if (sequenceIntervalId) clearInterval(sequenceIntervalId);
-            dealOrNoDealOptions.innerHTML = '';
-            dealOrNoDealOptions.classList.add('hidden');
-
-            sequenceRound++;
-            const startIndex = (sequenceRound - 1) * 5;
-            let endIndex = sequenceRound * 5;
-            if (sequenceRound === 4) endIndex = 20;
-
-            for (let i = startIndex; i < endIndex; i++) {
-                if (i >= dealOrNoDealGame.sequence.length) break;
-                revealedSequence.push(dealOrNoDealGame.sequence[i]);
-                if (dealOrNoDealGame.sequence[i] === sequenceNumber && i < 19) {
-                    dealOrNoDealGame.chosenNumberWasRevealedEarly = true;
-                }
-            }
-            displayDealOrNoDealSequence();
-
-            if (sequenceRound < 4) {
-                if (dealOrNoDealGame.chosenNumberWasRevealedEarly) {
-                    dealOrNoDealResultDisplay.textContent = 'You lose! Your number was revealed early.';
-                    handleGameEnd('Deal or No Deal', false, 0, 0, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
-                    return;
-                }
-            } else {
-                if (chosenNumberIsLast && !dealOrNoDealGame.chosenNumberWasRevealedEarly) {
-                    const finalWinnings = dealOrNoDealGame.bet * 20;
-                    const profit = finalWinnings - dealOrNoDealGame.bet;
-                    dealOrNoDealResultDisplay.textContent = `Congratulations! Your number was the very LAST! You win 20x your initial bet!`;
-                    handleGameEnd('Deal or No Deal', true, finalWinnings, profit, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
-                } else {
-                    dealOrNoDealResultDisplay.textContent = `You lose! Your number was revealed, or it was not the very last.`;
-                    handleGameEnd('Deal or No Deal', false, 0, 0, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
-                }
-                return;
-            }
-
-            let payoutMultiplier = 0;
-            let message = '';
-            if (sequenceRound === 1) { payoutMultiplier = 1.25; message = 'Round 1 complete. Your number was not revealed. You can take 1.25x your initial bet or continue.'; }
-            else if (sequenceRound === 2) { payoutMultiplier = 2; message = 'Round 2 complete. Your number was not revealed. You can take 2x your initial bet or continue.'; }
-            else if (sequenceRound === 3) { payoutMultiplier = 2.5; message = 'Round 3 complete. Your number was not revealed. You can take 2.5x your initial bet or continue.'; }
-
-            const currentPayout = dealOrNoDealGame.bet * payoutMultiplier;
-            const profitOnDeal = currentPayout - dealOrNoDealGame.bet;
-            messageBox.textContent = message;
-            dealOrNoDealOptions.classList.remove('hidden');
-
-            const takeButton = document.createElement('button');
-            takeButton.textContent = `Take ${payoutMultiplier}x Bet ($${currentPayout.toFixed(2)})`;
-            takeButton.className = 'bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline';
-            takeButton.onclick = () => {
-                dealOrNoDealOptions.innerHTML = '';
-                dealOrNoDealOptions.classList.add('hidden');
-                handleGameEnd('Deal or No Deal', true, currentPayout, profitOnDeal, dealOrNoDealGame.bet, dealOrNoDealGame.insurancePurchased);
-            };
-            dealOrNoDealOptions.appendChild(takeButton);
-
-            const continueButton = document.createElement('button');
-            continueButton.textContent = 'Continue';
-            continueButton.className = 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline';
-            continueButton.onclick = () => {
-                dealOrNoDealOptions.innerHTML = '';
-                dealOrNoDealOptions.classList.add('hidden');
-                startNextDealOrNoDealRound();
-            };
-            dealOrNoDealOptions.appendChild(continueButton);
+            let playerWon = (cardColor === color);
+            let winnings = playerWon ? wager * 2 : 0;
+            
+            setTimeout(() => {
+                 handleGameEnd('Red or Black', playerWon, winnings, wager, insuranceSelected);
+            }, 1000);
         }
 
         // --- Action button functions ---
-        function withdrawHardshipFunds() {
-            if (hardshipBalance <= 0) { messageBox.textContent = "Your Hardship Fund is empty."; return; }
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-            const amountToWithdraw = hardshipBalance;
-            playerBalance += amountToWithdraw;
-            playerNetProfitLoss += amountToWithdraw;
-            hardshipBalance = 0;
-            addTransaction('hardship_withdrawal', amountToWithdraw, `Withdrew all funds ($${amountToWithdraw.toFixed(2)}) from Hardship Fund`);
-            updateBalanceDisplays();
-            messageBox.textContent = `Successfully withdrew $${amountToWithdraw.toFixed(2)} from your Hardship Fund.`;
-        }
-
-        function toggleEmergencyLoanInput() {
-            emergencyLoanAmountInput.classList.toggle('hidden');
-            proposeLoanTermsButton.classList.toggle('hidden');
-            emergencyLoanRequestButton.textContent = emergencyLoanAmountInput.classList.contains('hidden') ? "Request Emergency Loan" : "Hide Loan Request";
-            if (emergencyLoanAmountInput.classList.contains('hidden')) emergencyLoanAmountInput.value = '';
-        }
-
-        function proposeEmergencyLoanTerms() {
-            if (emergencyLoanActive) { messageBox.textContent = "You already have an active emergency loan. Please repay it first."; return; }
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-            const desiredLoanAmount = parseFloat(emergencyLoanAmountInput.value);
-            if (isNaN(desiredLoanAmount) || desiredLoanAmount <= 0) { messageBox.textContent = 'Invalid loan amount. Please enter a positive number.'; return; }
-            if (desiredLoanAmount > 6000) { messageBox.textContent = 'Maximum emergency loan amount is $6000.'; return; }
-            if (playerBalance > 500) { messageBox.textContent = "You are not eligible for an emergency loan. Your balance is too high (must be $500 or less, or negative)."; return; }
-
-            let actualLoanAmount = Math.min(6000, desiredLoanAmount);
-            const minFeeRate = 0.75; const maxFeeRate = 6.00;
-            let riskFactor = playerBalance <= 0 ? 1 : (500 - playerBalance) / 500;
-            const feeRate = minFeeRate + (maxFeeRate - minFeeRate) * riskFactor;
-            const fee = actualLoanAmount * feeRate;
-            const totalRepayment = actualLoanAmount + fee;
-            const repaymentPerPayment = totalRepayment / 10;
-
-            loanApprovalModal.dataset.loanType = 'emergency';
-            loanApprovalModal.dataset.loanAmount = actualLoanAmount;
-            loanApprovalModal.dataset.fee = fee;
-            loanApprovalModal.dataset.feeRate = feeRate;
-            loanApprovalModal.dataset.totalRepayment = totalRepayment;
-            loanApprovalModal.dataset.repaymentPerPayment = repaymentPerPayment;
-
-            loanTermsTitle.textContent = "Emergency Loan Offer";
-            loanTermsDetails.innerHTML = `<p>Proposed Loan Amount: $${actualLoanAmount.toFixed(2)}</p><p>Acquisition Fee: $${fee.toFixed(2)} (${(feeRate*100).toFixed(2)}%)</p><p>Total to Repay: $${totalRepayment.toFixed(2)}</p><p>Repayment Terms: 10 payments of $${repaymentPerPayment.toFixed(2)} per bet.</p>`;
-            loanApprovalModal.classList.remove('hidden');
-        }
-
-        function proposeBNPLoanTerms() {
-            if (bnplLoanActive) { messageBox.textContent = "You already have an active Bet Now Pay Later loan."; return; }
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-            let loanAmount = Math.min(2000, Math.max(250, playerBalance * 5));
-            if (loanAmount <= 0) { messageBox.textContent = "You are not eligible for a BNPL loan at this moment."; return; }
-
-            const minFeeRate = 0.05; const maxFeeRate = 0.50;
-            const feeRate = Math.random() * (maxFeeRate - minFeeRate) + minFeeRate;
-            const fee = loanAmount * feeRate;
-            const totalLoan = loanAmount + fee;
-            const repaymentPerPayment = totalLoan / 10;
-
-            loanApprovalModal.dataset.loanType = 'bnpl';
-            loanApprovalModal.dataset.loanAmount = loanAmount;
-            loanApprovalModal.dataset.fee = fee;
-            loanApprovalModal.dataset.feeRate = feeRate;
-            loanApprovalModal.dataset.totalRepayment = totalLoan;
-            loanApprovalModal.dataset.repaymentPerPayment = repaymentPerPayment;
-
-            loanTermsTitle.textContent = "Bet Now, Pay Later Loan Offer";
-            loanTermsDetails.innerHTML = `<p>Proposed Loan Amount: $${loanAmount.toFixed(2)}</p><p>Acquisition Fee: $${fee.toFixed(2)} (${(feeRate*100).toFixed(2)}%)</p><p>Total to Repay: $${totalLoan.toFixed(2)}</p><p>Repayment Terms: 10 payments of $${repaymentPerPayment.toFixed(2)} per bet.</p>`;
-            loanApprovalModal.classList.remove('hidden');
-        }
-
-        function handleAcceptLoan() {
-            const loanType = loanApprovalModal.dataset.loanType;
-            const loanAmount = parseFloat(loanApprovalModal.dataset.loanAmount);
-            const fee = parseFloat(loanApprovalModal.dataset.fee);
-            const feeRate = parseFloat(loanApprovalModal.dataset.feeRate);
-            const totalRepayment = parseFloat(loanApprovalModal.dataset.totalRepayment);
-            const repaymentPerPayment = parseFloat(loanApprovalModal.dataset.repaymentPerPayment);
-
-            if (loanType === 'emergency') {
-                emergencyLoanActive = true;
-                emergencyLoanAmount = totalRepayment;
-                emergencyLoanTotalRepayment = totalRepayment;
-                emergencyLoanRepaymentsMade = 0;
-                playerBalance += loanAmount;
-                playerNetProfitLoss -= fee;
-                addTransaction('loan_received', loanAmount, `Emergency loan received: $${loanAmount.toFixed(2)}`);
-                addTransaction('loan_fee', -fee, `Emergency loan fee: $${fee.toFixed(2)} (${(feeRate*100).toFixed(2)}%)`);
-                messageBox.textContent = `Emergency loan of $${loanAmount.toFixed(2)} accepted! Total to repay: $${totalRepayment.toFixed(2)} in 10 payments of $${repaymentPerPayment.toFixed(2)} per bet.`;
-                emergencyLoanAmountInput.classList.add('hidden');
-                proposeLoanTermsButton.classList.add('hidden');
-                emergencyLoanRequestButton.textContent = "Request Emergency Loan";
-                emergencyLoanAmountInput.value = '';
-            } else if (loanType === 'bnpl') {
-                bnplLoanAmount = totalRepayment;
-                bnplPaymentsRemaining = 10;
-                bnplLoanActive = true;
-                playerBalance += loanAmount;
-                playerNetProfitLoss -= fee;
-                addTransaction('bnpl_loan_received', loanAmount, `BNPL loan received: $${loanAmount.toFixed(2)}`);
-                addTransaction('bnpl_fee', -fee, `BNPL loan fee: $${fee.toFixed(2)} (${(feeRate*100).toFixed(2)}%)`);
-                messageBox.textContent = `Bet Now, Pay Later loan of $${loanAmount.toFixed(2)} accepted! Total to repay: $${totalRepayment.toFixed(2)} over 10 bets.`;
-            }
-            loanApprovalModal.classList.add('hidden');
-            updateBalanceDisplays();
-        }
-
-        function handleDeclineLoan() {
-            messageBox.textContent = `${loanApprovalModal.dataset.loanType === 'emergency' ? 'Emergency' : 'Bet Now Pay Later'} loan declined.`;
-            loanApprovalModal.classList.add('hidden');
-            if (loanApprovalModal.dataset.loanType === 'emergency') {
-                emergencyLoanAmountInput.classList.add('hidden');
-                proposeLoanTermsButton.classList.add('hidden');
-                emergencyLoanRequestButton.textContent = "Request Emergency Loan";
-                emergencyLoanAmountInput.value = '';
-            }
-        }
-
-        function makeExtraLoanPayment() {
-            const extraAmount = parseFloat(extraPaymentAmountInput.value);
-            if (isNaN(extraAmount) || extraAmount <= 0) { messageBox.textContent = 'Invalid amount. Please enter a positive number for extra payment.'; return; }
-            if (playerBalance < extraAmount) { messageBox.textContent = "You don't have enough funds for this extra payment."; return; }
-            if (!emergencyLoanActive && !bnplLoanActive) { messageBox.textContent = "You don't have any active loans to make extra payments on."; return; }
-
-            playerBalance -= extraAmount;
-            playerNetProfitLoss -= extraAmount;
-            addTransaction('extra_loan_payment', -extraAmount, `Extra loan payment of $${extraAmount.toFixed(2)}`);
-
-            if (emergencyLoanActive) {
-                emergencyLoanAmount -= extraAmount;
-                if (emergencyLoanAmount <= 0.01) {
-                    emergencyLoanActive = false; emergencyLoanAmount = 0; emergencyLoanTotalRepayment = 0; emergencyLoanRepaymentsMade = 0;
-                    messageBox.textContent = 'Your emergency loan has been fully repaid with extra payment!';
-                    addTransaction('loan_repaid', 0, 'Emergency loan fully repaid (extra payment)');
-                } else {
-                    messageBox.textContent = `Extra payment of $${extraAmount.toFixed(2)} applied to Emergency Loan. Remaining: $${emergencyLoanAmount.toFixed(2)}.`;
-                }
-            } else if (bnplLoanActive) {
-                bnplLoanAmount -= extraAmount;
-                if (bnplLoanAmount <= 0.01) {
-                    bnplLoanActive = false; bnplLoanAmount = 0; bnplPaymentsRemaining = 0;
-                    messageBox.textContent = 'Your Bet Now Pay Later loan has been fully repaid with extra payment!';
-                    addTransaction('bnpl_repaid', 0, 'BNPL loan fully repaid (extra payment)');
-                } else {
-                    messageBox.textContent = `Extra payment of $${extraAmount.toFixed(2)} applied to BNPL Loan. Remaining: $${bnplLoanAmount.toFixed(2)}.`;
-                }
-            }
-            updateBalanceDisplays();
-            extraPaymentAmountInput.value = '';
-        }
-
-        function requestPeopleAssistanceFund() {
-            if (peopleAssistanceFundRequestButton.dataset.count >= 20) { messageBox.textContent = "You have already received the maximum amount of assistance (20 times)."; return; }
-            if (tariffBalance < 5) { messageBox.textContent = "Insufficient funds in the Tariff Fund to grant assistance ($5 required)."; return; }
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-            playerBalance += 5; playerNetProfitLoss += 5; tariffBalance -= 5;
-            addTransaction('freeplay_received', 5, `Received $5 free play from People's Assistance Fund`);
-            updateBalanceDisplays();
-            messageBox.textContent = "You received $5 free play from the People's Assistance Fund.";
-            peopleAssistanceFundRequestButton.dataset.count = parseInt(peopleAssistanceFundRequestButton.dataset.count || 0) + 1;
-        }
-
-        function toggleAutoPlay() {
-            autoPlay = !autoPlay;
-            autoPlayModeButton.textContent = autoPlay ? 'Disable Auto Play Mode' : 'Enable Auto Play Mode';
-            messageBox.textContent = `Auto Play Mode is now ${autoPlay ? 'enabled' : 'disabled'}.`;
-        }
-
         function withdrawFunds() {
-            if (bnplLoanActive) { messageBox.textContent = "Please repay your Bet Now Pay Later loan in full before making a withdrawal."; return; }
-            if (emergencyLoanActive) { messageBox.textContent = "Please repay your Emergency Loan in full before making a withdrawal."; return; }
-            const withdrawalAmount = playerBalance;
-            if (withdrawalAmount <= 0) { messageBox.textContent = "You have no funds to withdraw."; return; }
-            if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; return; }
-
-            if (specialFeatures444Active) {
-                const casinoCut = withdrawalAmount * 0.20;
-                const tariffCut = withdrawalAmount * 0.30;
-                const netAmountToPlayer = withdrawalAmount - casinoCut - tariffCut;
-
-                playerBalance -= withdrawalAmount; playerNetProfitLoss -= (casinoCut + tariffCut);
-                totalCasinoProfit += casinoCut; tariffBalance += tariffCut;
-
-                addTransaction('withdrawal_request', -withdrawalAmount, `Attempted withdrawal of $${withdrawalAmount.toFixed(2)}`);
-                addTransaction('withdrawal_fee_casino', -casinoCut, `Withdrawal fee (20% to Casino): $${casinoCut.toFixed(2)}`);
-                addTransaction('withdrawal_fee_tariff', -tariffCut, `Withdrawal fee (30% to Tariff Fund): $${tariffCut.toFixed(2)}`);
-                addTransaction('withdrawal_net_received', netAmountToPlayer, `Net funds received on withdrawal: $${netAmountToPlayer.toFixed(2)}`);
-                messageBox.textContent = `You have withdrawn $${netAmountToPlayer.toFixed(2)} (after $${casinoCut.toFixed(2)} to Casino and $${tariffCut.toFixed(2)} to Tariff Fund). Your balance is now $0.`;
-            } else {
-                addTransaction('withdrawal_request', -withdrawalAmount, `Withdrawal request of $${withdrawalAmount.toFixed(2)}`);
-                playerBalance = 0;
-                addTransaction('withdrawal_net_received', withdrawalAmount, `Net funds received on withdrawal: $${withdrawalAmount.toFixed(2)}`);
-                messageBox.textContent = `You have withdrawn $${withdrawalAmount.toFixed(2)}. Your balance is now $0.`;
+            if (playerBalance <= 0) {
+                messageBox.textContent = "You have no funds to withdraw.";
+                return;
             }
+            const withdrawalAmount = playerBalance;
+            addTransaction('withdrawal', -withdrawalAmount, `Withdrawal of all funds`);
+            playerBalance = 0;
+            messageBox.textContent = `You have withdrawn $${withdrawalAmount.toFixed(2)}. Your balance is now $0.`;
             updateBalanceDisplays();
             gameSelection.classList.add('hidden');
-            gameActive = false;
-        }
-
-        function handleSecretCode(event) {
-            if (event.key === 'Enter') {
-                const code = secretCodeInput.value.toUpperCase();
-                switch (code) {
-                    case '999':
-                        const tariffWithdrawal = tariffBalance;
-                        playerBalance += tariffWithdrawal; playerNetProfitLoss += tariffWithdrawal; tariffBalance = 0;
-                        addTransaction('tariff_withdrawal_secret', tariffWithdrawal, `Secret code 999: All Tariff Fund ($${tariffWithdrawal.toFixed(2)}) withdrawn`);
-                        messageBox.textContent = `You have withdrawn all funds from the Tariff Fund: $${tariffWithdrawal.toFixed(2)}.`;
-                        break;
-                    case '777':
-                        messageBox.textContent = "A new player has entered the game!";
-                        break;
-                    case '888':
-                        if (isBanned) { messageBox.textContent = "You are currently banned from the casino and cannot use this code."; break; }
-                        messageBox.textContent = "You have unlocked 5 rounds of 0% tariff and a $5000 loan at 0% interest, repayable after 1 bet!";
-                        tariffFreeRoundsRemaining = 5;
-                        const zeroInterestLoanAmount = 5000;
-
-                        playerBalance += zeroInterestLoanAmount; playerNetProfitLoss += zeroInterestLoanAmount;
-                        addTransaction('loan_received_0_interest', zeroInterestLoanAmount, `Secret code 888: 0% interest loan received: $${zeroInterestLoanAmount.toFixed(2)}`);
-
-                        document.addEventListener('gameEnded', function loanRepayCheckOnce() {
-                            if (playerBalance >= zeroInterestLoanAmount) {
-                                playerBalance -= zeroInterestLoanAmount; playerNetProfitLoss -= zeroInterestLoanAmount;
-                                addTransaction('loan_repaid_0_interest', -zeroInterestLoanAmount, `Secret code 888: 0% interest loan repaid: $${zeroInterestLoanAmount.toFixed(2)}`);
-                                messageBox.textContent = `You have repaid the $${zeroInterestLoanAmount.toFixed(2)} loan. Thank you!`;
-                            } else {
-                                isBanned = true; tariffBalance += playerBalance; playerNetProfitLoss -= playerBalance; playerBalance = 0;
-                                addTransaction('ban_forfeit', 0, 'Banned for not repaying 0% interest loan (funds forfeited to Tariff Fund)');
-                                messageBox.textContent = "You have been banned from the casino for failing to repay your 0% interest loan! All your funds have been transferred to the Tariff Fund!";
-                                gameSelection.classList.add('hidden'); gameActive = false;
-                            }
-                            updateBalanceDisplays();
-                            document.removeEventListener('gameEnded', loanRepayCheckOnce);
-                        }, { once: true });
-                        break;
-                    case '444':
-                        if (isBanned) { messageBox.textContent = "You are currently banned from the casino and cannot use this code."; break; }
-                        specialFeatures444Active = true;
-                        messageBox.textContent = `Code 444 Activated! All bet fees and tariffs are now 0%! New withdrawal fees: 20% to Casino, 30% to Tariff Fund.`;
-                        break;
-                    case 'CANCEL':
-                        if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; break; }
-                        specialFeatures444Active = false;
-                        messageBox.textContent = `Code 444 Deactivated. Standard fees and tariffs are now active.`;
-                        break;
-                    case 'STOPTARIFFS':
-                        if (isBanned) { messageBox.textContent = "You are currently banned from the casino."; break; }
-                        if (tariffFreeRoundsRemaining > 0) { messageBox.textContent = `You already have ${tariffFreeRoundsRemaining} tariff-free rounds remaining.`; break; }
-                        tariffFreeRoundsRemaining = 5;
-                        messageBox.textContent = `Code "STOPTARIFFS" Activated! Your next 5 game profits will be 100% tariff-free!`;
-                        break;
-                    case '123':
-                        isBanned = true; tariffBalance += playerBalance; playerNetProfitLoss -= playerBalance; playerBalance = 0;
-                        addTransaction('ban_forfeit', 0, 'Banned for drinking too much beer (funds forfeited to Tariff Fund)');
-                        messageBox.textContent = "You have been banned from the casino for drinking too much beer! All your funds have been transferred to the Tariff Fund!";
-                        gameSelection.classList.add('hidden'); gameActive = false;
-                        break;
-                    case '000':
-                        if(isBanned){ isBanned = false; messageBox.textContent = "Welcome back! You are now sober and can play again. Please remember not to drink too much beer!"; gameSelection.classList.remove('hidden'); }
-                        else{ messageBox.textContent = "Invalid code. Please try again."; }
-                        break;
-                    case '555':
-                        tariffBalance += playerBalance; playerNetProfitLoss -= playerBalance; playerBalance = 0;
-                        addTransaction('miscalculation', 0, `Miscalculation error: All funds ($${playerBalance.toFixed(2)}) lost to Tariff Fund`);
-                        messageBox.textContent = "All your money has been lost due to a miscalculation error! We deeply apologize for the inconvenience!";
-                        gameSelection.classList.add('hidden'); gameActive = false;
-                        break;
-                    default:
-                        messageBox.textContent = "Invalid code. Please try again.";
-                }
-                secretCodeInput.value = '';
-                updateBalanceDisplays();
-            }
-        }
-
-        function handleCasinoBankruptcy(){
-            messageBox.textContent = "The casino has gone bankrupt! All player profits are forfeit. Please find another casino to play at.";
-            playerBalance = 0; tariffBalance = 0; hardshipBalance = 0; playerNetProfitLoss = 0; totalCasinoProfit = 0;
-            addTransaction('bankruptcy', 0, 'Casino declared bankrupt');
-            updateBalanceDisplays();
-            gameSelection.classList.add('hidden'); gameActive = false;
-            emergencyLoanActive = false; emergencyLoanAmount = 0; emergencyLoanTotalRepayment = 0; emergencyLoanRepaymentsMade = 0;
-            bnplLoanActive = false; bnplLoanAmount = 0; bnplPaymentsRemaining = 0;
-        }
-
-        // Market Event Functions
-        function startMarketEventTimer() {
-            if (marketEventTimeoutId) clearTimeout(marketEventTimeoutId);
-            if (marketEventDurationIntervalId) clearInterval(marketEventDurationIntervalId);
-
-            const minDelay = 90 * 1000; const maxDelay = 180 * 1000;
-            const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
-            marketEventTimeoutId = setTimeout(triggerRandomMarketEvent, randomDelay);
-            console.log(`Next market event scheduled in ${Math.round(randomDelay / 1000)} seconds.`);
-        }
-
-        function triggerRandomMarketEvent() {
-            const eventTypes = ['solidarity', 'production'];
-            marketEventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-
-            const minDuration = 60 * 1000; const maxDuration = 120 * 1000;
-            const randomDuration = Math.random() * (maxDuration - minDuration) + minDuration;
-
-            marketEventActive = true;
-            let eventTitle = (marketEventType === 'solidarity' ? "Solidarity Week!" : "Production Boom!");
-            let eventDetails = `${marketEventType === 'solidarity' ? "All tariffs on your profits are now 0% for the next " : "House fees on all bets are reduced to 5% for the next "}`;
-
-            marketEventTitle.textContent = eventTitle;
-            marketEventDetails.innerHTML = `${eventDetails} ${Math.round(randomDuration / 1000)} seconds!`;
-            marketEventModal.classList.remove('hidden');
-
-            marketEventDurationIntervalId = setTimeout(endMarketEvent, randomDuration);
-            console.log(`Market event '${marketEventType}' started for ${Math.round(randomDuration / 1000)} seconds.`);
-        }
-
-        function endMarketEvent() {
-            marketEventActive = false; marketEventType = null;
-            if (marketEventDurationIntervalId) clearTimeout(marketEventDurationIntervalId);
-            messageBox.textContent = `Market event has ended. Standard rules apply.`;
-            marketEventModal.classList.add('hidden');
-            console.log("Market event ended. Restarting timer for next event.");
-            startMarketEventTimer();
-        }
-
-        // --- Tariff Ticker Functions ---
-        function startTariffTicker() {
-            // Initial display
-            updateTariffRate();
-            // Update every 5 seconds
-            setInterval(updateTariffRate, 5000);
-        }
-
-        function updateTariffRate() {
-            previousTariffRate = currentTariffRate;
-            currentTariffRate = Math.floor(Math.random() * 100) + 1; // Random rate between 1 and 100
-            displayTariffTicker();
-        }
-
-        function displayTariffTicker() {
-            currentTariffRateDisplay.textContent = currentTariffRate;
-            tariffTrendDisplay.classList.remove('up', 'down', 'neutral');
-
-            if (currentTariffRate > previousTariffRate) {
-                tariffTrendDisplay.textContent = '▲';
-                tariffTrendDisplay.classList.add('up');
-            } else if (currentTariffRate < previousTariffRate) {
-                tariffTrendDisplay.textContent = '▼';
-                tariffTrendDisplay.classList.add('down');
-            } else {
-                tariffTrendDisplay.textContent = '●';
-                tariffTrendDisplay.classList.add('neutral');
-            }
-        }
-
-        // --- All-in Super Safe Bet Functionality ---
-        function toggleAllInSuperSafeBet() {
-            const isAllIn = allInSuperSafeBetCheckbox.checked;
-
-            // Get all bet inputs and insurance checkboxes by their IDs or a common class if they had one
-            const betInputs = [
-                blackjackBetInput,
-                redBlackBetInput,
-                dealOrNoDealBetInput
-            ];
-            const insuranceCheckboxes = [
-                document.getElementById('blackjack-insurance-checkbox'),
-                document.getElementById('red-black-insurance-checkbox'),
-                document.getElementById('dond-insurance-checkbox')
-            ];
-
-            betInputs.forEach(input => {
-                input.disabled = isAllIn;
-                if (isAllIn) {
-                    input.value = ''; // Clear the value when all-in is active
-                }
-            });
-
-            insuranceCheckboxes.forEach(checkbox => {
-                checkbox.disabled = isAllIn;
-                if (isAllIn) {
-                    checkbox.checked = false; // Uncheck when all-in is active
-                }
-            });
-
-            if (isAllIn) {
-                messageBox.textContent = "All-in Super Safe Bet is active. Your entire balance (after fees) will be wagered.";
-            } else {
-                messageBox.textContent = "All-in Super Safe Bet is deactivated. Enter your custom bet.";
-            }
+            actionButtons.classList.add('hidden');
         }
 
         // Initialize display on load
         window.onload = () => {
             updateBalanceDisplays();
-            peopleAssistanceFundRequestButton.dataset.count = 0;
-            // The tariff ticker will start once the user makes an initial deposit.
-            toggleAllInSuperSafeBet(); // Initialize state of bet inputs based on checkbox
         };
     </script>
 </body>
