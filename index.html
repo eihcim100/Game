@@ -222,6 +222,43 @@
           border: 1px solid #006400;
       }
 
+      /* Deal or No Deal Specific Styles */
+      #sequence-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 1rem;
+        background: rgba(0,0,0,0.2);
+        border-radius: 1rem;
+        margin-top: 1rem;
+      }
+      .sequence-card {
+        width: 45px;
+        height: 45px;
+        border-radius: 8px;
+        border: 1px solid #555;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+        font-weight: 700;
+        background-color: #333;
+        color: #ccc;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      }
+      .sequence-card.revealed {
+        background-color: #D4AF37;
+        color: #1a1a1a;
+        border-color: #fff;
+      }
+      .sequence-card.player-choice {
+        background-color: #1e63c8;
+        color: #fff;
+        border-color: #3b82f6;
+      }
+
+
       #ledger-container {
         margin-top: 3rem;
         background-color: rgba(0, 0, 0, 0.5);
@@ -362,6 +399,10 @@
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                 Red or Black
             </button>
+            <button class="game-button" id="deal-or-no-deal-button">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                Deal or No Deal
+            </button>
         </div>
 
         <div id="game-container" class="mt-6">
@@ -400,6 +441,22 @@
                 <button id="black-button" style="background: linear-gradient(145deg, #333, #111); border-color: #555;">Black</button>
                 <div id="red-black-result" class="mt-4 text-lg"></div>
             </div>
+
+            <div id="deal-or-no-deal-game" class="hidden">
+                <h2>Deal or No Deal</h2>
+                <p>Choose your number (1-20):</p>
+                <input type="number" id="deal-or-no-deal-number" placeholder="Enter Number (1-20)">
+                 <p>Place your bet:</p>
+                <input type="number" id="deal-or-no-deal-bet" placeholder="Enter Total Bet Amount">
+                <div class="mt-2 mb-2">
+                    <input type="checkbox" id="dond-insurance-checkbox" class="mr-2 align-middle">
+                    <label for="dond-insurance-checkbox" class="align-middle">Buy Insurance (45% of wager, built into bet)</label>
+                </div>
+                <button id="start-sequence-button">Start Game</button>
+                <div id="sequence-container" class="mt-4"></div>
+                <div id="deal-or-no-deal-result" class="mt-4 text-lg"></div>
+                <div id="deal-or-no-deal-options" class="mt-4 hidden"></div>
+            </div>
         </div>
 
         <div id="action-buttons" class="mt-6 hidden">
@@ -430,6 +487,7 @@
         let gameActive = false;
         let totalCasinoProfit = 0;
         let transactionHistory = [];
+        let dealOrNoDealGame = null;
 
         // DOM Elements
         const messageBox = document.getElementById('message-box');
@@ -444,6 +502,7 @@
         const gameSelection = document.getElementById('game-selection');
         const blackjackButton = document.getElementById('blackjack-button');
         const redBlackButton = document.getElementById('red-black-button');
+        const dealOrNoDealButton = document.getElementById('deal-or-no-deal-button');
         const actionButtons = document.getElementById('action-buttons');
         const withdrawButton = document.getElementById('withdraw-button');
 
@@ -462,6 +521,14 @@
         const blackButton = document.getElementById('black-button');
         const redBlackResultDisplay = document.getElementById('red-black-result');
 
+        const dealOrNoDealGameContainer = document.getElementById('deal-or-no-deal-game');
+        const dealOrNoDealNumberInput = document.getElementById('deal-or-no-deal-number');
+        const dealOrNoDealBetInput = document.getElementById('deal-or-no-deal-bet');
+        const startSequenceButton = document.getElementById('start-sequence-button');
+        const sequenceContainer = document.getElementById('sequence-container');
+        const dealOrNoDealResultDisplay = document.getElementById('deal-or-no-deal-result');
+        const dealOrNoDealOptions = document.getElementById('deal-or-no-deal-options');
+
         const ledgerContainer = document.getElementById('ledger-container');
         const ledgerDisplay = document.getElementById('ledger-display');
         
@@ -469,6 +536,7 @@
         depositButton.addEventListener('click', handleDeposit);
         blackjackButton.addEventListener('click', () => showGame('blackjack'));
         redBlackButton.addEventListener('click', () => showGame('red-black'));
+        dealOrNoDealButton.addEventListener('click', () => showGame('deal-or-no-deal'));
         withdrawButton.addEventListener('click', withdrawFunds);
 
         blackjackPlayButton.addEventListener('click', playBlackjackHand);
@@ -476,6 +544,7 @@
         blackjackStandButton.addEventListener('click', blackjackStand);
         redButton.addEventListener('click', () => playRedOrBlack('red'));
         blackButton.addEventListener('click', () => playRedOrBlack('black'));
+        startSequenceButton.addEventListener('click', startDealOrNoDealGame);
 
         // --- Core Functions ---
 
@@ -534,6 +603,7 @@
             gameActive = true;
             blackjackGameContainer.classList.add('hidden');
             redBlackGameContainer.classList.add('hidden');
+            dealOrNoDealGameContainer.classList.add('hidden');
 
             switch (gameName) {
                 case 'blackjack':
@@ -543,6 +613,10 @@
                 case 'red-black':
                     redBlackGameContainer.classList.remove('hidden');
                     redBlackResultDisplay.textContent = '';
+                    break;
+                case 'deal-or-no-deal':
+                    dealOrNoDealGameContainer.classList.remove('hidden');
+                    resetDealOrNoDealUI();
                     break;
             }
             messageBox.textContent = '';
@@ -557,15 +631,16 @@
             blackjackHandDealerDisplay.innerHTML = '<p>Dealer Hand:</p>';
         }
 
-        /**
-         * NEW: Calculates wager components from a total risk amount.
-         * @param {number} totalRiskAmount - The total amount the player is betting.
-         * @param {boolean} insuranceSelected - Whether insurance is active.
-         * @returns {object|null} An object with wager, houseFee, insuranceCost, or null if invalid.
-         */
+        function resetDealOrNoDealUI() {
+            dealOrNoDealOptions.classList.add('hidden');
+            dealOrNoDealResultDisplay.textContent = '';
+            sequenceContainer.innerHTML = '';
+            startSequenceButton.disabled = false;
+        }
+
         function calculateWagerFromTotalRisk(totalRiskAmount, insuranceSelected) {
-            const BASE_HOUSE_FEE_RATE = 0.15; // 15%
-            const INSURANCE_RATE = 0.45;      // 45%
+            const BASE_HOUSE_FEE_RATE = 0.15;
+            const INSURANCE_RATE = 0.45;
 
             let divisor = 1 + BASE_HOUSE_FEE_RATE;
             if (insuranceSelected) {
@@ -581,8 +656,8 @@
             return { wager, houseFee, insuranceCost };
         }
 
-        function handleGameEnd(gameName, playerWon, winnings, wager, insurancePurchased) {
-            const TARIFF_RATE = 0.10; // 10% tariff on profits
+        function handleGameEnd(gameName, playerWon, winnings, wager, insurancePurchased, additionalMessage = '') {
+            const TARIFF_RATE = 0.10;
             let tariffAmount = 0;
             let netWinnings = 0;
             let profit = winnings - wager;
@@ -598,27 +673,25 @@
 
                 addTransaction('win_payout', winnings, `${gameName} gross winnings`);
                 addTransaction('tariff_deduction', -tariffAmount, `Tariff (${(TARIFF_RATE*100)}%)`);
-                messageBox.textContent = `You won! Net Payout: $${(netWinnings-wager).toFixed(2)} (after $${tariffAmount.toFixed(2)} tariff).`;
+                messageBox.textContent = `You won! Net Payout: $${(netWinnings-wager).toFixed(2)} (after $${tariffAmount.toFixed(2)} tariff). ${additionalMessage}`;
 
-            } else if (playerWon && profit === 0) { // Push
-                 playerBalance += wager; // Return original wager
-                 // No change to P/L or casino profit
-                 messageBox.textContent = `It's a push! Your wager of $${wager.toFixed(2)} is returned.`;
+            } else if (playerWon && profit === 0) {
+                 playerBalance += wager;
+                 messageBox.textContent = `It's a push! Your wager of $${wager.toFixed(2)} is returned. ${additionalMessage}`;
                  addTransaction('push_return', wager, `${gameName} push, wager returned.`);
 
-            } else { // Player lost
+            } else {
                 totalCasinoProfit += wager;
                 let finalMessage = `You lost $${wager.toFixed(2)}.`;
 
                 if (insurancePurchased) {
-                    playerBalance += wager; // Refund the wager
-                    playerNetProfitLoss += wager; // Nullify the loss of the wager on the P/L
-                    totalCasinoProfit -= wager; // Casino doesn't profit from wager, only premium
+                    playerBalance += wager;
+                    playerNetProfitLoss += wager;
+                    totalCasinoProfit -= wager;
                     finalMessage = `You lost, but insurance refunded your wager of $${wager.toFixed(2)}!`;
                     addTransaction('insurance_payout', wager, `Insurance refund for ${gameName} loss.`);
                 }
                 
-                // Hardship fund contribution on any non-insured loss
                 if (tariffBalance > 0 && !insurancePurchased) {
                     const payoutAmount = Math.min(tariffBalance * 0.20, tariffBalance);
                     hardshipBalance += payoutAmount;
@@ -626,7 +699,7 @@
                     addTransaction('hardship_transfer', payoutAmount, `20% of Tariff Fund to Hardship Fund`);
                     finalMessage += ` $${payoutAmount.toFixed(2)} moved to your Hardship Fund.`;
                 }
-                messageBox.textContent = finalMessage;
+                messageBox.textContent = finalMessage + " " + additionalMessage;
             }
 
             updateBalanceDisplays();
@@ -756,8 +829,8 @@
                 winnings = wager * 2;
             } else if (playerHandValue === dealerHandValue) {
                 blackjackResultDisplay.textContent = 'It\'s a push!';
-                playerWon = true; // Push is a "win" to return bet
-                winnings = wager; // Return original wager
+                playerWon = true;
+                winnings = wager; 
             } else {
                 blackjackResultDisplay.textContent = 'House wins!';
             }
@@ -789,10 +862,10 @@
             addTransaction('bet_placement', -totalBetAmount, `Red/Black Bet: $${wager.toFixed(2)} (Fee: $${houseFee.toFixed(2)}, Ins: $${insuranceCost.toFixed(2)})`);
             updateBalanceDisplays();
 
-            const card = generateBlackjackCard(); // Re-using card generation logic
+            const card = generateBlackjackCard();
             const cardColor = ['Hearts', 'Diamonds'].includes(card.suit) ? 'red' : 'black';
             
-            redBlackResultDisplay.innerHTML = ''; // Clear previous result
+            redBlackResultDisplay.innerHTML = '';
             const cardDiv = document.createElement('div');
             cardDiv.classList.add('card', cardColor);
             cardDiv.innerHTML = `<div class="value">${card.value}</div><div class="suit">${getSuitSymbol(card.suit)}</div>`;
@@ -805,6 +878,144 @@
                  handleGameEnd('Red or Black', playerWon, winnings, wager, insuranceSelected);
             }, 1000);
         }
+
+        // --- Deal or No Deal Game functions ---
+        function generateDealOrNoDealSequence() {
+            const numbers = Array.from({length: 20}, (_, i) => i + 1);
+            for (let i = numbers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+            }
+            return numbers;
+        }
+
+        function displayDealOrNoDealSequence(revealedSequence, playerChoice) {
+            sequenceContainer.innerHTML = '';
+            for (let i = 1; i <= 20; i++) {
+                const numDiv = document.createElement('div');
+                numDiv.classList.add('sequence-card');
+                numDiv.textContent = i;
+                if (revealedSequence.includes(i)) {
+                    numDiv.classList.add('revealed');
+                    if (i === playerChoice) {
+                        numDiv.classList.add('player-choice');
+                    }
+                }
+                sequenceContainer.appendChild(numDiv);
+            }
+        }
+
+        function startDealOrNoDealGame() {
+            const chosenNumber = parseInt(dealOrNoDealNumberInput.value);
+            const totalBetAmount = parseFloat(dealOrNoDealBetInput.value);
+            const insuranceSelected = document.getElementById('dond-insurance-checkbox').checked;
+
+            if (isNaN(chosenNumber) || chosenNumber < 1 || chosenNumber > 20) {
+                messageBox.textContent = 'Please choose a number between 1 and 20.';
+                return;
+            }
+            if (totalBetAmount > playerBalance) {
+                messageBox.textContent = `Insufficient funds. Your bet of $${totalBetAmount.toFixed(2)} exceeds your balance of $${playerBalance.toFixed(2)}.`;
+                return;
+            }
+
+            const betComponents = calculateWagerFromTotalRisk(totalBetAmount, insuranceSelected);
+            if (!betComponents) {
+                messageBox.textContent = 'Invalid bet amount.';
+                return;
+            }
+
+            const { wager, houseFee, insuranceCost } = betComponents;
+
+            playerBalance -= totalBetAmount;
+            playerNetProfitLoss -= totalBetAmount;
+            totalCasinoProfit += houseFee + insuranceCost;
+            addTransaction('bet_placement', -totalBetAmount, `DOND Bet: $${wager.toFixed(2)} (Fee: $${houseFee.toFixed(2)}, Ins: $${insuranceCost.toFixed(2)})`);
+            updateBalanceDisplays();
+
+            dealOrNoDealGame = {
+                playerChoice: chosenNumber,
+                wager: wager,
+                insurancePurchased: insuranceSelected,
+                sequence: generateDealOrNoDealSequence(),
+                round: 0,
+                revealedSequence: [],
+            };
+
+            startSequenceButton.disabled = true;
+            dealOrNoDealResultDisplay.textContent = 'Round 1 starting...';
+            displayDealOrNoDealSequence([], chosenNumber);
+            setTimeout(runDealOrNoDealRound, 1500);
+        }
+
+        function runDealOrNoDealRound() {
+            dealOrNoDealGame.round++;
+            const numbersToReveal = 5;
+            let revealedThisRound = 0;
+
+            const revealInterval = setInterval(() => {
+                if (revealedThisRound >= numbersToReveal || dealOrNoDealGame.sequence.length === 0) {
+                    clearInterval(revealInterval);
+                    
+                    // Check if player's number was revealed
+                    if (dealOrNoDealGame.revealedSequence.includes(dealOrNoDealGame.playerChoice)) {
+                        dealOrNoDealResultDisplay.textContent = `Your number ${dealOrNoDealGame.playerChoice} was revealed. You lose.`;
+                        handleGameEnd('Deal or No Deal', false, 0, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased);
+                        resetDealOrNoDealUI();
+                        return;
+                    }
+
+                    // Check for win condition (last number)
+                    if (dealOrNoDealGame.sequence.length === 0 && !dealOrNoDealGame.revealedSequence.includes(dealOrNoDealGame.playerChoice)) {
+                         const winnings = dealOrNoDealGame.wager * 20;
+                         dealOrNoDealResultDisplay.textContent = `Your number was the last one standing!`;
+                         handleGameEnd('Deal or No Deal', true, winnings, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased, `You win 20x your wager!`);
+                         resetDealOrNoDealUI();
+                         return;
+                    }
+
+                    // Offer a deal if game is not over
+                    if (dealOrNoDealGame.round < 3) {
+                        offerDeal();
+                    } else { // Final round
+                        dealOrNoDealResultDisplay.textContent = "Final round... revealing the rest!";
+                        runDealOrNoDealRound(); // Continue to reveal remaining numbers
+                    }
+                    return;
+                }
+
+                const nextNumber = dealOrNoDealGame.sequence.pop();
+                if (!dealOrNoDealGame.revealedSequence.includes(nextNumber)) {
+                    dealOrNoDealGame.revealedSequence.push(nextNumber);
+                    revealedThisRound++;
+                    displayDealOrNoDealSequence(dealOrNoDealGame.revealedSequence, dealOrNoDealGame.playerChoice);
+                }
+            }, 500);
+        }
+
+        function offerDeal() {
+            const payoutMultipliers = [0, 1.25, 2, 2.5]; // Index matches round number
+            const multiplier = payoutMultipliers[dealOrNoDealGame.round];
+            const offerAmount = dealOrNoDealGame.wager * multiplier;
+            
+            messageBox.textContent = `Round ${dealOrNoDealGame.round} is over. Your number is safe. The banker offers you $${offerAmount.toFixed(2)}.`;
+            dealOrNoDealOptions.classList.remove('hidden');
+            dealOrNoDealOptions.innerHTML = `
+                <button id="accept-deal-button" class="bg-green-600 hover:bg-green-700">Take Deal ($${offerAmount.toFixed(2)})</button>
+                <button id="reject-deal-button" class="bg-red-600 hover:bg-red-700">No Deal</button>
+            `;
+
+            document.getElementById('accept-deal-button').onclick = () => {
+                handleGameEnd('Deal or No Deal', true, offerAmount, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased, `You accepted the deal.`);
+                resetDealOrNoDealUI();
+            };
+            document.getElementById('reject-deal-button').onclick = () => {
+                dealOrNoDealOptions.classList.add('hidden');
+                messageBox.textContent = `You rejected the deal. Starting round ${dealOrNoDealGame.round + 1}...`;
+                setTimeout(runDealOrNoDealRound, 1500);
+            };
+        }
+
 
         // --- Action button functions ---
         function withdrawFunds() {
