@@ -895,15 +895,17 @@
                 const numDiv = document.createElement('div');
                 numDiv.classList.add('sequence-card');
                 numDiv.textContent = i;
+                if (i === playerChoice) {
+                    numDiv.classList.add('player-choice');
+                }
                 if (revealedSequence.includes(i)) {
                     numDiv.classList.add('revealed');
-                    if (i === playerChoice) {
-                        numDiv.classList.add('player-choice');
-                    }
                 }
                 sequenceContainer.appendChild(numDiv);
             }
         }
+
+        // --- FIXED Deal or No Deal Functions ---
 
         function startDealOrNoDealGame() {
             const chosenNumber = parseInt(dealOrNoDealNumberInput.value);
@@ -933,11 +935,15 @@
             addTransaction('bet_placement', -totalBetAmount, `DOND Bet: $${wager.toFixed(2)} (Fee: $${houseFee.toFixed(2)}, Ins: $${insuranceCost.toFixed(2)})`);
             updateBalanceDisplays();
 
+            let sequence = generateDealOrNoDealSequence();
+            // IMPORTANT CHANGE: Remove player's choice from the sequence of numbers to be revealed.
+            sequence = sequence.filter(num => num !== chosenNumber);
+
             dealOrNoDealGame = {
                 playerChoice: chosenNumber,
                 wager: wager,
                 insurancePurchased: insuranceSelected,
-                sequence: generateDealOrNoDealSequence(),
+                sequence: sequence, // Now has 19 numbers
                 round: 0,
                 revealedSequence: [],
             };
@@ -950,59 +956,55 @@
 
         function runDealOrNoDealRound() {
             dealOrNoDealGame.round++;
-            const numbersToReveal = 5;
+            // New reveal schedule: 5, 5, 5, 4. Total 19.
+            const revealSchedule = { 1: 5, 2: 5, 3: 5, 4: 4 };
+            const numbersToReveal = revealSchedule[dealOrNoDealGame.round];
+
             let revealedThisRound = 0;
+            dealOrNoDealResultDisplay.textContent = `Round ${dealOrNoDealGame.round}: Revealing ${numbersToReveal} numbers...`;
 
             const revealInterval = setInterval(() => {
                 if (revealedThisRound >= numbersToReveal || dealOrNoDealGame.sequence.length === 0) {
                     clearInterval(revealInterval);
-                    
-                    // Check if player's number was revealed
-                    if (dealOrNoDealGame.revealedSequence.includes(dealOrNoDealGame.playerChoice)) {
-                        dealOrNoDealResultDisplay.textContent = `Your number ${dealOrNoDealGame.playerChoice} was revealed. You lose.`;
-                        handleGameEnd('Deal or No Deal', false, 0, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased);
-                        resetDealOrNoDealUI();
-                        return;
-                    }
 
-                    // Check for win condition (last number)
-                    if (dealOrNoDealGame.sequence.length === 0 && !dealOrNoDealGame.revealedSequence.includes(dealOrNoDealGame.playerChoice)) {
+                    // Check for win condition (all other numbers revealed)
+                    if (dealOrNoDealGame.sequence.length === 0) {
                          const winnings = dealOrNoDealGame.wager * 20;
-                         dealOrNoDealResultDisplay.textContent = `Your number was the last one standing!`;
-                         handleGameEnd('Deal or No Deal', true, winnings, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased, `You win 20x your wager!`);
+                         dealOrNoDealResultDisplay.textContent = `Your number, ${dealOrNoDealGame.playerChoice}, was the last one standing!`;
+                         handleGameEnd('Deal or No Deal', true, winnings, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased, `You win the 20x jackpot!`);
                          resetDealOrNoDealUI();
                          return;
                     }
 
-                    // Offer a deal if game is not over
-                    if (dealOrNoDealGame.round < 3) {
+                    // Offer a deal if it's not the final round of reveals.
+                    if (dealOrNoDealGame.round < 4) {
                         offerDeal();
-                    } else { // Final round
-                        dealOrNoDealResultDisplay.textContent = "Final round... revealing the rest!";
-                        runDealOrNoDealRound(); // Continue to reveal remaining numbers
+                    } else {
+                        // This is after the final reveal, the game is over, and the win condition above should have been met.
+                        dealOrNoDealResultDisplay.textContent = "Something went wrong in the final round.";
                     }
                     return;
                 }
 
                 const nextNumber = dealOrNoDealGame.sequence.pop();
-                if (!dealOrNoDealGame.revealedSequence.includes(nextNumber)) {
-                    dealOrNoDealGame.revealedSequence.push(nextNumber);
-                    revealedThisRound++;
-                    displayDealOrNoDealSequence(dealOrNoDealGame.revealedSequence, dealOrNoDealGame.playerChoice);
-                }
+                dealOrNoDealGame.revealedSequence.push(nextNumber);
+                revealedThisRound++;
+                displayDealOrNoDealSequence(dealOrNoDealGame.revealedSequence, dealOrNoDealGame.playerChoice);
             }, 500);
         }
 
         function offerDeal() {
-            const payoutMultipliers = [0, 1.25, 2, 2.5]; // Index matches round number
+            // New payout multipliers for rounds 1, 2, and 3
+            const payoutMultipliers = [0, 1.5, 2.5, 4.0]; // Index 0 is unused, 1-3 for rounds
             const multiplier = payoutMultipliers[dealOrNoDealGame.round];
             const offerAmount = dealOrNoDealGame.wager * multiplier;
+            const remainingToReveal = dealOrNoDealGame.sequence.length;
             
-            messageBox.textContent = `Round ${dealOrNoDealGame.round} is over. Your number is safe. The banker offers you $${offerAmount.toFixed(2)}.`;
+            messageBox.textContent = `Round ${dealOrNoDealGame.round} is over. ${remainingToReveal} numbers remain. The banker offers you $${offerAmount.toFixed(2)}.`;
             dealOrNoDealOptions.classList.remove('hidden');
             dealOrNoDealOptions.innerHTML = `
-                <button id="accept-deal-button" class="bg-green-600 hover:bg-green-700">Take Deal ($${offerAmount.toFixed(2)})</button>
-                <button id="reject-deal-button" class="bg-red-600 hover:bg-red-700">No Deal</button>
+                <button id="accept-deal-button" style="background-color: #16a34a; border-color: #22c55e;">Take Deal ($${offerAmount.toFixed(2)})</button>
+                <button id="reject-deal-button" style="background-color: #dc2626; border-color: #ef4444;">No Deal</button>
             `;
 
             document.getElementById('accept-deal-button').onclick = () => {
