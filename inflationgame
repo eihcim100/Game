@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inflationopoly</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 1200px;
+            width: 100%;
+        }
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* Example for a 12-space board */
+            grid-template-rows: repeat(4, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Keep board square */
+            max-width: 600px; /* Max width for the board itself */
+            margin: 0 auto; /* Center the board */
+        }
+        .board-space {
+            background-color: #e2e8f0; /* Light gray for spaces */
+            border: 1px solid #cbd5e1; /* Border for spaces */
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.75rem;
+            position: relative;
+            min-height: 80px; /* Ensure a minimum height for spaces */
+        }
+        .board-space.go { background-color: #a7f3d0; } /* Green for Go */
+        .board-space.jail { background-color: #fecaca; } /* Red for Jail */
+        .board-space.property { background-color: #bfdbfe; } /* Blue for properties */
+        .board-space.player-1-pos { border: 3px solid #ef4444; } /* Red border for player 1 */
+        .board-space.player-2-pos { border: 3px solid #3b82f6; } /* Blue border for player 2 */
+
+        .player-token {
+            position: absolute;
+            bottom: 5px;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        .player-token.player-1 { color: #dc2626; left: 5px; }
+        .player-token.player-2 { color: #2563eb; right: 5px; }
+
+        .player-info-card {
+            background-color: #f8fafc;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .game-button {
+            @apply px-6 py-3 rounded-xl font-bold transition-all duration-200 ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .game-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .game-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .game-button:disabled {
+            @apply opacity-50 cursor-not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .game-container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 2rem;
+            }
+            .board-grid {
+                flex-shrink: 0; /* Prevent board from shrinking */
+            }
+            .game-sidebar {
+                flex-grow: 1; /* Allow sidebar to take remaining space */
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="game-container">
+        <!-- Game Board -->
+        <div id="gameBoard" class="board-grid">
+            <!-- Board spaces will be dynamically generated here -->
+        </div>
+
+        <!-- Game Sidebar (Controls, Info, Log) -->
+        <div class="game-sidebar flex flex-col gap-6 w-full md:w-1/2 lg:w-1/3">
+            <h1 class="text-4xl font-bold text-gray-800 text-center mb-4">Inflationopoly</h1>
+
+            <!-- Global Game Info -->
+            <div class="bg-blue-50 p-4 rounded-xl shadow-md">
+                <h2 class="text-xl font-semibold text-blue-800 mb-2">Market Conditions</h2>
+                <p class="text-gray-700">Inflation: <span id="inflationRate" class="font-bold text-red-600">0%</span></p>
+                <p class="text-gray-700">FED Interest Rate: <span id="interestRate" class="font-bold text-green-600">0%</span></p>
+            </div>
+
+            <!-- Player Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="player1Info" class="player-info-card bg-red-50 border border-red-200">
+                    <h2 class="text-lg font-semibold text-red-700 mb-1">Player 1 (❤️)</h2>
+                    <p class="text-gray-700">Money: $<span id="player1Money" class="font-bold">1500</span></p>
+                    <p class="text-gray-700">Properties: <span id="player1Properties" class="font-bold">0</span></p>
+                </div>
+                <div id="player2Info" class="player-info-card bg-blue-50 border border-blue-200">
+                    <h2 class="text-lg font-semibold text-blue-700 mb-1">Player 2 (💙)</h2>
+                    <p class="text-gray-700">Money: $<span id="player2Money" class="font-bold">1500</span></p>
+                    <p class="text-gray-700">Properties: <span id="player2Properties" class="font-bold">0</span></p>
+                </div>
+            </div>
+
+            <!-- Game Controls -->
+            <div class="bg-gray-50 p-4 rounded-xl shadow-md flex flex-col gap-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Game Controls</h2>
+                <p class="text-center text-lg font-medium text-gray-700">Current Player: <span id="currentPlayerName" class="font-bold text-purple-700"></span></p>
+                <p class="text-center text-xl font-bold text-gray-800">Dice Roll: <span id="diceRoll">0</span></p>
+                <button id="rollDiceBtn" class="game-button bg-purple-600 text-white hover:bg-purple-700">Roll Dice</button>
+                <button id="buyPropertyBtn" class="game-button bg-green-500 text-white hover:bg-green-600" disabled>Buy Property</button>
+                <button id="mortgageBtn" class="game-button bg-yellow-500 text-white hover:bg-yellow-600" disabled>Mortgage Property</button>
+                <button id="unmortgageBtn" class="game-button bg-blue-500 text-white hover:bg-blue-600" disabled>Unmortgage Property</button>
+                <button id="endTurnBtn" class="game-button bg-gray-400 text-white hover:bg-gray-500" disabled>End Turn</button>
+                <button id="startGameBtn" class="game-button bg-indigo-600 text-white hover:bg-indigo-700 mt-4">Start Game</button>
+            </div>
+
+            <!-- Game Log -->
+            <div class="bg-gray-50 p-4 rounded-xl shadow-md flex-grow overflow-y-auto max-h-64">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">Game Log</h2>
+                <div id="gameLog" class="text-sm text-gray-700"></div>
+            </div>
+
+            <!-- Game Over Modal (Hidden by default) -->
+            <div id="gameOverModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-50">
+                <div class="bg-white p-8 rounded-xl shadow-lg text-center">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Game Over!</h2>
+                    <p id="gameOverMessage" class="text-xl text-gray-700 mb-6"></p>
+                    <button id="restartGameBtn" class="game-button bg-indigo-600 text-white hover:bg-indigo-700">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for Firebase configuration and app ID (provided by Canvas environment)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        // Fix: Changed 'initialAuthToken' to '__initial_auth_token' on the right-hand side
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
+
+        // Firebase imports (if needed for future persistence, currently not used for simplicity)
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Game State Variables
+        let players = [];
+        let board = [];
+        let currentPlayerIndex = 0;
+        let inflationRate = 0.02; // Initial 2% inflation
+        let interestRate = 0.01; // Initial 1% FED interest rate
+        let gameStarted = false;
+        let diceRolledThisTurn = false;
+        let turnCount = 0; // To track rounds for inflation/interest rate changes
+
+        // DOM Elements
+        const gameBoardEl = document.getElementById('gameBoard');
+        const inflationRateEl = document.getElementById('inflationRate');
+        const interestRateEl = document.getElementById('interestRate');
+        const player1MoneyEl = document.getElementById('player1Money');
+        const player1PropertiesEl = document.getElementById('player1Properties');
+        const player2MoneyEl = document.getElementById('player2Money');
+        const player2PropertiesEl = document.getElementById('player2Properties');
+        const currentPlayerNameEl = document.getElementById('currentPlayerName');
+        const diceRollEl = document.getElementById('diceRoll');
+        const rollDiceBtn = document.getElementById('rollDiceBtn');
+        const buyPropertyBtn = document.getElementById('buyPropertyBtn');
+        const mortgageBtn = document.getElementById('mortgageBtn');
+        const unmortgageBtn = document.getElementById('unmortgageBtn');
+        const endTurnBtn = document.getElementById('endTurnBtn');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const gameLogEl = document.getElementById('gameLog');
+        const gameOverModal = document.getElementById('gameOverModal');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+        const restartGameBtn = document.getElementById('restartGameBtn');
+
+        // --- Game Initialization ---
+        function initializeGame() {
+            players = [
+                { id: 0, name: 'Player 1', money: 1500, position: 0, properties: [], token: '❤️' },
+                { id: 1, name: 'Player 2', money: 1500, position: 0, properties: [], token: '💙' }
+            ];
+
+            // Define a simple board with 12 spaces
+            board = [
+                { name: 'GO', type: 'go', basePrice: 0, baseRent: 0 }, // 0
+                { name: 'Property A', type: 'property', basePrice: 100, baseRent: 10, owner: null, mortgaged: false }, // 1
+                { name: 'Property B', type: 'property', basePrice: 120, baseRent: 12, owner: null, mortgaged: false }, // 2
+                { name: 'Inflation Event', type: 'event', basePrice: 0, baseRent: 0 }, // 3
+                { name: 'Property C', type: 'property', basePrice: 140, baseRent: 14, owner: null, mortgaged: false }, // 4
+                { name: 'Property D', type: 'property', basePrice: 160, baseRent: 16, owner: null, mortgaged: false }, // 5
+                { name: 'Interest Rate Event', type: 'event', basePrice: 0, baseRent: 0 }, // 6
+                { name: 'Property E', type: 'property', basePrice: 180, baseRent: 18, owner: null, mortgaged: false }, // 7
+                { name: 'Property F', type: 'property', basePrice: 200, baseRent: 20, owner: null, mortgaged: false }, // 8
+                { name: 'Jail', type: 'jail', basePrice: 0, baseRent: 0 }, // 9 (Just a space, no complex jail rules)
+                { name: 'Property G', type: 'property', basePrice: 220, baseRent: 22, owner: null, mortgaged: false }, // 10
+                { name: 'Property H', type: 'property', basePrice: 240, baseRent: 24, owner: null, mortgaged: false }  // 11
+            ];
+
+            // Calculate initial current prices and rents based on initial inflation
+            board.forEach(space => {
+                if (space.type === 'property') {
+                    space.currentPrice = space.basePrice * (1 + inflationRate);
+                    space.currentRent = space.baseRent * (1 + inflationRate);
+                }
+            });
+
+            currentPlayerIndex = 0;
+            inflationRate = 0.02;
+            interestRate = 0.01;
+            gameStarted = true;
+            diceRolledThisTurn = false;
+            turnCount = 0;
+
+            updateUI();
+            renderBoard();
+            logMessage('Game started! Player 1, roll the dice.');
+            startGameBtn.disabled = true;
+            rollDiceBtn.disabled = false;
+            endTurnBtn.disabled = true;
+            buyPropertyBtn.disabled = true;
+            mortgageBtn.disabled = true;
+            unmortgageBtn.disabled = true;
+            gameOverModal.classList.add('hidden');
+        }
+
+        // --- UI Rendering Functions ---
+        function renderBoard() {
+            gameBoardEl.innerHTML = ''; // Clear existing board
+            board.forEach((space, index) => {
+                const spaceEl = document.createElement('div');
+                spaceEl.classList.add('board-space', 'relative');
+                spaceEl.dataset.index = index;
+
+                let spaceTypeClass = '';
+                switch (space.type) {
+                    case 'go': spaceTypeClass = 'go'; break;
+                    case 'jail': spaceTypeClass = 'jail'; break;
+                    case 'property': spaceTypeClass = 'property'; break;
+                    case 'event': spaceTypeClass = 'event'; break;
+                }
+                spaceEl.classList.add(spaceTypeClass);
+
+                let content = `<strong>${space.name}</strong>`;
+                if (space.type === 'property') {
+                    content += `<br>Price: $${Math.round(space.currentPrice)}<br>Rent: $${Math.round(space.currentRent)}`;
+                    if (space.owner !== null) {
+                        content += `<br>Owner: ${players[space.owner].name}`;
+                        if (space.mortgaged) {
+                            content += ' (Mortgaged)';
+                        }
+                    }
+                }
+                spaceEl.innerHTML = content;
+                gameBoardEl.appendChild(spaceEl);
+            });
+            updatePlayerTokens();
+        }
+
+        function updatePlayerTokens() {
+            document.querySelectorAll('.player-token').forEach(token => token.remove()); // Clear old tokens
+            players.forEach(player => {
+                // Ensure player object and its position property exist before accessing
+                if (player && typeof player.position !== 'undefined') {
+                    const spaceEl = document.querySelector(`.board-space[data-index="${player.position}"]`);
+                    if (spaceEl) {
+                        const tokenEl = document.createElement('div');
+                        tokenEl.classList.add('player-token', `player-${player.id + 1}`);
+                        tokenEl.textContent = player.token;
+                        spaceEl.appendChild(tokenEl);
+                    }
+                }
+            });
+
+            // Highlight current player's position - only if players array is populated
+            if (players.length > 0) {
+                document.querySelectorAll('.board-space').forEach(space => {
+                    space.classList.remove('player-1-pos', 'player-2-pos');
+                });
+                document.querySelector(`.board-space[data-index="${players[0].position}"]`).classList.add('player-1-pos');
+                document.querySelector(`.board-space[data-index="${players[1].position}"]`).classList.add('player-2-pos');
+            }
+        }
+
+        function updateUI() {
+            // Only update UI if players array is populated
+            if (players.length === 0) {
+                // Set default values or clear UI if game hasn't started
+                player1MoneyEl.textContent = 'N/A';
+                player1PropertiesEl.textContent = 'N/A';
+                player2MoneyEl.textContent = 'N/A';
+                player2PropertiesEl.textContent = 'N/A';
+                currentPlayerNameEl.textContent = 'N/A';
+                inflationRateEl.textContent = 'N/A';
+                interestRateEl.textContent = 'N/A';
+                return;
+            }
+
+            const currentPlayer = players[currentPlayerIndex];
+            player1MoneyEl.textContent = players[0].money.toFixed(0);
+            player1PropertiesEl.textContent = players[0].properties.length;
+            player2MoneyEl.textContent = players[1].money.toFixed(0);
+            player2PropertiesEl.textContent = players[1].properties.length;
+            currentPlayerNameEl.textContent = currentPlayer.name;
+            inflationRateEl.textContent = `${(inflationRate * 100).toFixed(1)}%`;
+            interestRateEl.textContent = `${(interestRate * 100).toFixed(1)}%`;
+
+            // Update button states
+            const currentSpace = board[currentPlayer.position];
+            buyPropertyBtn.disabled = !diceRolledThisTurn || currentSpace.type !== 'property' || currentSpace.owner !== null || currentPlayer.money < currentSpace.currentPrice;
+
+            // Check if current player owns any properties to mortgage
+            const canMortgage = currentPlayer.properties.some(propIndex => !board[propIndex].mortgaged);
+            mortgageBtn.disabled = !canMortgage;
+
+            // Check if current player has any mortgaged properties to unmortgage
+            const canUnmortgage = currentPlayer.properties.some(propIndex => board[propIndex].mortgaged && currentPlayer.money >= (board[propIndex].basePrice / 2) * (1 + interestRate));
+            unmortgageBtn.disabled = !canUnmortgage;
+
+            rollDiceBtn.disabled = diceRolledThisTurn;
+            endTurnBtn.disabled = !diceRolledThisTurn; // Enable end turn only after rolling
+        }
+
+        function logMessage(message) {
+            const p = document.createElement('p');
+            p.textContent = message;
+            gameLogEl.prepend(p); // Add to top
+            if (gameLogEl.children.length > 20) { // Keep log concise
+                gameLogEl.removeChild(gameLogEl.lastChild);
+            }
+        }
+
+        function showGameOver(message) {
+            gameOverMessage.textContent = message;
+            gameOverModal.classList.remove('hidden');
+            rollDiceBtn.disabled = true;
+            buyPropertyBtn.disabled = true;
+            mortgageBtn.disabled = true;
+            unmortgageBtn.disabled = true;
+            endTurnBtn.disabled = true;
+            gameStarted = false;
+        }
+
+        // --- Game Logic Functions ---
+        function rollDice() {
+            if (!gameStarted || diceRolledThisTurn) return;
+
+            const die1 = Math.floor(Math.random() * 6) + 1;
+            const die2 = Math.floor(Math.random() * 6) + 1;
+            const totalRoll = die1 + die2;
+            diceRollEl.textContent = totalRoll;
+
+            const currentPlayer = players[currentPlayerIndex];
+            logMessage(`${currentPlayer.name} rolled a ${totalRoll} (${die1} + ${die2}).`);
+
+            movePlayer(currentPlayer, totalRoll);
+            diceRolledThisTurn = true;
+            updateUI();
+        }
+
+        function movePlayer(player, steps) {
+            const oldPosition = player.position;
+            player.position = (player.position + steps) % board.length;
+
+            // Pass GO logic (wages are stagnant)
+            if (player.position < oldPosition && player.position !== 0) { // Passed GO
+                logMessage(`${player.name} passed GO! Wages are stagnant, no extra money collected.`);
+            }
+
+            updatePlayerTokens();
+            handleLanding(player);
+        }
+
+        function handleLanding(player) {
+            const currentSpace = board[player.position];
+            logMessage(`${player.name} landed on ${currentSpace.name}.`);
+
+            switch (currentSpace.type) {
+                case 'go':
+                    // Nothing special, just a starting point
+                    break;
+                case 'property':
+                    if (currentSpace.owner === null) {
+                        logMessage(`This property is unowned. Price: $${Math.round(currentSpace.currentPrice)}. ${player.name}, do you want to buy it?`);
+                        buyPropertyBtn.disabled = false; // Enable buy button
+                    } else if (currentSpace.owner !== player.id) {
+                        // Owned by another player
+                        if (!currentSpace.mortgaged) {
+                            const rent = Math.round(currentSpace.currentRent);
+                            logMessage(`${player.name} must pay $${rent} rent to ${players[currentSpace.owner].name}.`);
+                            player.money -= rent;
+                            players[currentSpace.owner].money += rent;
+                            checkBankruptcy(player);
+                        } else {
+                            logMessage(`Property ${currentSpace.name} is mortgaged. No rent due.`);
+                        }
+                    } else {
+                        logMessage(`${player.name} owns this property.`);
+                    }
+                    break;
+                case 'jail':
+                    logMessage(`${player.name} is just visiting Jail.`);
+                    break;
+                case 'event':
+                    if (currentSpace.name === 'Inflation Event') {
+                        logMessage('Inflation Event triggered!');
+                        adjustInflation();
+                    } else if (currentSpace.name === 'Interest Rate Event') {
+                        logMessage('Interest Rate Event triggered!');
+                        adjustInterestRate();
+                    }
+                    break;
+            }
+            updateUI();
+        }
+
+        function buyProperty() {
+            const currentPlayer = players[currentPlayerIndex];
+            const currentSpace = board[currentPlayer.position];
+
+            if (currentSpace.type === 'property' && currentSpace.owner === null && currentPlayer.money >= currentSpace.currentPrice) {
+                currentPlayer.money -= currentSpace.currentPrice;
+                currentSpace.owner = currentPlayer.id;
+                currentPlayer.properties.push(currentPlayer.position);
+                logMessage(`${currentPlayer.name} bought ${currentSpace.name} for $${Math.round(currentSpace.currentPrice)}.`);
+                buyPropertyBtn.disabled = true; // Disable after purchase
+                updateUI();
+            } else {
+                logMessage("Cannot buy property.");
+            }
+        }
+
+        function mortgageProperty() {
+            const currentPlayer = players[currentPlayerIndex];
+            const ownedUnmortgagedProperties = currentPlayer.properties.filter(propIndex => !board[propIndex].mortgaged);
+
+            if (ownedUnmortgagedProperties.length > 0) {
+                // For simplicity, let's mortgage the first available unmortgaged property
+                const propIndexToMortgage = ownedUnmortgagedProperties[0];
+                const property = board[propIndexToMortgage];
+                const mortgageValue = Math.round(property.basePrice / 2); // Mortgage value is half base price
+
+                currentPlayer.money += mortgageValue;
+                property.mortgaged = true;
+                logMessage(`${currentPlayer.name} mortgaged ${property.name} for $${mortgageValue}.`);
+                updateUI();
+            } else {
+                logMessage("No unmortgaged properties to mortgage.");
+            }
+        }
+
+        function unmortgageProperty() {
+            const currentPlayer = players[currentPlayerIndex];
+            const ownedMortgagedProperties = currentPlayer.properties.filter(propIndex => board[propIndex].mortgaged);
+
+            if (ownedMortgagedProperties.length > 0) {
+                // For simplicity, let's unmortgage the first available mortgaged property
+                const propIndexToUnmortgage = ownedMortgagedProperties[0];
+                const property = board[propIndexToUnmortgage];
+                const unmortgageCost = Math.round((property.basePrice / 2) * (1 + interestRate)); // Cost is mortgage value + interest
+
+                if (currentPlayer.money >= unmortgageCost) {
+                    currentPlayer.money -= unmortgageCost;
+                    property.mortgaged = false;
+                    logMessage(`${currentPlayer.name} unmortgaged ${property.name} for $${unmortgageCost}.`);
+                    updateUI();
+                } else {
+                    logMessage(`${currentPlayer.name} does not have enough money to unmortgage ${property.name}. Need $${unmortgageCost}.`);
+                }
+            } else {
+                logMessage("No mortgaged properties to unmortgage.");
+            }
+        }
+
+        function endTurn() {
+            if (!gameStarted || !diceRolledThisTurn) return;
+
+            turnCount++;
+            logMessage(`${players[currentPlayerIndex].name}'s turn ended.`);
+
+            // Check for inflation/interest rate changes at the end of a round (e.g., every 2 turns for 2 players)
+            if (turnCount % players.length === 0) {
+                logMessage('--- End of Round ---');
+                adjustInflation();
+                adjustInterestRate();
+            }
+
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            diceRolledThisTurn = false; // Reset for next player
+            logMessage(`${players[currentPlayerIndex].name}, it's your turn. Roll the dice.`);
+            updateUI();
+        }
+
+        function checkBankruptcy(player) {
+            if (player.money < 0) {
+                logMessage(`${player.name} has gone bankrupt!`);
+                // Player loses all properties
+                player.properties.forEach(propIndex => {
+                    board[propIndex].owner = null;
+                    board[propIndex].mortgaged = false;
+                });
+                player.properties = [];
+                updateUI();
+                showGameOver(`${player.name} went bankrupt. ${players[(player.id + 1) % players.length].name} wins!`);
+            }
+        }
+
+        // --- Economic Mechanics ---
+        function adjustInflation() {
+            const oldInflationRate = inflationRate;
+            // Randomly adjust inflation: between -0.01 and +0.05 (e.g., -1% to +5%)
+            const inflationChange = (Math.random() * 0.06) - 0.01;
+            inflationRate = Math.max(0.005, inflationRate + inflationChange); // Keep inflation at least 0.5%
+
+            logMessage(`Inflation rate changed from ${(oldInflationRate * 100).toFixed(1)}% to ${(inflationRate * 100).toFixed(1)}%.`);
+
+            // Update all property prices and rents
+            board.forEach(space => {
+                if (space.type === 'property') {
+                    // Recalculate based on base price and new inflation rate
+                    space.currentPrice = space.basePrice * (1 + inflationRate);
+                    space.currentRent = space.baseRent * (1 + inflationRate);
+                }
+            });
+            renderBoard(); // Re-render to show updated prices/rents
+            updateUI();
+        }
+
+        function adjustInterestRate() {
+            const oldInterestRate = interestRate;
+            // Randomly adjust interest rate: between -0.005 and +0.02 (e.g., -0.5% to +2%)
+            const interestChange = (Math.random() * 0.025) - 0.005;
+            interestRate = Math.max(0.001, interestRate + interestChange); // Keep interest at least 0.1%
+
+            logMessage(`FED Interest Rate changed from ${(oldInterestRate * 100).toFixed(1)}% to ${(interestRate * 100).toFixed(1)}%.`);
+            updateUI();
+        }
+
+        // --- Event Listeners ---
+        startGameBtn.addEventListener('click', initializeGame);
+        rollDiceBtn.addEventListener('click', rollDice);
+        buyPropertyBtn.addEventListener('click', buyProperty);
+        mortgageBtn.addEventListener('click', mortgageProperty);
+        unmortgageBtn.addEventListener('click', unmortgageProperty);
+        endTurnBtn.addEventListener('click', endTurn);
+        restartGameBtn.addEventListener('click', initializeGame);
+
+        // Initial UI setup on load
+        window.onload = function() {
+            // Initialize UI elements with default or placeholder values before game starts
+            player1MoneyEl.textContent = '1500';
+            player1PropertiesEl.textContent = '0';
+            player2MoneyEl.textContent = '1500';
+            player2PropertiesEl.textContent = '0';
+            currentPlayerNameEl.textContent = 'Player 1'; // Default current player display
+            inflationRateEl.textContent = '2.0%'; // Initial inflation rate
+            interestRateEl.textContent = '1.0%'; // Initial interest rate
+            diceRollEl.textContent = '0'; // Initial dice roll
+
+            logMessage('Welcome to Inflationopoly! Click "Start Game" to begin.');
+            rollDiceBtn.disabled = true;
+            buyPropertyBtn.disabled = true;
+            mortgageBtn.disabled = true;
+            unmortgageBtn.disabled = true;
+            endTurnBtn.disabled = true;
+            startGameBtn.disabled = false;
+
+            // Render an empty board or initial static board if desired,
+            // but avoid calling functions that rely on 'players' array
+            // before 'initializeGame' is called.
+            // A simple static board could be rendered here, or just leave it empty
+            // until 'startGameBtn' is clicked.
+            // For now, we'll let initializeGame() handle the first render.
+        };
+
+    </script>
+</body>
+</html>
