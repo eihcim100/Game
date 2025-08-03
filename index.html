@@ -234,11 +234,12 @@
         margin-top: 1rem;
       }
       .sequence-card {
-        width: 45px;
-        height: 45px;
+        width: 60px; /* Increased width to accommodate values */
+        height: 60px; /* Increased height to accommodate values */
         border-radius: 8px;
         border: 1px solid #555;
         display: flex;
+        flex-direction: column; /* Allow content to stack */
         justify-content: center;
         align-items: center;
         font-size: 1rem;
@@ -246,16 +247,28 @@
         background-color: #333;
         color: #ccc;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        cursor: pointer; /* Indicate clickable */
       }
       .sequence-card.revealed {
         background-color: #D4AF37;
         color: #1a1a1a;
         border-color: #fff;
+        cursor: default; /* Not clickable once revealed */
       }
       .sequence-card.player-choice {
         background-color: #1e63c8;
         color: #fff;
         border-color: #3b82f6;
+        cursor: default; /* Not clickable once chosen */
+      }
+      .sequence-card .case-number {
+          font-size: 0.8rem;
+          color: #888;
+      }
+      .sequence-card.revealed .case-value {
+          font-size: 1.1rem;
+          font-weight: bold;
+          color: #1a1a1a;
       }
 
 
@@ -444,8 +457,8 @@
 
             <div id="deal-or-no-deal-game" class="hidden">
                 <h2>Deal or No Deal</h2>
-                <p>Choose your number (1-20):</p>
-                <input type="number" id="deal-or-no-deal-number" placeholder="Enter Number (1-20)">
+                <p>Choose your case (1-20):</p>
+                <input type="number" id="deal-or-no-deal-number" placeholder="Enter Case Number (1-20)">
                  <p>Place your bet:</p>
                 <input type="number" id="deal-or-no-deal-bet" placeholder="Enter Total Bet Amount">
                 <div class="mt-2 mb-2">
@@ -880,32 +893,45 @@
         }
 
         // --- Deal or No Deal Game functions ---
-        function generateDealOrNoDealSequence() {
-            const numbers = Array.from({length: 20}, (_, i) => i + 1);
-            for (let i = numbers.length - 1; i > 0; i--) {
+
+        // Helper function to shuffle an array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+                [array[i], array[j]] = [array[j], array[i]];
             }
-            return numbers;
+            return array;
         }
 
-        function displayDealOrNoDealSequence(revealedSequence, playerChoice) {
+        // Prize amounts for Deal or No Deal
+        const DEAL_OR_NO_DEAL_PRIZES = [
+            0.01, 1, 5, 10, 25, 50, 75, 100, 200, 300, 400, 500, 750, 1000,
+            5000, 10000, 25000, 50000, 75000, 100000
+        ];
+
+        function displayDealOrNoDealSequence(cases, playerChoice) {
             sequenceContainer.innerHTML = '';
             for (let i = 1; i <= 20; i++) {
+                const caseData = cases.find(c => c.number === i);
                 const numDiv = document.createElement('div');
                 numDiv.classList.add('sequence-card');
-                numDiv.textContent = i;
-                if (i === playerChoice) {
-                    numDiv.classList.add('player-choice');
-                }
-                if (revealedSequence.includes(i)) {
+                numDiv.dataset.caseNumber = i; // Store case number
+                numDiv.dataset.caseValue = caseData ? caseData.value : ''; // Store case value
+
+                let content = `<span class="case-number">${i}</span>`;
+                if (caseData && caseData.revealed) {
                     numDiv.classList.add('revealed');
+                    content += `<span class="case-value">$${caseData.value.toFixed(2)}</span>`;
+                } else if (i === playerChoice) {
+                    numDiv.classList.add('player-choice');
+                } else {
+                    // Only add click listener if not revealed and not player's chosen case
+                    numDiv.onclick = () => revealDealOrNoDealCase(i);
                 }
+                numDiv.innerHTML = content;
                 sequenceContainer.appendChild(numDiv);
             }
         }
-
-        // --- FIXED Deal or No Deal Functions ---
 
         function startDealOrNoDealGame() {
             const chosenNumber = parseInt(dealOrNoDealNumberInput.value);
@@ -913,7 +939,7 @@
             const insuranceSelected = document.getElementById('dond-insurance-checkbox').checked;
 
             if (isNaN(chosenNumber) || chosenNumber < 1 || chosenNumber > 20) {
-                messageBox.textContent = 'Please choose a number between 1 and 20.';
+                messageBox.textContent = 'Please choose a case number between 1 and 20.';
                 return;
             }
             if (totalBetAmount > playerBalance) {
@@ -935,72 +961,127 @@
             addTransaction('bet_placement', -totalBetAmount, `DOND Bet: $${wager.toFixed(2)} (Fee: $${houseFee.toFixed(2)}, Ins: $${insuranceCost.toFixed(2)})`);
             updateBalanceDisplays();
 
-            let sequence = generateDealOrNoDealSequence();
-            // IMPORTANT CHANGE: Remove player's choice from the sequence of numbers to be revealed.
-            sequence = sequence.filter(num => num !== chosenNumber);
+            // Assign prizes to cases randomly
+            let shuffledPrizes = shuffleArray([...DEAL_OR_NO_DEAL_PRIZES]);
+            let allCases = [];
+            for (let i = 1; i <= 20; i++) {
+                allCases.push({
+                    number: i,
+                    value: shuffledPrizes.pop(),
+                    revealed: false
+                });
+            }
+
+            // Find the player's chosen case value
+            const playerCase = allCases.find(c => c.number === chosenNumber);
+            const playerCaseValue = playerCase ? playerCase.value : 0;
 
             dealOrNoDealGame = {
                 playerChoice: chosenNumber,
+                playerCaseValue: playerCaseValue, // Store the value of the player's case
                 wager: wager,
                 insurancePurchased: insuranceSelected,
-                sequence: sequence, // Now has 19 numbers
+                allCases: allCases, // All cases with their values
+                unopenedCases: allCases.filter(c => c.number !== chosenNumber), // Cases available to open
                 round: 0,
-                revealedSequence: [],
+                revealedValues: [], // Values revealed so far
             };
 
             startSequenceButton.disabled = true;
-            dealOrNoDealResultDisplay.textContent = 'Round 1 starting...';
-            displayDealOrNoDealSequence([], chosenNumber);
-            setTimeout(runDealOrNoDealRound, 1500);
+            dealOrNoDealResultDisplay.textContent = 'Select cases to reveal...';
+            displayDealOrNoDealSequence(dealOrNoDealGame.allCases, chosenNumber);
+            // Start the first round of revealing cases
+            setTimeout(startDealOrNoDealRound, 1500);
         }
 
-        function runDealOrNoDealRound() {
+        function startDealOrNoDealRound() {
             dealOrNoDealGame.round++;
-            // New reveal schedule: 5, 5, 5, 4. Total 19.
-            const revealSchedule = { 1: 5, 2: 5, 3: 5, 4: 4 };
-            const numbersToReveal = revealSchedule[dealOrNoDealGame.round];
+            const revealSchedule = { 1: 6, 2: 5, 3: 4, 4: 3, 5: 2 }; // Number of cases to reveal per round
+            const casesToOpenThisRound = revealSchedule[dealOrNoDealGame.round];
 
-            let revealedThisRound = 0;
-            dealOrNoDealResultDisplay.textContent = `Round ${dealOrNoDealGame.round}: Revealing ${numbersToReveal} numbers...`;
+            if (!casesToOpenThisRound) {
+                // This means all rounds of revealing are done, and no deal was taken.
+                // The game ends with the player winning their chosen case value.
+                endDealOrNoDealGame(true, dealOrNoDealGame.playerCaseValue, `You rejected all offers! Your case (${dealOrNoDealGame.playerChoice}) contained $${dealOrNoDealGame.playerCaseValue.toFixed(2)}.`);
+                return;
+            }
 
-            const revealInterval = setInterval(() => {
-                if (revealedThisRound >= numbersToReveal || dealOrNoDealGame.sequence.length === 0) {
-                    clearInterval(revealInterval);
-
-                    // Check for win condition (all other numbers revealed)
-                    if (dealOrNoDealGame.sequence.length === 0) {
-                         const winnings = dealOrNoDealGame.wager * 20;
-                         dealOrNoDealResultDisplay.textContent = `Your number, ${dealOrNoDealGame.playerChoice}, was the last one standing!`;
-                         handleGameEnd('Deal or No Deal', true, winnings, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased, `You win the 20x jackpot!`);
-                         resetDealOrNoDealUI();
-                         return;
-                    }
-
-                    // Offer a deal if it's not the final round of reveals.
-                    if (dealOrNoDealGame.round < 4) {
-                        offerDeal();
-                    } else {
-                        // This is after the final reveal, the game is over, and the win condition above should have been met.
-                        dealOrNoDealResultDisplay.textContent = "Something went wrong in the final round.";
-                    }
-                    return;
+            messageBox.textContent = `Round ${dealOrNoDealGame.round}: Select ${casesToOpenThisRound} cases to reveal.`;
+            dealOrNoDealResultDisplay.textContent = ''; // Clear previous round result
+            dealOrNoDealOptions.classList.add('hidden'); // Hide deal options
+            
+            // Enable clicking on unrevealed cases that are not the player's choice
+            const caseElements = document.querySelectorAll('.sequence-card');
+            caseElements.forEach(card => {
+                const caseNum = parseInt(card.dataset.caseNumber);
+                const caseData = dealOrNoDealGame.allCases.find(c => c.number === caseNum);
+                if (caseNum !== dealOrNoDealGame.playerChoice && !caseData.revealed) {
+                    card.classList.remove('hidden'); // Ensure they are visible
+                    card.onclick = () => revealDealOrNoDealCase(caseNum);
                 }
+            });
 
-                const nextNumber = dealOrNoDealGame.sequence.pop();
-                dealOrNoDealGame.revealedSequence.push(nextNumber);
-                revealedThisRound++;
-                displayDealOrNoDealSequence(dealOrNoDealGame.revealedSequence, dealOrNoDealGame.playerChoice);
-            }, 500);
+            dealOrNoDealGame.casesToOpenThisRound = casesToOpenThisRound;
         }
+
+        function revealDealOrNoDealCase(caseNumber) {
+            if (dealOrNoDealGame.casesToOpenThisRound <= 0) {
+                messageBox.textContent = "You've revealed enough cases for this round. Waiting for the banker's offer...";
+                return;
+            }
+            if (caseNumber === dealOrNoDealGame.playerChoice) {
+                messageBox.textContent = "You cannot open your own chosen case!";
+                return;
+            }
+
+            const caseToReveal = dealOrNoDealGame.allCases.find(c => c.number === caseNumber);
+            if (caseToReveal && !caseToReveal.revealed) {
+                caseToReveal.revealed = true;
+                dealOrNoDealGame.revealedValues.push(caseToReveal.value);
+                dealOrNoDealGame.unopenedCases = dealOrNoDealGame.unopenedCases.filter(c => c.number !== caseNumber);
+
+                displayDealOrNoDealSequence(dealOrNoDealGame.allCases, dealOrNoDealGame.playerChoice);
+                dealOrNoDealGame.casesToOpenThisRound--;
+
+                messageBox.textContent = `Case ${caseNumber} revealed: $${caseToReveal.value.toFixed(2)}. ${dealOrNoDealGame.casesToOpenThisRound} more to open this round.`;
+
+                if (dealOrNoDealGame.casesToOpenThisRound <= 0) {
+                    // All cases for the round revealed, now offer a deal
+                    setTimeout(offerDeal, 1500);
+                }
+            } else {
+                messageBox.textContent = "That case has already been revealed or is invalid.";
+            }
+        }
+
 
         function offerDeal() {
-            // New payout multipliers for rounds 1, 2, and 3
-            const payoutMultipliers = [0, 1.5, 2.5, 4.0]; // Index 0 is unused, 1-3 for rounds
-            const multiplier = payoutMultipliers[dealOrNoDealGame.round];
-            const offerAmount = dealOrNoDealGame.wager * multiplier;
-            const remainingToReveal = dealOrNoDealGame.sequence.length;
+            // Calculate average of remaining unopened cases (including player's case)
+            const remainingValues = dealOrNoDealGame.allCases
+                                    .filter(c => !c.revealed)
+                                    .map(c => c.value);
             
-            messageBox.textContent = `Round ${dealOrNoDealGame.round} is over. ${remainingToReveal} numbers remain. The banker offers you $${offerAmount.toFixed(2)}.`;
+            if (remainingValues.length === 0) {
+                // Should not happen if game logic is correct, but as a safeguard
+                endDealOrNoDealGame(false, 0, "No cases left to make an offer. Something went wrong.");
+                return;
+            }
+
+            const sumRemaining = remainingValues.reduce((sum, val) => sum + val, 0);
+            const averageRemaining = sumRemaining / remainingValues.length;
+
+            // Banker's offer calculation (can be adjusted for difficulty)
+            // Example: Offer is a percentage of the average, increasing by round
+            const offerMultipliers = {
+                1: 0.3, // Round 1: 30% of average
+                2: 0.45, // Round 2: 45% of average
+                3: 0.6, // Round 3: 60% of average
+                4: 0.8, // Round 4: 80% of average
+                5: 0.95 // Round 5: 95% of average (last offer before final reveal)
+            };
+            const offerAmount = averageRemaining * (offerMultipliers[dealOrNoDealGame.round] || 0);
+
+            messageBox.textContent = `Banker's Offer: $${offerAmount.toFixed(2)}. Do you accept?`;
             dealOrNoDealOptions.classList.remove('hidden');
             dealOrNoDealOptions.innerHTML = `
                 <button id="accept-deal-button" style="background-color: #16a34a; border-color: #22c55e;">Take Deal ($${offerAmount.toFixed(2)})</button>
@@ -1008,16 +1089,19 @@
             `;
 
             document.getElementById('accept-deal-button').onclick = () => {
-                handleGameEnd('Deal or No Deal', true, offerAmount, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased, `You accepted the deal.`);
-                resetDealOrNoDealUI();
+                endDealOrNoDealGame(true, offerAmount, `You accepted the deal of $${offerAmount.toFixed(2)}.`);
             };
             document.getElementById('reject-deal-button').onclick = () => {
                 dealOrNoDealOptions.classList.add('hidden');
                 messageBox.textContent = `You rejected the deal. Starting round ${dealOrNoDealGame.round + 1}...`;
-                setTimeout(runDealOrNoDealRound, 1500);
+                setTimeout(startDealOrNoDealRound, 1500);
             };
         }
 
+        function endDealOrNoDealGame(playerTookDeal, winnings, message) {
+            handleGameEnd('Deal or No Deal', true, winnings, dealOrNoDealGame.wager, dealOrNoDealGame.insurancePurchased, message);
+            resetDealOrNoDealUI();
+        }
 
         // --- Action button functions ---
         function withdrawFunds() {
