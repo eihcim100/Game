@@ -146,12 +146,13 @@
 
 <script>
     const CONFIG = {
-        STORAGE_KEY: 'IF_State_Payout_Tracker_v3',
+        STORAGE_KEY: 'IF_State_Payout_Tracker_v4',
         INITIAL_PREMIUM: 199,
+        PREMIUM_M6_TARGET: 129, // New milestone 1
+        PREMIUM_M12_TARGET: 79, // New milestone 2
         TITANIUM_PREMIUM: 349,
         TITANIUM_PAYOUT: 1000,
         BASE_PREMIUM_FLOOR: 49,
-        PREMIUM_DROP: 10,
         ACF_PER_MONTH: 30,
         ODDS_BOOST: 5,
         M1_REFUND_CHANCE: 0.20,
@@ -301,21 +302,38 @@
         state.totalPaid += amountToCharge;
 
         if (!state.isPaid) {
+            // Activation Logic
             state.isPaid = true;
             if (state.monthsPaid === 0) {
                 state.monthsPaid = 1;
                 state.acfBalance += CONFIG.ACF_PER_MONTH;
+                
+                // Initialize premium logic (already handled by init, but double check)
                 const baseStart = state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
-                state.premium = Math.max(CONFIG.BASE_PREMIUM_FLOOR, baseStart - CONFIG.PREMIUM_DROP);
+                state.premium = baseStart; // Ensure we start at base
+                
                 msg = `Initial premium of $${amountToCharge} paid. Account activated.`;
             } else {
                 msg = `Payment of $${amountToCharge} processed. Account is active.`;
             }
         } else {
+            // Standard Monthly Progression
             state.monthsPaid++;
             state.acfBalance += CONFIG.ACF_PER_MONTH;
             state.lastClaimTime = 0;
-            state.premium = Math.max(CONFIG.BASE_PREMIUM_FLOOR, state.premium - CONFIG.PREMIUM_DROP);
+            
+            // --- NEW PREMIUM REDUCTION LOGIC ---
+            // Applies only to non-Titanium users for now, or standard schedule
+            if (state.tierId !== 6) {
+                if (state.monthsPaid === 6) {
+                    state.premium = CONFIG.PREMIUM_M6_TARGET;
+                    extraBonusMsg += `<br><br><span class='text-blue-400 font-bold'>LOYALTY REWARD:</span> Premium dropped to $${CONFIG.PREMIUM_M6_TARGET}/mo!`;
+                } else if (state.monthsPaid === 12) {
+                    state.premium = CONFIG.PREMIUM_M12_TARGET;
+                    extraBonusMsg += `<br><br><span class='text-blue-400 font-bold'>MAX LOYALTY:</span> Premium dropped to $${CONFIG.PREMIUM_M12_TARGET}/mo!`;
+                }
+            }
+            // -----------------------------------
             
             if (state.monthsPaid === CONFIG.M6_MONTH && !state.m6BonusPaid) {
                 const bonus = Math.floor(state.acfBalance * CONFIG.M6_BONUS_PERCENT);
@@ -351,14 +369,17 @@
             
             state.totalReceived += payout; 
 
+            // --- PREMIUM RESET LOGIC ---
             const baseStart = state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
-            state.premium = baseStart;
+            state.premium = baseStart; 
+            // ---------------------------
+
             state.monthsPaid = 0;
             state.acfBalance = 0;
             state.lastClaimTime = Date.now();
             state.m6BonusPaid = false;
             state.isFrozen = false;
-            showModal("✅ Request Approved", `Emergency Funds of $${payout} have been transferred.`);
+            showModal("✅ Request Approved", `Emergency Funds of $${payout} have been transferred.<br><br><span class="text-xs text-red-400">Account reset to Month 0. Premium returned to base rate.</span>`);
         } else {
             let refund = state.acfBalance;
             if (state.monthsPaid === 1 && Math.random() <= CONFIG.M1_REFUND_CHANCE) refund += CONFIG.M1_REFUND_AMOUNT;
