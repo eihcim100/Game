@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMake Pro | Silent Liquidity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --panel-dark: #18181b;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --text-muted: #a1a1aa;
+        }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'IBM Plex Mono', monospace; }
+        .panel { background-color: var(--panel-dark); border: 1px solid #27272a; }
+        
+        .ticker-wrap { width: 100%; overflow: hidden; white-space: nowrap; background: #000; padding: 4px 0; border-bottom: 1px solid #333; }
+        .ticker { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+        .btn-trade { transition: all 0.1s; position: relative; overflow: hidden; }
+        .btn-trade:active { transform: scale(0.98); }
+        
+        /* Slow transitions */
+        .value-flash-up { color: #22c55e; text-shadow: 0 0 15px rgba(34, 197, 94, 0.8); transition: color 0.5s ease; }
+        .value-flash-down { color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.8); transition: color 0.5s ease; }
+        .value-neutral { color: white; transition: color 0.5s ease; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Stock Ticker -->
+    <div class="ticker-wrap mono text-xs">
+        <div class="ticker">
+            <span class="text-green-500 mr-4">MMP ▲ 142.05</span>
+            <span class="text-red-500 mr-4">NDQ ▼ 15,200.10</span>
+            <span class="text-green-500 mr-4">SPX ▲ 4,450.22</span>
+            <span class="text-green-500 mr-4">BTC ▲ 64,200.00</span>
+            <span class="text-red-500 mr-4">EUR/USD ▼ 1.05</span>
+            <span class="text-green-500 mr-4">MMP ▲ 142.05</span>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="flex-1 p-2 md:p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Header & Chart (Left - 8 Cols) -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+            <div class="flex justify-between items-end border-b border-gray-800 pb-4">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+                        MoneyMake <span class="text-green-500">Pro</span>
+                        <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-1 rounded-full align-middle">LIVE MARKET</span>
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1 mono">SYMBOL: MMP-USD • 1.5Hz UPDATE RATE</p>
+                </div>
+                <div class="text-right">
+                    <button onclick="showOddsModal()" class="text-xs text-gray-400 hover:text-white underline decoration-dotted">
+                        Fairness & Odds Disclaimer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="panel rounded-xl p-1 relative h-96 shadow-2xl overflow-hidden group">
+                <canvas id="stockChart"></canvas>
+                <!-- Live Price Overlay on Chart -->
+                <div class="absolute top-4 left-4 bg-black/80 backdrop-blur px-4 py-2 rounded border border-gray-800">
+                    <div class="text-xs text-gray-400">MARKET PRICE</div>
+                    <div id="chartPrice" class="text-2xl font-bold mono text-green-500">$0.00</div>
+                    <div id="trendIndicator" class="text-[10px] font-bold mt-1 text-gray-500">WAITING FOR OPEN</div>
+                </div>
+            </div>
+
+            <!-- Portfolio Summary -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="panel p-4 rounded-lg border-l-4 border-gray-600">
+                    <div class="text-xs text-gray-500 mb-1">TOTAL INVESTED</div>
+                    <div id="displayTotalPaid" class="text-xl font-bold mono">$0.00</div>
+                </div>
+                <div class="panel p-4 rounded-lg border-l-4 border-green-600">
+                    <div class="text-xs text-gray-500 mb-1">REALIZED PROFIT</div>
+                    <div id="displayTotalReceived" class="text-xl font-bold mono text-green-400">$0.00</div>
+                </div>
+                <div class="panel p-4 rounded-lg border-l-4 border-blue-600">
+                    <div class="text-xs text-gray-500 mb-1">EQUITY (SAFETY NET)</div>
+                    <div id="displayEquity" class="text-xl font-bold mono text-blue-400">$0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trading Terminal (Right - 4 Cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- Dynamic Value Panel (Only shows when position is active) -->
+            <div id="valuePanel" class="panel rounded-xl p-6 bg-gradient-to-br from-gray-900 to-black border-green-500/30 hidden">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-green-400 animate-pulse">● MARKET OPEN</span>
+                    <span id="holdingTime" class="text-xs mono text-gray-400">T+0s</span>
+                </div>
+                <div class="text-center py-4">
+                    <div class="text-sm text-gray-400 mb-1">CURRENT SELL PRICE</div>
+                    <div id="marketValueDisplay" class="text-5xl font-bold mono text-white tracking-tighter transition-colors duration-500">$0.00</div>
+                    <div id="marketValueSub" class="text-xs text-gray-500 mt-2">Price fluctuates $0 - Max Ceiling</div>
+                </div>
+            </div>
+
+            <!-- Order Controls -->
+            <div class="panel rounded-xl p-6 flex-1 flex flex-col">
+                <div class="mb-6">
+                    <label class="text-xs text-gray-500 block mb-2 uppercase font-bold">Strategy Tier (Max Target)</label>
+                    <select id="tierSelect" onchange="changeTier(this.value)" class="w-full bg-black border border-gray-700 text-white p-3 rounded text-sm focus:border-green-500 outline-none mono">
+                        <!-- JS Populated -->
+                    </select>
+                </div>
+
+                <div class="space-y-4 mt-auto">
+                    <!-- Buy Button -->
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>BUY ORDER</span>
+                            <span id="costDisplay" class="text-white font-bold">$199.00</span>
+                        </div>
+                        <button id="btnBuy" onclick="payBill()" class="btn-trade w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-green-900/20">
+                            BUY STOCK
+                        </button>
+                    </div>
+
+                    <!-- Sell Button -->
+                    <div class="pt-4 border-t border-gray-800">
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>SELL ORDER (MARKET)</span>
+                            <span id="targetDisplay" class="text-gray-500 font-bold">--</span>
+                        </div>
+                        <button id="btnSell" onclick="executeSell()" disabled class="btn-trade w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed">
+                            NO POSITION
+                        </button>
+                    </div>
+
+                    <!-- Liquidate -->
+                    <button id="btnLiquidate" onclick="cashOut()" disabled class="w-full text-xs text-gray-500 hover:text-red-400 py-2 border border-transparent hover:border-red-900/30 rounded transition">
+                        Liquidate Entire Account
+                    </button>
+                </div>
+                
+                <div class="mt-4 text-[10px] text-center text-gray-600 uppercase">
+                    <!-- Blanked out visual text about rollover -->
+                    &nbsp;
+                </div>
+
+                <!-- Simulation Tools -->
+                <div class="mt-6 pt-4 border-t border-gray-800">
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="hedgeCheck" onchange="toggleHedge()" class="mr-2 accent-green-500" disabled>
+                            <span class="text-xs text-gray-400">Hedge Mode (-$20 cost)</span>
+                        </label>
+                        <button onclick="hardReset()" class="text-[10px] text-gray-600 hover:text-white uppercase">Reset Sim</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-gray-900 border border-gray-700 rounded-xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-lg font-bold text-white">Notice</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-white">&times;</button>
+            </div>
+            <div id="modalBody" class="text-gray-300 text-sm mb-6 leading-relaxed"></div>
+            <div id="modalActions" class="flex gap-3">
+                <button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded font-bold">Close</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const CONFIG = {
+        STORAGE_KEY: 'MMP_Sim_v4_Silent',
+        INITIAL_PREMIUM: 199,
+        TITANIUM_PREMIUM: 349,
+        TITANIUM_PAYOUT: 1000,
+        BASE_PREMIUM_FLOOR: 49,
+        PREMIUM_DROP: 10,
+        ACF_PER_MONTH: 30, 
+        ODDS_BOOST: 5,
+        YEAR_ONE_BONUS: 300,
+        M6_BONUS_PERCENT: 0.50,
+        FREEZE_DISCOUNT: 20,
+        TITANIUM_SIGNING_BONUS: 250,
+        TIERS: [
+            { id: 1, label: 'Micro Cap ($150 Target)', payout: 150, baseOdds: 75 },
+            { id: 2, label: 'Small Cap ($200 Target)', payout: 200, baseOdds: 60 },
+            { id: 3, label: 'Mid Cap ($300 Target)', payout: 300, baseOdds: 40 },
+            { id: 4, label: 'Large Cap ($400 Target)', payout: 400, baseOdds: 30 },
+            { id: 5, label: 'Mega Cap ($500 Target)', payout: 500, baseOdds: 20 },
+            { id: 6, label: 'IPO Access ($1,000 Target)', payout: 1000, baseOdds: 20 }
+        ]
+    };
+
+    let state = {
+        tierId: 5,
+        premium: CONFIG.INITIAL_PREMIUM,
+        monthsPaid: 0,
+        isPaid: false,
+        acfBalance: 0,
+        m6BonusPaid: false,
+        isFrozen: false,
+        totalPaid: 0,
+        totalReceived: 0,
+        hiddenSavingsFund: 0, // INTERNAL ONLY
+        
+        currentTradeOutcome: null, 
+        currentBaseMax: 0, 
+        tradeStartTime: null,
+        currentTickerValue: 0 
+    };
+
+    let chart;
+    function initChart() {
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
+        gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(40).fill(''),
+                datasets: [{
+                    data: Array(40).fill(0),
+                    borderColor: '#22c55e',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { 
+                    x: { display: false }, 
+                    y: { display: false, grid: { display: false }, min: 0 } 
+                },
+                animation: { duration: 600, easing: 'linear' }
+            }
+        });
+        
+        setInterval(updateTicker, 670);
+    }
+
+    // --- MARKET LOGIC (Includes Silent Fund) ---
+    function updateTicker() {
+        if(!chart) return;
+        
+        let displayVal = 0;
+        const trendEl = document.getElementById('trendIndicator');
+        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        
+        if (state.isPaid && state.currentTradeOutcome) {
+            
+            // Calculate Current Ceiling: Base Win + Hidden Savings
+            const currentCeiling = state.currentBaseMax + state.hiddenSavingsFund;
+            
+            const r = Math.random();
+            // 70% chance upper half, 30% lower half
+            if (r > 0.3) {
+                 displayVal = currentCeiling * (0.5 + (Math.random() * 0.5));
+            } else {
+                 displayVal = currentCeiling * (Math.random() * 0.5);
+            }
+            
+            if(displayVal > currentCeiling) displayVal = currentCeiling;
+            if(displayVal < 0) displayVal = 0;
+            
+            if(state.currentTradeOutcome === 'WIN') {
+                trendEl.innerText = "MARKET: BULLISH";
+                trendEl.className = "text-[10px] font-bold mt-1 text-green-400";
+                chart.data.datasets[0].borderColor = '#22c55e'; 
+            } else {
+                trendEl.innerText = "MARKET: BEARISH";
+                trendEl.className = "text-[10px] font-bold mt-1 text-yellow-500";
+                chart.data.datasets[0].borderColor = '#eab308'; 
+            }
+
+        } else {
+            displayVal = 0;
+            trendEl.innerText = "MARKET CLOSED";
+            trendEl.className = "text-[10px] font-bold mt-1 text-gray-600";
+            chart.data.datasets[0].borderColor = '#333';
+        }
+
+        state.currentTickerValue = Math.floor(displayVal); 
+
+        const currentData = chart.data.datasets[0].data;
+        currentData.shift();
+        currentData.push(displayVal);
+        
+        if (state.isPaid) {
+             const ceiling = state.currentBaseMax + state.hiddenSavingsFund;
+             chart.options.scales.y.max = Math.max(10, ceiling * 1.2); 
+        } else {
+             chart.options.scales.y.max = 10;
+        }
+        
+        chart.update();
+        updatePriceDisplay(displayVal);
+    }
+
+    let lastDisplayPrice = 0;
+    function updatePriceDisplay(val) {
+        const el = document.getElementById('chartPrice');
+        const valEl = document.getElementById('marketValueDisplay');
+        const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+        
+        const txt = fmt.format(val);
+        el.innerText = txt;
+        valEl.innerText = txt;
+        
+        if (val > lastDisplayPrice) {
+            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-up";
+        } else if (val < lastDisplayPrice) {
+            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-down";
+        } else {
+            valEl.className = "text-5xl font-bold mono tracking-tighter value-neutral";
+        }
+        
+        lastDisplayPrice = val;
+
+        if (state.isPaid) {
+            const secs = Math.floor((Date.now() - state.tradeStartTime)/1000);
+            document.getElementById('holdingTime').innerText = `T+${secs}s`;
+        }
+    }
+
+    function init() {
+        const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+        if (saved) state = { ...state, ...JSON.parse(saved) };
+        initChart();
+        render();
+    }
+    
+    function save() { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); }
+
+    function getOdds() {
+        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        const bonus = state.monthsPaid * CONFIG.ODDS_BOOST;
+        return Math.min(100, tier.baseOdds + bonus);
+    }
+
+    function getBill() {
+        if (!state.isPaid && state.monthsPaid === 0) return state.premium;
+        let bill = state.premium;
+        if (state.isFrozen) bill = Math.max(CONFIG.BASE_PREMIUM_FLOOR, bill - CONFIG.FREEZE_DISCOUNT);
+        return bill;
+    }
+
+    window.payBill = () => {
+        const cost = getBill();
+        state.totalPaid += cost;
+        state.isPaid = true;
+        state.tradeStartTime = Date.now();
+        
+        const odds = getOdds();
+        const win = Math.random() * 100 <= odds;
+        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        
+        state.currentTradeOutcome = win ? 'WIN' : 'LOSS';
+        
+        if (win) {
+            state.currentBaseMax = tier.payout;
+        } else {
+            state.currentBaseMax = state.acfBalance;
+        }
+        
+        if (state.monthsPaid === 0) {
+            state.monthsPaid = 1;
+            state.acfBalance += CONFIG.ACF_PER_MONTH;
+            const start = state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
+            state.premium = Math.max(CONFIG.BASE_PREMIUM_FLOOR, start - CONFIG.PREMIUM_DROP);
+        } else {
+            state.monthsPaid++;
+            state.acfBalance += CONFIG.ACF_PER_MONTH;
+            state.premium = Math.max(CONFIG.BASE_PREMIUM_FLOOR, state.premium - CONFIG.PREMIUM_DROP);
+            
+            if (state.monthsPaid === 6 && !state.m6BonusPaid) {
+                const bonus = Math.floor(state.acfBalance * CONFIG.M6_BONUS_PERCENT);
+                state.acfBalance -= bonus;
+                state.totalReceived += bonus;
+                state.m6BonusPaid = true;
+                setTimeout(() => showModal("DIVIDEND", `6-Month Dividend of $${bonus} added to realized profit.`), 500);
+            }
+            if (state.monthsPaid === 12) {
+                state.acfBalance += CONFIG.YEAR_ONE_BONUS;
+                setTimeout(() => showModal("BONUS", `Loyalty bonus of $${CONFIG.YEAR_ONE_BONUS} added to Equity.`), 500);
+            }
+        }
+
+        state.isFrozen = false;
+        save();
+        render();
+    };
+
+    window.executeSell = () => {
+        if (!state.isPaid) return;
+        
+        const capturedPrice = state.currentTickerValue;
+        state.totalReceived += capturedPrice;
+        
+        // --- SILENT SAVINGS FUND LOGIC ---
+        // We still do the math, but we don't tell the user.
+        const diff = capturedPrice - state.currentBaseMax;
+        
+        if (diff < 0) {
+            // Under-collected, add to silent fund
+            state.hiddenSavingsFund += Math.abs(diff);
+        } else {
+            // Over-collected, remove from silent fund
+            state.hiddenSavingsFund = Math.max(0, state.hiddenSavingsFund - diff);
+        }
+        
+        state.isPaid = false;
+        state.currentTradeOutcome = null;
+        state.tradeStartTime = null;
+        state.premium = state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
+        state.monthsPaid = 0;
+        state.acfBalance = 0;
+        state.m6BonusPaid = false;
+        state.currentBaseMax = 0;
+
+        save();
+        render();
+        // Updated modal: Just the price. No savings fund info.
+        showModal("ORDER EXECUTED", `Sold at market price.<br><br><span class="text-4xl font-bold text-green-400">$${capturedPrice.toFixed(2)}</span>`);
+    };
+
+    window.cashOut = () => {
+        const currentEquity = state.acfBalance;
+        showModal("LIQUIDATE ACCOUNT", `Close account and withdraw Equity?<br><br>Equity Value: <span class="text-blue-400 font-bold">$${currentEquity.toFixed(2)}</span>`, `<div class="flex gap-2 w-full"><button onclick="closeModal()" class="flex-1 bg-gray-700 p-2 rounded">CANCEL</button><button onclick="confirmLiquidate(${currentEquity})" class="flex-1 bg-red-600 p-2 rounded font-bold">LIQUIDATE</button></div>`);
+    };
+
+    window.confirmLiquidate = (val) => {
+        state.totalReceived += val;
+        hardReset();
+        showModal("ACCOUNT CLOSED", `Funds transferred: $${val.toFixed(2)}`);
+    }
+
+    window.hardReset = () => {
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        state = { 
+            tierId: 5, premium: CONFIG.INITIAL_PREMIUM, monthsPaid: 0, isPaid: false, 
+            acfBalance: 0, m6BonusPaid: false, totalPaid: 0, totalReceived: 0, hiddenSavingsFund: 0,
+            currentTradeOutcome: null, tradeStartTime: null 
+        };
+        save();
+        render();
+    }
+
+    window.showOddsModal = () => {
+        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        const odds = getOdds();
+        // Updated text to remove mention of Hidden Fund
+        showModal("MARKET DATA", 
+            `<b>WIN PROBABILITY:</b> ${odds}%<br>
+            <b>TIER TARGET:</b> $${tier.payout}<br>
+            <b>CURRENT EQUITY:</b> $${state.acfBalance}<br><br>
+            <span class="text-xs text-gray-400">
+            Probability increases +${CONFIG.ODDS_BOOST}% for every consecutive month held.
+            </span>`);
+    };
+
+    window.toggleHedge = () => {
+        state.isFrozen = document.getElementById('hedgeCheck').checked;
+        save();
+        render();
+    };
+
+    window.changeTier = (id) => {
+        if(state.isPaid) return alert("Cannot change strategy while position is open.");
+        state.tierId = parseInt(id);
+        save();
+        render();
+    };
+
+    function render() {
+        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        const bill = getBill();
+        const sel = document.getElementById('tierSelect');
+        if(sel.children.length === 0) sel.innerHTML = CONFIG.TIERS.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+        sel.value = state.tierId;
+        sel.disabled = state.isPaid;
+
+        document.getElementById('displayTotalPaid').innerText = `$${state.totalPaid.toFixed(2)}`;
+        document.getElementById('displayTotalReceived').innerText = `$${state.totalReceived.toFixed(2)}`;
+        document.getElementById('displayEquity').innerText = `$${state.acfBalance.toFixed(2)}`;
+        document.getElementById('targetDisplay').innerText = `$${tier.payout}.00`;
+        document.getElementById('costDisplay').innerText = `$${bill}.00`;
+
+        const valuePanel = document.getElementById('valuePanel');
+        const btnBuy = document.getElementById('btnBuy');
+        const btnSell = document.getElementById('btnSell');
+        const btnLiquidate = document.getElementById('btnLiquidate');
+
+        if (state.isPaid) {
+            valuePanel.classList.remove('hidden');
+            btnBuy.innerText = `ADD TO POSITION ($${bill})`;
+            btnBuy.classList.replace('bg-green-600', 'bg-blue-600');
+            btnSell.innerText = "SELL NOW (MARKET)";
+            btnSell.disabled = false;
+            btnSell.className = "btn-trade w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-red-900/20 animate-pulse";
+            btnLiquidate.disabled = true;
+        } else {
+            valuePanel.classList.add('hidden');
+            btnBuy.innerText = state.monthsPaid === 0 ? "BUY STOCK (OPEN POSITION)" : "RE-ENTER MARKET";
+            btnBuy.classList.replace('bg-blue-600', 'bg-green-600');
+            btnSell.innerText = "NO POSITION";
+            btnSell.disabled = true;
+            btnSell.className = "btn-trade w-full bg-gray-800 text-gray-600 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed";
+            btnLiquidate.disabled = false;
+        }
+        
+        document.getElementById('hedgeCheck').disabled = true;
+        document.getElementById('hedgeCheck').parentElement.classList.add('opacity-50');
+    }
+
+    function showModal(title, body, actions = null) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalBody').innerHTML = body;
+        document.getElementById('modalActions').innerHTML = actions || `<button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded font-bold">Close</button>`;
+        document.getElementById('modalOverlay').classList.remove('hidden');
+    }
+
+    window.closeModal = () => document.getElementById('modalOverlay').classList.add('hidden');
+
+    init();
+</script>
+</body>
+</html>
