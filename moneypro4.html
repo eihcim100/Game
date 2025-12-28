@@ -26,7 +26,6 @@
         .btn-trade { transition: all 0.1s; position: relative; overflow: hidden; }
         .btn-trade:active { transform: scale(0.98); }
         
-        /* Smooth transitions for values */
         .value-text { transition: color 0.5s ease; }
     </style>
 </head>
@@ -180,7 +179,7 @@
 
 <script>
     const CONFIG = {
-        STORAGE_KEY: 'MMP_Sim_v5_Stable',
+        STORAGE_KEY: 'MMP_Sim_v5_1_StableFix',
         INITIAL_PREMIUM: 199,
         TITANIUM_PREMIUM: 349,
         TITANIUM_PAYOUT: 1000,
@@ -237,7 +236,7 @@
                     backgroundColor: gradient,
                     borderWidth: 2,
                     pointRadius: 0,
-                    tension: 0.4, // Smooth bezier curves
+                    tension: 0.4, 
                     fill: true
                 }]
             },
@@ -253,11 +252,10 @@
             }
         });
         
-        // 1.5Hz Update Rate
         setInterval(updateTicker, 670);
     }
 
-    // --- RANDOM WALK MARKET LOGIC ---
+    // --- MARKET LOGIC ---
     function updateTicker() {
         if(!chart) return;
         
@@ -266,28 +264,20 @@
         
         if (state.isPaid && state.currentTradeOutcome) {
             
-            // 1. Calculate the Hard Ceiling
             const currentCeiling = state.currentBaseMax + state.hiddenSavingsFund;
             
-            // 2. Define Step Size (Volatility)
-            // Limit movement to 10% of the total range per tick
-            const maxStep = currentCeiling * 0.10;
-            
-            // 3. Random Walk Calculation
-            // Generate a random step between -10% and +10%
+            // Limit movement to 10% of range per tick
+            const maxStep = Math.max(1, currentCeiling * 0.10); // Ensure at least 1 step
             let step = (Math.random() * maxStep * 2) - maxStep;
             
-            // 4. Apply Step to Previous Value
             let newVal = state.currentTickerValue + step;
             
-            // 5. Hard Clamp (Floor: 0, Ceiling: Limit)
+            // Clamp
             if(newVal > currentCeiling) newVal = currentCeiling;
             if(newVal < 0) newVal = 0;
             
-            // Update State
             state.currentTickerValue = Math.floor(newVal); 
             
-            // UI Feedback
             if(state.currentTradeOutcome === 'WIN') {
                 trendEl.innerText = "MARKET: BULLISH";
                 trendEl.className = "text-[10px] font-bold mt-1 text-green-400";
@@ -305,12 +295,10 @@
             chart.data.datasets[0].borderColor = '#333';
         }
 
-        // Update Chart History
         const currentData = chart.data.datasets[0].data;
         currentData.shift();
         currentData.push(state.currentTickerValue);
         
-        // Dynamic Scaling
         if (state.isPaid) {
              const ceiling = state.currentBaseMax + state.hiddenSavingsFund;
              chart.options.scales.y.max = Math.max(10, ceiling * 1.2); 
@@ -332,7 +320,6 @@
         el.innerText = txt;
         valEl.innerText = txt;
         
-        // Color based on momentum relative to last tick
         if (val > lastDisplayPrice) {
             valEl.classList.remove('text-red-500', 'text-white');
             valEl.classList.add('text-green-400');
@@ -377,27 +364,10 @@
     window.payBill = () => {
         const cost = getBill();
         state.totalPaid += cost;
-        state.isPaid = true;
         state.tradeStartTime = Date.now();
         
-        const odds = getOdds();
-        const win = Math.random() * 100 <= odds;
-        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        
-        state.currentTradeOutcome = win ? 'WIN' : 'LOSS';
-        
-        // Set Ceiling Logic
-        if (win) {
-            state.currentBaseMax = tier.payout;
-        } else {
-            state.currentBaseMax = state.acfBalance;
-        }
-
-        // INITIALIZE STARTING POSITION (50% of Ceiling)
-        // This prevents the instant 0 or instant max, giving a "neutral" start
-        state.currentTickerValue = (state.currentBaseMax + state.hiddenSavingsFund) * 0.5;
-        
-        // Progression
+        // --- 1. UPDATE PROGRESSION (EQUITY) FIRST ---
+        // Crucial fix: Increment equity BEFORE calculating ceiling so first month isn't 0
         if (state.monthsPaid === 0) {
             state.monthsPaid = 1;
             state.acfBalance += CONFIG.ACF_PER_MONTH;
@@ -421,6 +391,24 @@
             }
         }
 
+        // --- 2. DETERMINE OUTCOME ---
+        state.isPaid = true;
+        
+        const odds = getOdds();
+        const win = Math.random() * 100 <= odds;
+        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        
+        state.currentTradeOutcome = win ? 'WIN' : 'LOSS';
+        
+        if (win) {
+            state.currentBaseMax = tier.payout;
+        } else {
+            state.currentBaseMax = state.acfBalance;
+        }
+
+        // Initialize at 50% to prevent static start
+        state.currentTickerValue = (state.currentBaseMax + state.hiddenSavingsFund) * 0.5;
+        
         state.isFrozen = false;
         save();
         render();
