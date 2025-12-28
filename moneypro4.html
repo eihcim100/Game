@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoneyMake Pro | Silent Liquidity</title>
+    <title>MoneyMake Pro | Stable Market</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -26,10 +26,8 @@
         .btn-trade { transition: all 0.1s; position: relative; overflow: hidden; }
         .btn-trade:active { transform: scale(0.98); }
         
-        /* Slow transitions */
-        .value-flash-up { color: #22c55e; text-shadow: 0 0 15px rgba(34, 197, 94, 0.8); transition: color 0.5s ease; }
-        .value-flash-down { color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.8); transition: color 0.5s ease; }
-        .value-neutral { color: white; transition: color 0.5s ease; }
+        /* Smooth transitions for values */
+        .value-text { transition: color 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -55,9 +53,9 @@
                 <div>
                     <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
                         MoneyMake <span class="text-green-500">Pro</span>
-                        <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-1 rounded-full align-middle">LIVE MARKET</span>
+                        <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-1 rounded-full align-middle">STABLE MARKET</span>
                     </h1>
-                    <p class="text-sm text-gray-500 mt-1 mono">SYMBOL: MMP-USD • 1.5Hz UPDATE RATE</p>
+                    <p class="text-sm text-gray-500 mt-1 mono">SYMBOL: MMP-USD • LOW VARIANCE</p>
                 </div>
                 <div class="text-right">
                     <button onclick="showOddsModal()" class="text-xs text-gray-400 hover:text-white underline decoration-dotted">
@@ -105,8 +103,8 @@
                 </div>
                 <div class="text-center py-4">
                     <div class="text-sm text-gray-400 mb-1">CURRENT SELL PRICE</div>
-                    <div id="marketValueDisplay" class="text-5xl font-bold mono text-white tracking-tighter transition-colors duration-500">$0.00</div>
-                    <div id="marketValueSub" class="text-xs text-gray-500 mt-2">Price fluctuates $0 - Max Ceiling</div>
+                    <div id="marketValueDisplay" class="text-5xl font-bold mono text-white tracking-tighter value-text">$0.00</div>
+                    <div id="marketValueSub" class="text-xs text-gray-500 mt-2">Price updates +/- 10% per tick</div>
                 </div>
             </div>
 
@@ -149,7 +147,6 @@
                 </div>
                 
                 <div class="mt-4 text-[10px] text-center text-gray-600 uppercase">
-                    <!-- Blanked out visual text about rollover -->
                     &nbsp;
                 </div>
 
@@ -183,7 +180,7 @@
 
 <script>
     const CONFIG = {
-        STORAGE_KEY: 'MMP_Sim_v4_Silent',
+        STORAGE_KEY: 'MMP_Sim_v5_Stable',
         INITIAL_PREMIUM: 199,
         TITANIUM_PREMIUM: 349,
         TITANIUM_PAYOUT: 1000,
@@ -215,7 +212,7 @@
         isFrozen: false,
         totalPaid: 0,
         totalReceived: 0,
-        hiddenSavingsFund: 0, // INTERNAL ONLY
+        hiddenSavingsFund: 0, 
         
         currentTradeOutcome: null, 
         currentBaseMax: 0, 
@@ -240,7 +237,7 @@
                     backgroundColor: gradient,
                     borderWidth: 2,
                     pointRadius: 0,
-                    tension: 0.3,
+                    tension: 0.4, // Smooth bezier curves
                     fill: true
                 }]
             },
@@ -256,33 +253,41 @@
             }
         });
         
+        // 1.5Hz Update Rate
         setInterval(updateTicker, 670);
     }
 
-    // --- MARKET LOGIC (Includes Silent Fund) ---
+    // --- RANDOM WALK MARKET LOGIC ---
     function updateTicker() {
         if(!chart) return;
         
-        let displayVal = 0;
         const trendEl = document.getElementById('trendIndicator');
         const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
         
         if (state.isPaid && state.currentTradeOutcome) {
             
-            // Calculate Current Ceiling: Base Win + Hidden Savings
+            // 1. Calculate the Hard Ceiling
             const currentCeiling = state.currentBaseMax + state.hiddenSavingsFund;
             
-            const r = Math.random();
-            // 70% chance upper half, 30% lower half
-            if (r > 0.3) {
-                 displayVal = currentCeiling * (0.5 + (Math.random() * 0.5));
-            } else {
-                 displayVal = currentCeiling * (Math.random() * 0.5);
-            }
+            // 2. Define Step Size (Volatility)
+            // Limit movement to 10% of the total range per tick
+            const maxStep = currentCeiling * 0.10;
             
-            if(displayVal > currentCeiling) displayVal = currentCeiling;
-            if(displayVal < 0) displayVal = 0;
+            // 3. Random Walk Calculation
+            // Generate a random step between -10% and +10%
+            let step = (Math.random() * maxStep * 2) - maxStep;
             
+            // 4. Apply Step to Previous Value
+            let newVal = state.currentTickerValue + step;
+            
+            // 5. Hard Clamp (Floor: 0, Ceiling: Limit)
+            if(newVal > currentCeiling) newVal = currentCeiling;
+            if(newVal < 0) newVal = 0;
+            
+            // Update State
+            state.currentTickerValue = Math.floor(newVal); 
+            
+            // UI Feedback
             if(state.currentTradeOutcome === 'WIN') {
                 trendEl.innerText = "MARKET: BULLISH";
                 trendEl.className = "text-[10px] font-bold mt-1 text-green-400";
@@ -294,18 +299,18 @@
             }
 
         } else {
-            displayVal = 0;
+            state.currentTickerValue = 0;
             trendEl.innerText = "MARKET CLOSED";
             trendEl.className = "text-[10px] font-bold mt-1 text-gray-600";
             chart.data.datasets[0].borderColor = '#333';
         }
 
-        state.currentTickerValue = Math.floor(displayVal); 
-
+        // Update Chart History
         const currentData = chart.data.datasets[0].data;
         currentData.shift();
-        currentData.push(displayVal);
+        currentData.push(state.currentTickerValue);
         
+        // Dynamic Scaling
         if (state.isPaid) {
              const ceiling = state.currentBaseMax + state.hiddenSavingsFund;
              chart.options.scales.y.max = Math.max(10, ceiling * 1.2); 
@@ -314,7 +319,7 @@
         }
         
         chart.update();
-        updatePriceDisplay(displayVal);
+        updatePriceDisplay(state.currentTickerValue);
     }
 
     let lastDisplayPrice = 0;
@@ -327,12 +332,16 @@
         el.innerText = txt;
         valEl.innerText = txt;
         
+        // Color based on momentum relative to last tick
         if (val > lastDisplayPrice) {
-            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-up";
+            valEl.classList.remove('text-red-500', 'text-white');
+            valEl.classList.add('text-green-400');
         } else if (val < lastDisplayPrice) {
-            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-down";
+            valEl.classList.remove('text-green-400', 'text-white');
+            valEl.classList.add('text-red-500');
         } else {
-            valEl.className = "text-5xl font-bold mono tracking-tighter value-neutral";
+            valEl.classList.remove('text-green-400', 'text-red-500');
+            valEl.classList.add('text-white');
         }
         
         lastDisplayPrice = val;
@@ -377,12 +386,18 @@
         
         state.currentTradeOutcome = win ? 'WIN' : 'LOSS';
         
+        // Set Ceiling Logic
         if (win) {
             state.currentBaseMax = tier.payout;
         } else {
             state.currentBaseMax = state.acfBalance;
         }
+
+        // INITIALIZE STARTING POSITION (50% of Ceiling)
+        // This prevents the instant 0 or instant max, giving a "neutral" start
+        state.currentTickerValue = (state.currentBaseMax + state.hiddenSavingsFund) * 0.5;
         
+        // Progression
         if (state.monthsPaid === 0) {
             state.monthsPaid = 1;
             state.acfBalance += CONFIG.ACF_PER_MONTH;
@@ -417,15 +432,11 @@
         const capturedPrice = state.currentTickerValue;
         state.totalReceived += capturedPrice;
         
-        // --- SILENT SAVINGS FUND LOGIC ---
-        // We still do the math, but we don't tell the user.
         const diff = capturedPrice - state.currentBaseMax;
         
         if (diff < 0) {
-            // Under-collected, add to silent fund
             state.hiddenSavingsFund += Math.abs(diff);
         } else {
-            // Over-collected, remove from silent fund
             state.hiddenSavingsFund = Math.max(0, state.hiddenSavingsFund - diff);
         }
         
@@ -440,7 +451,6 @@
 
         save();
         render();
-        // Updated modal: Just the price. No savings fund info.
         showModal("ORDER EXECUTED", `Sold at market price.<br><br><span class="text-4xl font-bold text-green-400">$${capturedPrice.toFixed(2)}</span>`);
     };
 
@@ -469,7 +479,6 @@
     window.showOddsModal = () => {
         const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
         const odds = getOdds();
-        // Updated text to remove mention of Hidden Fund
         showModal("MARKET DATA", 
             `<b>WIN PROBABILITY:</b> ${odds}%<br>
             <b>TIER TARGET:</b> $${tier.payout}<br>
