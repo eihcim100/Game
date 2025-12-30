@@ -3,172 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InstantFund: Resilience Subscription</title>
+    <title>MoneyMake Pro | Single Position</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --brand-bg: #111827;
-            --card-bg: #1F2937;
-            --accent: #059669;
-            --accent-hover: #10B981;
+            --bg-dark: #09090b;
+            --panel-dark: #18181b;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --text-muted: #a1a1aa;
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--brand-bg); color: #f3f4f6; }
-        .app-card { background-color: var(--card-bg); max-width: 500px; width: 100%; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'IBM Plex Mono', monospace; }
+        .panel { background-color: var(--panel-dark); border: 1px solid #27272a; }
         
-        .btn { transition: all 0.2s; font-weight: 600; border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%; }
-        .btn-primary { background-color: var(--accent); color: white; }
-        .btn-primary:hover:not(:disabled) { background-color: var(--accent-hover); transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
-        
-        .btn-warning { background-color: #F59E0B; color: #111827; }
-        .btn-warning:hover:not(:disabled) { background-color: #FBBF24; }
-        .btn-warning:disabled { opacity: 0.5; cursor: not-allowed; }
+        .ticker-wrap { width: 100%; overflow: hidden; white-space: nowrap; background: #000; padding: 4px 0; border-bottom: 1px solid #333; }
+        .ticker { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        .btn-danger { background-color: #DC2626; color: white; }
-        .btn-danger:hover { background-color: #EF4444; }
+        .btn-trade { transition: all 0.1s; position: relative; overflow: hidden; }
+        .btn-trade:active { transform: scale(0.98); }
         
-        .btn-titanium { background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 100%); color: #1f2937; }
-        .btn-titanium:hover { background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%); }
-
-        .tier-card { transition: all 0.2s; border: 2px solid transparent; }
-        .tier-card.active { border-color: var(--accent); background-color: #374151; }
+        .value-text { transition: color 0.5s ease; }
         
-        .progress-bar { transition: width 0.1s linear; }
+        .timer-normal { color: #60a5fa; } 
+        .timer-warn { color: #facc15; } 
+        .timer-critical { color: #ef4444; animation: pulse-red 1s infinite; }
+        
+        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="min-h-screen flex flex-col">
 
-    <div id="app" class="app-card p-6">
-        <!-- Header -->
-        <div class="flex justify-between items-start mb-6 border-b border-gray-700 pb-4">
-            <div>
-                <h1 class="text-2xl font-bold text-white">InstantFund</h1>
-                <p class="text-xs text-gray-400 mt-1">Resilience Subscription</p>
-            </div>
-            <div id="statusBadge" class="px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full bg-red-900 text-red-200">
-                Unpaid
-            </div>
-        </div>
-
-        <!-- Tier Selection -->
-        <div class="mb-6">
-            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 text-center text-gray-300">Coverage Level</h3>
-            <div id="tierGrid" class="grid grid-cols-5 gap-2"></div>
-        </div>
-
-        <!-- Metrics Dashboard -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <div class="bg-gray-800 p-3 rounded-lg text-center border border-gray-700 relative overflow-hidden">
-                <div class="text-[10px] text-gray-400 uppercase mb-1 tracking-tighter">Total Paid (Lifetime)</div>
-                <div id="displayTotalPaid" class="text-xl font-bold text-gray-300">$0</div>
-            </div>
-            <div class="bg-gray-800 p-3 rounded-lg text-center border border-gray-700 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                <div class="text-[10px] text-gray-400 uppercase mb-1 tracking-tighter">Total Value Received</div>
-                <div id="displayTotalReceived" class="text-xl font-bold text-green-400">$0</div>
-            </div>
-        </div>
-        
-        <div class="bg-gray-800 p-3 rounded-lg text-center border border-gray-700 mb-6">
-            <div class="text-[10px] text-gray-400 uppercase mb-1 tracking-tighter">Current Monthly Premium</div>
-            <div id="displayPremium" class="text-2xl font-bold text-yellow-400">$199</div>
-        </div>
-
-        <!-- Claims Context -->
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-gray-800 p-3 rounded-lg text-center">
-                <div class="text-xs text-gray-400 mb-1">Emergency Payout</div>
-                <div id="displayPayout" class="text-lg font-bold text-white">$500</div>
-            </div>
-            <div class="bg-gray-800 p-3 rounded-lg text-center">
-                <div class="text-xs text-gray-400 mb-1">Approval Odds</div>
-                <div id="displayOdds" class="text-lg font-bold text-blue-400">20%</div>
-            </div>
-        </div>
-
-        <!-- Main Action Area -->
-        <div class="mb-4 relative">
-            <button id="btnClaim" class="btn btn-primary text-lg shadow-lg">Request Funds</button>
-            <div id="processingOverlay" class="absolute inset-0 bg-gray-800 rounded-lg flex flex-col items-center justify-center hidden z-10">
-                <span class="text-sm font-semibold mb-2 text-blue-300">Analyzing Liquidity...</span>
-                <div class="w-3/4 h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <div id="progressBar" class="h-full bg-blue-500 w-0 progress-bar"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Simulation Tools & Controls -->
-        <div class="border-t border-gray-700 pt-4 mt-6">
-            <p class="text-xs text-center text-gray-500 mb-3 uppercase tracking-widest font-bold">Loyalty & Risk Control</p>
-            
-            <div id="freezeOption" class="bg-gray-900 p-4 rounded-lg flex items-center justify-between mb-4 border border-dashed border-gray-600 transition-opacity duration-200">
-                <label for="inputFreeze" class="text-gray-200 flex flex-col cursor-pointer flex-1">
-                    <span class="font-bold flex items-center">
-                        <input type="checkbox" id="inputFreeze" onchange="toggleFreeze()" class="mr-3 h-5 w-5 text-emerald-600 bg-gray-700 border-gray-600 rounded focus:ring-emerald-500">
-                        SAFETY FREEZE
-                    </span>
-                    <span id="freezeLabelText" class="text-[10px] text-gray-400 mt-1 pl-8">Neutralize risk now for $20 off NEXT bill</span>
-                </label>
-                <div class="flex flex-col items-end">
-                    <span id="freezeDiscountDisplay" class="text-yellow-400 font-bold text-xs mb-1">Save $20</span>
-                    <div id="freezeStatusIcon" class="text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Upgrade Option (Hidden by default) -->
-            <button id="btnUpgrade" class="btn btn-titanium text-sm mb-3 hidden shadow-lg border border-white/20">
-                ⭐ Upgrade to Titanium ($1000 Payout)
-            </button>
-
-            <div class="grid grid-cols-2 gap-3 mb-3">
-                <button id="btnPay" class="btn bg-blue-700 hover:bg-blue-600 text-white text-sm shadow-md">Activate Account</button>
-                <button id="btnMiss" class="btn bg-red-900 hover:bg-red-800 text-white text-sm shadow-md">Miss Payment</button>
-            </div>
-
-            <button id="btnCashOut" class="btn btn-warning text-sm mb-3 shadow-md">Cash Out & Cancel</button>
-            <button id="btnReset" class="text-xs text-gray-500 hover:text-white w-full underline">Hard Reset Demo</button>
+    <!-- Stock Ticker -->
+    <div class="ticker-wrap mono text-xs">
+        <div class="ticker">
+            <span class="text-green-500 mr-4">MMP ▲ 142.05</span>
+            <span class="text-red-500 mr-4">NDQ ▼ 15,200.10</span>
+            <span class="text-green-500 mr-4">SPX ▲ 4,450.22</span>
+            <span class="text-green-500 mr-4">BTC ▲ 64,200.00</span>
+            <span class="text-red-500 mr-4">EUR/USD ▼ 1.05</span>
+            <span class="text-green-500 mr-4">MMP ▲ 142.05</span>
         </div>
     </div>
 
-    <!-- Modal Interface -->
-    <div id="modalOverlay" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-gray-800 rounded-xl max-w-sm w-full p-6 shadow-2xl border-t-4 border-emerald-500" id="modalContainer">
-            <h3 id="modalTitle" class="text-xl font-bold text-white mb-2">Title</h3>
-            <div id="modalBody" class="text-gray-300 text-sm mb-6 leading-relaxed">Message</div>
-            <div id="modalActions" class="flex gap-3"></div>
+    <!-- Main App -->
+    <div class="flex-1 p-2 md:p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Header & Chart (Left - 8 Cols) -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+            <div class="flex justify-between items-end border-b border-gray-800 pb-4">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+                        MoneyMake <span class="text-green-500">Pro</span>
+                        <span id="rolloverBadge" class="hidden ml-2 text-[10px] bg-green-900 text-green-200 px-2 py-1 rounded-full align-middle border border-green-700 animate-pulse">ROLLOVER ACTIVE</span>
+                        <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-1 rounded-full align-middle ml-2">STANDARD ACCOUNT</span>
+                    </h1>
+                    <p class="text-sm text-gray-500 mt-1 mono">SYMBOL: MMP-USD • SINGLE POSITION MODE</p>
+                </div>
+                <div class="text-right">
+                    <button onclick="showOddsModal()" class="text-xs text-gray-400 hover:text-white underline decoration-dotted">
+                        Fairness & Fund Logic
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="panel rounded-xl p-1 relative h-96 shadow-2xl overflow-hidden group">
+                <canvas id="stockChart"></canvas>
+                <div class="absolute top-4 left-4 bg-black/80 backdrop-blur px-4 py-2 rounded border border-gray-800">
+                    <div class="text-xs text-gray-400">MARKET PRICE</div>
+                    <div id="chartPrice" class="text-2xl font-bold mono text-green-500">$0.00</div>
+                    <div id="trendIndicator" class="text-[10px] font-bold mt-1 text-gray-500">WAITING FOR OPEN</div>
+                </div>
+            </div>
+
+            <!-- Portfolio Summary -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="panel p-4 rounded-lg border-l-4 border-gray-600">
+                    <div class="text-xs text-gray-500 mb-1">TOTAL INVESTED</div>
+                    <div id="displayTotalPaid" class="text-xl font-bold mono">$0.00</div>
+                </div>
+                <div class="panel p-4 rounded-lg border-l-4 border-green-600">
+                    <div class="text-xs text-gray-500 mb-1">REALIZED PROFIT</div>
+                    <div id="displayTotalReceived" class="text-xl font-bold mono text-green-400">$0.00</div>
+                </div>
+                <!-- NET P&L TRACKER -->
+                <div class="panel p-4 rounded-lg border-l-4 border-purple-600">
+                    <div class="text-xs text-gray-500 mb-1">NET P&L</div>
+                    <div id="displayNetPnL" class="text-xl font-bold mono text-gray-400">$0.00</div>
+                </div>
+                <!-- TIMER -->
+                <div class="panel p-4 rounded-lg border-l-4 border-blue-600 relative overflow-hidden">
+                    <div class="text-xs text-gray-500 mb-1 uppercase">Round Timer</div>
+                    <div id="displayTimer" class="text-3xl font-bold mono timer-normal">--:--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trading Terminal (Right - 4 Cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+            
+            <!-- Dynamic Value Panel -->
+            <div id="valuePanel" class="panel rounded-xl p-6 bg-gradient-to-br from-gray-900 to-black border-green-500/30 hidden">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-green-400 animate-pulse">● MARKET OPEN</span>
+                    <span id="holdingTime" class="text-xs mono text-gray-400">T+0s</span>
+                </div>
+                <div class="text-center py-4">
+                    <div class="text-sm text-gray-400 mb-1">CURRENT SELL PRICE</div>
+                    <div id="marketValueDisplay" class="text-5xl font-bold mono text-white tracking-tighter value-text">$0.00</div>
+                    <div id="marketValueSub" class="text-xs text-gray-500 mt-2">Price updates +/- 10% per tick</div>
+                </div>
+            </div>
+
+            <!-- Order Controls -->
+            <div class="panel rounded-xl p-6 flex-1 flex flex-col">
+                <div class="mb-6">
+                    <label class="text-xs text-gray-500 block mb-2 uppercase font-bold">Strategy Tier (Max Target)</label>
+                    <select id="tierSelect" onchange="changeTier(this.value)" class="w-full bg-black border border-gray-700 text-white p-3 rounded text-sm focus:border-green-500 outline-none mono">
+                        <!-- JS Populated -->
+                    </select>
+                </div>
+
+                <div class="space-y-4 mt-auto">
+                    <!-- Buy Button -->
+                    <div>
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>BUY ORDER</span>
+                            <span id="costDisplay" class="text-white font-bold">$199.00</span>
+                        </div>
+                        <button id="btnBuy" onclick="payBill()" class="btn-trade w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-green-900/20">
+                            OPEN POSITION
+                        </button>
+                    </div>
+
+                    <!-- Sell Button -->
+                    <div class="pt-4 border-t border-gray-800">
+                        <div class="flex justify-between text-xs text-gray-400 mb-1">
+                            <span>SELL ORDER (MARKET)</span>
+                            <span id="targetDisplay" class="text-gray-500 font-bold">--</span>
+                        </div>
+                        <button id="btnSell" onclick="executeSell()" disabled class="btn-trade w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed">
+                            NO POSITION
+                        </button>
+                    </div>
+
+                    <!-- Liquidate -->
+                    <button id="btnLiquidate" onclick="cashOut()" disabled class="w-full text-xs text-gray-500 hover:text-red-400 py-2 border border-transparent hover:border-red-900/30 rounded transition">
+                        Liquidate Entire Account
+                    </button>
+                </div>
+                
+                <div class="mt-4 text-[10px] text-center text-gray-600 uppercase">
+                    Only 1 position allowed at a time
+                </div>
+
+                <!-- Simulation Tools -->
+                <div class="mt-6 pt-4 border-t border-gray-800">
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox" id="hedgeCheck" onchange="toggleHedge()" class="mr-2 accent-green-500" disabled>
+                            <span class="text-xs text-gray-400">Hedge Mode (Paused)</span>
+                        </label>
+                        <button onclick="hardReset()" class="text-[10px] text-gray-600 hover:text-white uppercase">Reset Sim</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-gray-900 border border-gray-700 rounded-xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-lg font-bold text-white">Notice</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-white">&times;</button>
+            </div>
+            <div id="modalBody" class="text-gray-300 text-sm mb-6 leading-relaxed"></div>
+            <div id="modalActions" class="flex gap-3">
+                <button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded font-bold">Close</button>
+            </div>
         </div>
     </div>
 
 <script>
     const CONFIG = {
-        STORAGE_KEY: 'IF_State_Payout_Tracker_v4',
+        STORAGE_KEY: 'MMP_Sim_v7_HouseWins',
         INITIAL_PREMIUM: 199,
-        PREMIUM_M6_TARGET: 129, // New milestone 1
-        PREMIUM_M12_TARGET: 79, // New milestone 2
         TITANIUM_PREMIUM: 349,
         TITANIUM_PAYOUT: 1000,
-        BASE_PREMIUM_FLOOR: 49,
-        ACF_PER_MONTH: 30,
+        BASE_PREMIUM_FLOOR: 199, 
+        PREMIUM_DROP: 0,         
+        ACF_PER_MONTH: 30, 
         ODDS_BOOST: 5,
-        M1_REFUND_CHANCE: 0.20,
-        M1_REFUND_AMOUNT: 199,
         YEAR_ONE_BONUS: 300,
         M6_BONUS_PERCENT: 0.50,
-        M6_MONTH: 6,
-        FREEZE_DISCOUNT: 20,
-        TITANIUM_SIGNING_BONUS: 250, 
+        FREEZE_DISCOUNT: 0,      
+        TITANIUM_SIGNING_BONUS: 250,
         TIERS: [
-            { id: 1, label: 'Tier 1', payout: 150, baseOdds: 75 },
-            { id: 2, label: 'Tier 2', payout: 200, baseOdds: 60 },
-            { id: 3, label: 'Tier 3', payout: 300, baseOdds: 40 },
-            { id: 4, label: 'Tier 4', payout: 400, baseOdds: 30 },
-            { id: 5, label: 'Tier 5', payout: 500, baseOdds: 20 },
-            { id: 6, label: 'Titanium', payout: 1000, baseOdds: 20 }
+            { id: 1, label: 'Micro Cap ($150 Target)', payout: 150, baseOdds: 75 },
+            { id: 2, label: 'Small Cap ($200 Target)', payout: 200, baseOdds: 60 },
+            { id: 3, label: 'Mid Cap ($300 Target)', payout: 300, baseOdds: 40 },
+            { id: 4, label: 'Large Cap ($400 Target)', payout: 400, baseOdds: 30 },
+            { id: 5, label: 'Mega Cap ($500 Target)', payout: 500, baseOdds: 20 },
+            { id: 6, label: 'IPO Access ($1,000 Target)', payout: 1000, baseOdds: 20 }
         ]
     };
 
@@ -178,376 +219,372 @@
         monthsPaid: 0,
         isPaid: false,
         acfBalance: 0,
-        lastClaimTime: 0,
         m6BonusPaid: false,
         isFrozen: false,
         totalPaid: 0,
-        totalReceived: 0
+        totalReceived: 0,
+        hiddenSavingsFund: 0, 
+        autoSellDeadline: 0, 
+        
+        currentTradeOutcome: null, 
+        currentBaseMax: 0, 
+        tradeStartTime: null,
+        currentTickerValue: 0 
     };
+
+    let chart;
+    function initChart() {
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
+        gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(40).fill(''),
+                datasets: [{
+                    data: Array(40).fill(0),
+                    borderColor: '#22c55e',
+                    backgroundColor: gradient,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.4, 
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { 
+                    x: { display: false }, 
+                    y: { display: false, grid: { display: false }, min: 0 } 
+                },
+                animation: { duration: 600, easing: 'linear' }
+            }
+        });
+        
+        setInterval(updateTicker, 670);
+        setInterval(updateTimer, 100);
+    }
+
+    // --- TIMER & AUTO-SELL LOGIC ---
+    function updateTimer() {
+        const timerEl = document.getElementById('displayTimer');
+        
+        if (!state.isPaid) {
+            timerEl.innerText = "--:--";
+            timerEl.className = "text-3xl font-bold mono timer-normal";
+            return;
+        }
+
+        const now = Date.now();
+        const diff = state.autoSellDeadline - now;
+
+        if (diff <= 0) {
+            timerEl.innerText = "00:00";
+            if(state.isPaid) executeSell(true);
+            return;
+        }
+
+        const secs = Math.ceil(diff / 1000);
+        const mm = Math.floor(secs / 60).toString().padStart(2, '0');
+        const ss = (secs % 60).toString().padStart(2, '0');
+        timerEl.innerText = `${mm}:${ss}`;
+
+        if (secs <= 10) {
+            timerEl.className = "text-3xl font-bold mono timer-critical";
+        } else if (secs <= 30) {
+            timerEl.className = "text-3xl font-bold mono timer-warn";
+        } else {
+            timerEl.className = "text-3xl font-bold mono timer-normal";
+        }
+    }
+
+    // --- MARKET LOGIC ---
+    function updateTicker() {
+        if(!chart) return;
+        
+        const trendEl = document.getElementById('trendIndicator');
+        
+        if (state.isPaid && state.currentTradeOutcome) {
+            
+            const currentCeiling = state.currentBaseMax + state.hiddenSavingsFund;
+            const maxStep = Math.max(1, currentCeiling * 0.10); 
+            let step = (Math.random() * maxStep * 2) - maxStep;
+            let newVal = state.currentTickerValue + step;
+            
+            if(newVal > currentCeiling) newVal = currentCeiling;
+            if(newVal < 0) newVal = 0;
+            
+            state.currentTickerValue = Math.floor(newVal); 
+            
+            if(state.currentTradeOutcome === 'WIN') {
+                trendEl.innerText = "MARKET: BULLISH";
+                trendEl.className = "text-[10px] font-bold mt-1 text-green-400";
+                chart.data.datasets[0].borderColor = '#22c55e'; 
+            } else {
+                trendEl.innerText = "MARKET: BEARISH";
+                trendEl.className = "text-[10px] font-bold mt-1 text-yellow-500";
+                chart.data.datasets[0].borderColor = '#eab308'; 
+            }
+
+        } else {
+            state.currentTickerValue = 0;
+            trendEl.innerText = "MARKET CLOSED";
+            trendEl.className = "text-[10px] font-bold mt-1 text-gray-600";
+            chart.data.datasets[0].borderColor = '#333';
+        }
+
+        const currentData = chart.data.datasets[0].data;
+        currentData.shift();
+        currentData.push(state.currentTickerValue);
+        
+        if (state.isPaid) {
+             const ceiling = state.currentBaseMax + state.hiddenSavingsFund;
+             chart.options.scales.y.max = Math.max(10, ceiling * 1.2); 
+        } else {
+             chart.options.scales.y.max = 10;
+        }
+        
+        chart.update();
+        updatePriceDisplay(state.currentTickerValue);
+    }
+
+    let lastDisplayPrice = 0;
+    function updatePriceDisplay(val) {
+        const el = document.getElementById('chartPrice');
+        const valEl = document.getElementById('marketValueDisplay');
+        const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+        
+        const txt = fmt.format(val);
+        el.innerText = txt;
+        valEl.innerText = txt;
+        
+        if (val > lastDisplayPrice) {
+            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-up";
+        } else if (val < lastDisplayPrice) {
+            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-down";
+        } else {
+            valEl.className = "text-5xl font-bold mono tracking-tighter value-neutral";
+        }
+        
+        lastDisplayPrice = val;
+
+        if (state.isPaid) {
+            const secs = Math.floor((Date.now() - state.tradeStartTime)/1000);
+            document.getElementById('holdingTime').innerText = `T+${secs}s`;
+        }
+    }
 
     function init() {
         const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                state = { ...state, ...parsed };
-            } catch (e) {
-                resetApp();
-                return;
-            }
-        }
+        if (saved) state = { ...state, ...JSON.parse(saved) };
+        // Reset old bad states
+        state.isPaid = false; 
+        initChart();
         render();
     }
+    
+    function save() { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); }
 
-    function saveState() {
-        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function resetApp() {
-        state = {
-            tierId: 5,
-            premium: CONFIG.INITIAL_PREMIUM,
-            monthsPaid: 0,
-            isPaid: false,
-            acfBalance: 0,
-            lastClaimTime: 0,
-            m6BonusPaid: false,
-            isFrozen: false,
-            totalPaid: 0,
-            totalReceived: 0
-        };
-        saveState();
-        render();
-        showModal("System Reset", "All historical simulation data has been cleared.");
-    }
-
-    function getCurrentOdds() {
+    function getOdds() {
         const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        // Bonus only comes from months, which are now reset every round
+        // So odds are basically fixed at baseOdds
         const bonus = state.monthsPaid * CONFIG.ODDS_BOOST;
         return Math.min(100, tier.baseOdds + bonus);
     }
 
-    function getBillAmount() {
-        if (!state.isPaid && state.monthsPaid === 0) return state.premium;
-        let bill = state.premium;
-        if (state.isFrozen) {
-            bill = Math.max(CONFIG.BASE_PREMIUM_FLOOR, bill - CONFIG.FREEZE_DISCOUNT);
-        }
-        return bill;
+    function getBill() {
+        // Strict fixed price
+        return state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
     }
 
-    window.toggleFreeze = function() {
-        const checkbox = document.getElementById('inputFreeze');
+    window.payBill = () => {
+        if(state.isPaid) return; // Prevent multi-buys
+
+        const cost = getBill();
+        state.totalPaid += cost;
+        state.tradeStartTime = Date.now();
         
-        if (state.lastClaimTime > 0) {
-            showModal("Freeze Unavailable", "You have already accessed funds this cycle. You cannot freeze your account until the start of the next billing period.");
-            checkbox.checked = false; 
-            return;
-        }
+        // Single Round Timer: 60s
+        state.autoSellDeadline = Date.now() + 60000;
 
-        state.isFrozen = checkbox.checked;
-        saveState();
-        render();
-    }
+        // Reset to Month 1 Logic every time
+        state.monthsPaid = 1;
+        state.acfBalance = CONFIG.ACF_PER_MONTH; 
+        state.premium = getBill();
 
-    window.switchTier = function(newId) {
-        if (state.tierId === 6) {
-             showModal("Downgrade Restricted", "Titanium Tier members cannot downgrade via this menu.");
-             return;
-        }
-        state.tierId = newId;
-        saveState();
-        render();
-    }
-
-    window.upgradeTier = function() {
-        const totalTransitionBonus = state.acfBalance + CONFIG.TITANIUM_SIGNING_BONUS;
-        
-        showModal("Titanium Upgrade", 
-            `Upgrade to <b>$1,000 Coverage</b> for a base premium of <b>$349/mo</b>?<br><br>
-            <div class="bg-gray-900 p-3 rounded border border-gray-700 mb-3">
-                <span class="text-green-400 font-bold">INSTANT UPGRADE BONUS: $${totalTransitionBonus.toFixed(2)}</span><br>
-                <span class="text-xs text-gray-400">Includes 100% of your ACF ($${state.acfBalance.toFixed(2)}) + $${CONFIG.TITANIUM_SIGNING_BONUS} Signing Bonus.</span>
-            </div>
-            This bonus will be paid to you immediately. Your cycle will then reset to Month 0 at the new tier.`, 
-            `<button onclick="closeModal()" class="btn bg-gray-600 flex-1">Cancel</button>
-             <button onclick="window.confirmUpgrade(${totalTransitionBonus})" class="btn btn-primary flex-1">Accept & Upgrade</button>`
-        );
-    }
-
-    window.confirmUpgrade = function(bonusAmount) {
-        state.totalReceived += bonusAmount;
-        state.tierId = 6; 
-        state.premium = CONFIG.TITANIUM_PREMIUM;
-        state.monthsPaid = 0; 
-        state.isPaid = false; 
-        state.acfBalance = 0; 
-        state.lastClaimTime = 0;
-        state.m6BonusPaid = false;
-        
-        closeModal();
-        saveState();
-        render();
-        
-        setTimeout(() => {
-            showModal("Welcome to Titanium", `We have transferred your <b>$${bonusAmount.toFixed(2)}</b> upgrade bonus! Please pay the initial premium to activate your $1,000 coverage.`);
-        }, 300);
-    }
-
-    function payBill() {
-        const amountToCharge = getBillAmount();
-        let msg = "";
-        let extraBonusMsg = "";
-
-        state.totalPaid += amountToCharge;
-
-        if (!state.isPaid) {
-            // Activation Logic
-            state.isPaid = true;
-            if (state.monthsPaid === 0) {
-                state.monthsPaid = 1;
-                state.acfBalance += CONFIG.ACF_PER_MONTH;
-                
-                // Initialize premium logic (already handled by init, but double check)
-                const baseStart = state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
-                state.premium = baseStart; // Ensure we start at base
-                
-                msg = `Initial premium of $${amountToCharge} paid. Account activated.`;
-            } else {
-                msg = `Payment of $${amountToCharge} processed. Account is active.`;
-            }
-        } else {
-            // Standard Monthly Progression
-            state.monthsPaid++;
-            state.acfBalance += CONFIG.ACF_PER_MONTH;
-            state.lastClaimTime = 0;
-            
-            // --- NEW PREMIUM REDUCTION LOGIC ---
-            // Applies only to non-Titanium users for now, or standard schedule
-            if (state.tierId !== 6) {
-                if (state.monthsPaid === 6) {
-                    state.premium = CONFIG.PREMIUM_M6_TARGET;
-                    extraBonusMsg += `<br><br><span class='text-blue-400 font-bold'>LOYALTY REWARD:</span> Premium dropped to $${CONFIG.PREMIUM_M6_TARGET}/mo!`;
-                } else if (state.monthsPaid === 12) {
-                    state.premium = CONFIG.PREMIUM_M12_TARGET;
-                    extraBonusMsg += `<br><br><span class='text-blue-400 font-bold'>MAX LOYALTY:</span> Premium dropped to $${CONFIG.PREMIUM_M12_TARGET}/mo!`;
-                }
-            }
-            // -----------------------------------
-            
-            if (state.monthsPaid === CONFIG.M6_MONTH && !state.m6BonusPaid) {
-                const bonus = Math.floor(state.acfBalance * CONFIG.M6_BONUS_PERCENT);
-                state.acfBalance -= bonus;
-                state.totalReceived += bonus; 
-                state.m6BonusPaid = true;
-                extraBonusMsg += `<br><br><span class='text-green-400 font-bold'>6-MONTH PAYOUT:</span> You received a $${bonus} cash bonus!`;
-            } else if (state.monthsPaid === 12) {
-                state.acfBalance += CONFIG.YEAR_ONE_BONUS;
-                extraBonusMsg += `<br><br><span class='text-yellow-400 font-bold'>ANNIVERSARY BONUS:</span> $${CONFIG.YEAR_ONE_BONUS} added to your fund!`;
-            }
-
-            msg = `Payment of $${amountToCharge} processed. Advanced to Month ${state.monthsPaid}. ${extraBonusMsg}`;
-        }
-        
-        state.isFrozen = false; 
-        saveState();
-        render();
-        showModal("Payment Confirmed", msg);
-    }
-
-    function finalizeClaim() {
+        state.isPaid = true;
+        const odds = getOdds();
+        const win = Math.random() * 100 <= odds;
         const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        const odds = getCurrentOdds();
-        const passed = (Math.random() * 100) <= odds;
-
-        document.getElementById('processingOverlay').classList.add('hidden');
-        document.getElementById('btnClaim').disabled = false;
-
-        if (passed) {
-            let payout = tier.payout;
-            if (state.monthsPaid >= 12) payout += CONFIG.YEAR_ONE_BONUS;
-            
-            state.totalReceived += payout; 
-
-            // --- PREMIUM RESET LOGIC ---
-            const baseStart = state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
-            state.premium = baseStart; 
-            // ---------------------------
-
-            state.monthsPaid = 0;
-            state.acfBalance = 0;
-            state.lastClaimTime = Date.now();
-            state.m6BonusPaid = false;
-            state.isFrozen = false;
-            showModal("✅ Request Approved", `Emergency Funds of $${payout} have been transferred.<br><br><span class="text-xs text-red-400">Account reset to Month 0. Premium returned to base rate.</span>`);
+        state.currentTradeOutcome = win ? 'WIN' : 'LOSS';
+        
+        if (win) {
+            state.currentBaseMax = tier.payout;
         } else {
-            let refund = state.acfBalance;
-            if (state.monthsPaid === 1 && Math.random() <= CONFIG.M1_REFUND_CHANCE) refund += CONFIG.M1_REFUND_AMOUNT;
-            
-            state.totalReceived += refund; 
-            
-            state.acfBalance = 0;
-            state.lastClaimTime = Date.now();
-            showModal("Request Denied", `Current liquidity odds: ${odds}%. Loyalty payout of $${refund.toFixed(2)} issued.`);
+            state.currentBaseMax = state.acfBalance;
         }
-        saveState();
+
+        state.currentTickerValue = (state.currentBaseMax + state.hiddenSavingsFund) * 0.5;
+        
+        state.isFrozen = false;
+        save();
+        render();
+    };
+
+    window.executeSell = (isAuto = false) => {
+        if (!state.isPaid) return;
+        
+        const capturedPrice = state.currentTickerValue;
+        state.totalReceived += capturedPrice;
+        
+        const totalCeiling = state.currentBaseMax + state.hiddenSavingsFund;
+        const remainder = Math.max(0, totalCeiling - capturedPrice);
+        
+        state.hiddenSavingsFund = remainder;
+        
+        // RESET EVERYTHING ON SELL
+        state.isPaid = false;
+        state.currentTradeOutcome = null;
+        state.tradeStartTime = null;
+        state.premium = getBill();
+        state.monthsPaid = 0; // Back to 0
+        state.acfBalance = 0; 
+        state.m6BonusPaid = false;
+        state.currentBaseMax = 0;
+        state.autoSellDeadline = 0; 
+
+        save();
+        render();
+        
+        const title = isAuto ? "AUTO-SOLD (TIME EXPIRED)" : "ORDER EXECUTED";
+        const note = isAuto ? "<br><span class='text-xs text-yellow-500'>Position closed automatically at deadline.</span>" : "";
+        
+        showModal(title, `Sold at market price.<br><br><span class="text-4xl font-bold text-green-400">$${capturedPrice.toFixed(2)}</span>${note}`);
+    };
+
+    window.cashOut = () => {
+        const currentEquity = state.acfBalance;
+        showModal("LIQUIDATE ACCOUNT", `Close account and withdraw Equity?<br><br>Equity Value: <span class="text-blue-400 font-bold">$${currentEquity.toFixed(2)}</span>`, `<div class="flex gap-2 w-full"><button onclick="closeModal()" class="flex-1 bg-gray-700 p-2 rounded">CANCEL</button><button onclick="confirmLiquidate(${currentEquity})" class="flex-1 bg-red-600 p-2 rounded font-bold">LIQUIDATE</button></div>`);
+    };
+
+    window.confirmLiquidate = (val) => {
+        state.totalReceived += val;
+        hardReset();
+        showModal("ACCOUNT CLOSED", `Funds transferred: $${val.toFixed(2)}`);
+    }
+
+    window.hardReset = () => {
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        state = { 
+            tierId: 5, premium: CONFIG.INITIAL_PREMIUM, monthsPaid: 0, isPaid: false, 
+            acfBalance: 0, m6BonusPaid: false, totalPaid: 0, totalReceived: 0, hiddenSavingsFund: 0,
+            autoSellDeadline: 0,
+            currentTradeOutcome: null, tradeStartTime: null 
+        };
+        save();
         render();
     }
 
-    function attemptClaim() {
-        if (state.isFrozen) return;
-        const btn = document.getElementById('btnClaim');
-        const overlay = document.getElementById('processingOverlay');
-        const bar = document.getElementById('progressBar');
-        btn.disabled = true;
-        overlay.classList.remove('hidden');
-        let w = 0;
-        const iv = setInterval(() => {
-            w += 5;
-            bar.style.width = w + '%';
-            if (w >= 100) { clearInterval(iv); finalizeClaim(); }
-        }, 50);
-    }
+    window.showOddsModal = () => {
+        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
+        const odds = getOdds();
+        showModal("MARKET DATA", 
+            `<b>WIN PROBABILITY:</b> ${odds}%<br>
+            <b>TIER TARGET:</b> $${tier.payout}<br>
+            <span class="text-xs text-gray-400">
+            Unified Fund captures missed value for future trades.
+            </span>`);
+    };
+
+    window.toggleHedge = () => {
+        state.isFrozen = document.getElementById('hedgeCheck').checked;
+        save();
+        render();
+    };
+
+    window.changeTier = (id) => {
+        if(state.isPaid) return alert("Cannot change strategy while position is open.");
+        state.tierId = parseInt(id);
+        save();
+        render();
+    };
 
     function render() {
         const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        const currentBill = getBillAmount();
+        const bill = getBill();
+        const sel = document.getElementById('tierSelect');
+        if(sel.children.length === 0) sel.innerHTML = CONFIG.TIERS.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+        sel.value = state.tierId;
+        sel.disabled = state.isPaid;
 
-        const setVal = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.innerText = val;
-        };
-
-        setVal('displayTotalPaid', `$${state.totalPaid}`);
-        setVal('displayTotalReceived', `$${state.totalReceived}`);
-        setVal('displayPremium', `$${state.premium}`);
-        setVal('displayPayout', `$${tier.payout}`);
-        setVal('displayOdds', `${getCurrentOdds()}%`);
-
-        const badge = document.getElementById('statusBadge');
-        if (badge) {
-            badge.innerText = state.isPaid ? `Active • Month ${state.monthsPaid}` : "Unpaid";
-            badge.className = `px-3 py-1 text-xs font-bold uppercase rounded-full ${state.isPaid ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'}`;
-        }
-
-        const grid = document.getElementById('tierGrid');
-        if (grid) {
-            grid.innerHTML = CONFIG.TIERS.slice(0, 5).map(t => `
-                <div onclick="switchTier(${t.id})" class="tier-card ${state.tierId === t.id ? 'active' : 'bg-gray-800'} p-2 rounded cursor-pointer text-center hover:bg-gray-700">
-                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">${t.label}</div>
-                    <div class="text-sm text-blue-400 font-bold">$${t.payout}</div>
-                </div>`).join('');
-            
-            if (state.tierId === 6) {
-                grid.innerHTML = `<div class="col-span-5 bg-gradient-to-r from-gray-200 to-gray-400 text-gray-900 p-2 rounded text-center font-bold text-sm shadow-md">
-                    TITANIUM TIER ($1,000 Payout)
-                </div>`;
-            }
-        }
-
-        const btnPay = document.getElementById('btnPay');
-        if (btnPay) {
-            if (state.isPaid) {
-                btnPay.innerText = `Advance Month ($${currentBill})`;
-                btnPay.classList.replace('bg-blue-700', 'bg-green-700');
-            } else {
-                btnPay.innerText = state.monthsPaid === 0 ? `Activate Account ($${currentBill})` : `Re-activate ($${currentBill})`;
-                btnPay.classList.replace('bg-green-700', 'bg-blue-700');
-            }
-        }
-
-        const btnClaim = document.getElementById('btnClaim');
-        if (btnClaim) {
-            const isLocked = !state.isPaid || state.lastClaimTime > 0 || state.isFrozen;
-            btnClaim.disabled = isLocked;
-            
-            if (state.isFrozen) {
-                btnClaim.innerText = "ACCESS FROZEN";
-                btnClaim.classList.add('opacity-50', 'bg-gray-600');
-                btnClaim.classList.remove('btn-primary');
-                document.getElementById('freezeStatusIcon').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>`;
-            } else {
-                btnClaim.innerText = state.lastClaimTime > 0 ? "Used this Cycle" : "Request Funds";
-                if(isLocked) {
-                    btnClaim.classList.add('opacity-50', 'bg-gray-600');
-                    btnClaim.classList.remove('btn-primary');
-                } else {
-                    btnClaim.classList.remove('opacity-50', 'bg-gray-600');
-                    btnClaim.classList.add('btn-primary');
-                }
-                document.getElementById('freezeStatusIcon').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg>`;
-            }
-        }
-
-        const freezeLabel = document.getElementById('freezeDiscountDisplay');
-        const freezeContainer = document.getElementById('freezeOption');
-        const freezeText = document.getElementById('freezeLabelText');
-        const freezeInput = document.getElementById('inputFreeze');
-
-        if (freezeLabel) {
-            const canFreeze = state.isPaid && state.lastClaimTime === 0;
-            freezeInput.disabled = !canFreeze;
-            
-            if (!canFreeze) {
-                freezeContainer.classList.add('opacity-50', 'cursor-not-allowed');
-                freezeText.innerText = state.lastClaimTime > 0 ? "Service used. Freeze unavailable." : "Pay bill to enable options";
-            } else {
-                freezeContainer.classList.remove('opacity-50', 'cursor-not-allowed');
-                freezeText.innerText = "Neutralize risk now for $20 off NEXT bill";
-            }
-
-            if (state.isFrozen) {
-                freezeLabel.innerText = "-$20 Discount Locked";
-                freezeLabel.className = "text-emerald-400 font-bold italic text-[10px]";
-            } else {
-                freezeLabel.innerText = "Save $20";
-                freezeLabel.className = "text-yellow-400 font-bold text-sm";
-            }
-        }
-
-        const btnUpgrade = document.getElementById('btnUpgrade');
-        if (state.monthsPaid >= 12 && state.tierId !== 6) {
-            btnUpgrade.classList.remove('hidden');
-            btnUpgrade.onclick = window.upgradeTier;
+        document.getElementById('displayTotalPaid').innerText = `$${state.totalPaid.toFixed(2)}`;
+        document.getElementById('displayTotalReceived').innerText = `$${state.totalReceived.toFixed(2)}`;
+        
+        const net = state.totalReceived - state.totalPaid;
+        const netEl = document.getElementById('displayNetPnL');
+        netEl.innerText = `$${net.toFixed(2)}`;
+        
+        if (net > 0) {
+            netEl.className = "text-xl font-bold mono text-green-400";
+        } else if (net < 0) {
+            netEl.className = "text-xl font-bold mono text-red-500";
         } else {
-            btnUpgrade.classList.add('hidden');
+            netEl.className = "text-xl font-bold mono text-gray-400";
         }
+        
+        document.getElementById('targetDisplay').innerText = `$${tier.payout}.00`;
+        document.getElementById('costDisplay').innerText = `$${bill}.00`;
+        
+        const badge = document.getElementById('rolloverBadge');
+        if (state.hiddenSavingsFund > 0) badge.classList.remove('hidden');
+        else badge.classList.add('hidden');
 
-        document.getElementById('btnCashOut').disabled = !state.isPaid || state.monthsPaid < 1;
-        document.getElementById('btnMiss').disabled = !state.isPaid;
-        if (freezeInput) freezeInput.checked = state.isFrozen;
+        const valuePanel = document.getElementById('valuePanel');
+        const btnBuy = document.getElementById('btnBuy');
+        const btnSell = document.getElementById('btnSell');
+        const btnLiquidate = document.getElementById('btnLiquidate');
+
+        if (state.isPaid) {
+            // TRADE ACTIVE
+            valuePanel.classList.remove('hidden');
+            btnBuy.innerText = `POSITION OPEN (LOCKED)`;
+            btnBuy.className = "btn-trade w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed";
+            btnBuy.disabled = true;
+
+            btnSell.innerText = "SELL NOW (MARKET)";
+            btnSell.disabled = false;
+            btnSell.className = "btn-trade w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-red-900/20 animate-pulse";
+            btnLiquidate.disabled = true;
+        } else {
+            // IDLE
+            valuePanel.classList.add('hidden');
+            btnBuy.innerText = "OPEN POSITION ($199.00)";
+            btnBuy.className = "btn-trade w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-green-900/20";
+            btnBuy.disabled = false;
+
+            btnSell.innerText = "NO POSITION";
+            btnSell.disabled = true;
+            btnSell.className = "btn-trade w-full bg-gray-800 text-gray-600 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed";
+            btnLiquidate.disabled = false;
+        }
+        
+        document.getElementById('hedgeCheck').disabled = true;
+        document.getElementById('hedgeCheck').parentElement.classList.add('opacity-50');
     }
 
     function showModal(title, body, actions = null) {
         document.getElementById('modalTitle').innerText = title;
         document.getElementById('modalBody').innerHTML = body;
-        document.getElementById('modalActions').innerHTML = actions || `<button onclick="closeModal()" class="btn btn-primary">Understood</button>`;
+        document.getElementById('modalActions').innerHTML = actions || `<button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded font-bold">Close</button>`;
         document.getElementById('modalOverlay').classList.remove('hidden');
     }
 
     window.closeModal = () => document.getElementById('modalOverlay').classList.add('hidden');
-
-    document.getElementById('btnPay').onclick = payBill;
-    document.getElementById('btnMiss').onclick = () => {
-        showModal("Confirm Cancellation", "Warning: Missing a payment will cancel your account and wipe your loyalty progress.", 
-        `<button onclick="closeModal()" class="btn bg-gray-600 flex-1">Back</button><button onclick="window.confirmMiss()" class="btn btn-danger flex-1">End Policy</button>`);
-    };
-    window.confirmMiss = () => {
-        resetApp();
-        closeModal();
-    }
-    document.getElementById('btnClaim').onclick = attemptClaim;
-    document.getElementById('btnReset').onclick = resetApp;
-    document.getElementById('btnCashOut').onclick = () => {
-        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        const total = state.acfBalance + (tier.payout * (getCurrentOdds()/100) * 0.5);
-        showModal("Cash Out Benefit", `Final Buy-Back Amount: $${total.toFixed(2)}`, `<button onclick="closeModal()" class="btn bg-gray-600 flex-1">Stay</button><button onclick="window.confirmCashOut(${total})" class="btn btn-warning flex-1">Accept & Exit</button>`);
-    };
-    window.confirmCashOut = function(amt) {
-        state.totalReceived += amt; 
-        resetApp();
-        setTimeout(() => showModal("💰 Funds Sent", `Your cash-out of $${amt.toFixed(2)} has been paid. Account closed.`), 100);
-    }
 
     init();
 </script>
