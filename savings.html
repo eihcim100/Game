@@ -3,590 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoneyMake Pro | Single Position</title>
+    <title>MMP Pro Lite | Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
-        :root {
-            --bg-dark: #09090b;
-            --panel-dark: #18181b;
-            --accent-green: #22c55e;
-            --accent-red: #ef4444;
-            --text-muted: #a1a1aa;
-        }
-        body { background-color: var(--bg-dark); color: white; font-family: 'Inter', sans-serif; }
-        .mono { font-family: 'IBM Plex Mono', monospace; }
-        .panel { background-color: var(--panel-dark); border: 1px solid #27272a; }
-        
-        .ticker-wrap { width: 100%; overflow: hidden; white-space: nowrap; background: #000; padding: 4px 0; border-bottom: 1px solid #333; }
-        .ticker { display: inline-block; animation: marquee 20s linear infinite; }
-        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
-
-        .btn-trade { transition: all 0.1s; position: relative; overflow: hidden; }
-        .btn-trade:active { transform: scale(0.98); }
-        
-        .value-text { transition: color 0.5s ease; }
-        
-        .timer-normal { color: #60a5fa; } 
-        .timer-warn { color: #facc15; } 
-        .timer-critical { color: #ef4444; animation: pulse-red 1s infinite; }
-        
-        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        body { background: #050505; color: #fff; font-family: ui-monospace, monospace; }
+        .panel { background: #0f0f0f; border: 1px solid #222; border-radius: 12px; }
+        .chart-locked div { pointer-events: none !important; }
+        input { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 6px 12px; border-radius: 6px; outline: none; }
+        input:focus { border-color: #22c55e; }
+        .btn-action { transition: all 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
 
-    <!-- Stock Ticker -->
-    <div class="ticker-wrap mono text-xs">
-        <div class="ticker">
-            <span class="text-green-500 mr-4">MMP ▲ 142.05</span>
-            <span class="text-red-500 mr-4">NDQ ▼ 15,200.10</span>
-            <span class="text-green-500 mr-4">SPX ▲ 4,450.22</span>
-            <span class="text-green-500 mr-4">BTC ▲ 64,200.00</span>
-            <span class="text-red-500 mr-4">EUR/USD ▼ 1.05</span>
-            <span class="text-green-500 mr-4">MMP ▲ 142.05</span>
+    <!-- Header Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="panel p-4">
+            <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Wallet Balance</div>
+            <div id="ui-wallet" class="text-2xl font-bold text-green-400">$0.00</div>
+            <div class="flex flex-col gap-2 mt-3">
+                <div class="flex gap-1">
+                    <input type="number" id="deposit-amount" placeholder="Amt" class="w-full text-xs" value="500">
+                    <button onclick="walletDeposit()" class="text-[10px] bg-green-600 hover:bg-green-500 px-3 py-1 rounded font-bold uppercase btn-action">Deposit</button>
+                </div>
+                <button onclick="walletWithdraw()" class="text-[9px] text-gray-400 hover:text-white underline text-left">Withdraw All to Bank</button>
+            </div>
+        </div>
+        <div class="panel p-4">
+            <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Current Session P&L</div>
+            <div id="ui-session-pnl" class="text-2xl font-bold">$0.00</div>
+            <div class="text-[9px] text-gray-600 mt-1 uppercase">Active Trade Focus</div>
+        </div>
+        <div class="panel p-4">
+            <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Lifetime P&L</div>
+            <div id="ui-lifetime-pnl" class="text-2xl font-bold text-blue-400">$0.00</div>
+            <div class="text-[9px] text-gray-600 mt-1 uppercase">Persistent History</div>
+        </div>
+        <div class="panel p-4 flex flex-col justify-between">
+            <div>
+                <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Round Timer</div>
+                <div id="ui-timer" class="text-2xl font-bold text-blue-500">--:--</div>
+            </div>
+            <button onclick="requestCashout()" class="text-[10px] bg-yellow-600/20 text-yellow-500 border border-yellow-600/40 hover:bg-yellow-600 hover:text-black p-1 rounded font-bold uppercase btn-action mt-2">Cashout & Exit</button>
         </div>
     </div>
 
-    <!-- Main App -->
-    <div class="flex-1 p-2 md:p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Header & Chart (Left - 8 Cols) -->
-        <div class="lg:col-span-8 flex flex-col gap-6">
-            <div class="flex justify-between items-end border-b border-gray-800 pb-4">
-                <div>
-                    <h1 class="text-3xl font-bold tracking-tight text-white flex items-center gap-2">
-                        MoneyMake <span class="text-green-500">Pro</span>
-                        <span id="rolloverBadge" class="hidden ml-2 text-[10px] bg-green-900 text-green-200 px-2 py-1 rounded-full align-middle border border-green-700 animate-pulse">ROLLOVER ACTIVE</span>
-                        <span class="text-[10px] bg-gray-800 text-gray-400 px-2 py-1 rounded-full align-middle ml-2">STANDARD ACCOUNT</span>
-                    </h1>
-                    <p class="text-sm text-gray-500 mt-1 mono">SYMBOL: MMP-USD • SINGLE POSITION MODE</p>
+        <!-- Chart Section -->
+        <div class="lg:col-span-2 space-y-4">
+            <div class="panel p-2 relative h-[450px] overflow-hidden">
+                <div class="absolute top-4 left-4 z-10 bg-black/80 p-3 rounded-lg border border-gray-800 backdrop-blur-sm">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="ui-indicator" class="w-2 h-2 rounded-full bg-gray-500"></span>
+                        <span class="text-[10px] text-gray-400 uppercase font-bold">MMP Data Feed</span>
+                    </div>
+                    <div id="ui-price" class="text-3xl font-bold mono">$0.00</div>
+                    <div id="ui-trend" class="text-[9px] text-gray-600 uppercase font-bold mt-1 tracking-tighter">Market Idle</div>
                 </div>
-                <div class="text-right">
-                    <button onclick="showOddsModal()" class="text-xs text-gray-400 hover:text-white underline decoration-dotted">
-                        Fairness & Fund Logic
-                    </button>
-                </div>
+                <div id="chartContainer" class="w-full h-full chart-locked"></div>
             </div>
-
-            <!-- Chart -->
-            <div class="panel rounded-xl p-1 relative h-96 shadow-2xl overflow-hidden group">
-                <canvas id="stockChart"></canvas>
-                <div class="absolute top-4 left-4 bg-black/80 backdrop-blur px-4 py-2 rounded border border-gray-800">
-                    <div class="text-xs text-gray-400">MARKET PRICE</div>
-                    <div id="chartPrice" class="text-2xl font-bold mono text-green-500">$0.00</div>
-                    <div id="trendIndicator" class="text-[10px] font-bold mt-1 text-gray-500">WAITING FOR OPEN</div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="panel p-4">
+                    <h3 class="text-[10px] font-bold uppercase mb-4 text-gray-500 tracking-widest">Automation Controls</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-300">Take Profit</span>
+                            <div class="flex items-center gap-3">
+                                <input type="number" id="input-tp" class="w-24 text-xs h-8" placeholder="Target $">
+                                <input type="checkbox" id="check-tp" onchange="syncControls()" class="w-4 h-4 accent-green-500">
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-300">Stop Loss</span>
+                            <div class="flex items-center gap-3">
+                                <input type="number" id="input-sl" class="w-24 text-xs h-8" placeholder="Floor $">
+                                <input type="checkbox" id="check-sl" onchange="syncControls()" class="w-4 h-4 accent-red-500">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <!-- Portfolio Summary -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="panel p-4 rounded-lg border-l-4 border-gray-600">
-                    <div class="text-xs text-gray-500 mb-1">TOTAL INVESTED</div>
-                    <div id="displayTotalPaid" class="text-xl font-bold mono">$0.00</div>
-                </div>
-                <div class="panel p-4 rounded-lg border-l-4 border-green-600">
-                    <div class="text-xs text-gray-500 mb-1">REALIZED PROFIT</div>
-                    <div id="displayTotalReceived" class="text-xl font-bold mono text-green-400">$0.00</div>
-                </div>
-                <!-- NET P&L TRACKER -->
-                <div class="panel p-4 rounded-lg border-l-4 border-purple-600">
-                    <div class="text-xs text-gray-500 mb-1">NET P&L</div>
-                    <div id="displayNetPnL" class="text-xl font-bold mono text-gray-400">$0.00</div>
-                </div>
-                <!-- TIMER -->
-                <div class="panel p-4 rounded-lg border-l-4 border-blue-600 relative overflow-hidden">
-                    <div class="text-xs text-gray-500 mb-1 uppercase">Round Timer</div>
-                    <div id="displayTimer" class="text-3xl font-bold mono timer-normal">--:--</div>
+                <div class="panel p-4 flex flex-col justify-center text-center">
+                    <div class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Calculated Odds</div>
+                    <div id="ui-odds" class="text-4xl font-bold text-blue-400 my-1">0%</div>
+                    <div class="text-[9px] text-gray-600 uppercase italic">Volatility Adjusted Probabilities</div>
                 </div>
             </div>
         </div>
 
-        <!-- Trading Terminal (Right - 4 Cols) -->
-        <div class="lg:col-span-4 flex flex-col gap-4">
-            
-            <!-- Dynamic Value Panel -->
-            <div id="valuePanel" class="panel rounded-xl p-6 bg-gradient-to-br from-gray-900 to-black border-green-500/30 hidden">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-bold text-green-400 animate-pulse">● MARKET OPEN</span>
-                    <span id="holdingTime" class="text-xs mono text-gray-400">T+0s</span>
+        <!-- Terminal Section -->
+        <div class="space-y-4">
+            <div class="panel p-6 space-y-6 flex flex-col h-full">
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase font-bold block mb-2 tracking-widest">Strategy Selection</label>
+                    <select id="ui-tier-select" onchange="updateTier(this.value)" class="w-full bg-black border border-gray-700 p-4 rounded-xl text-sm outline-none focus:border-green-500 cursor-pointer"></select>
                 </div>
-                <div class="text-center py-4">
-                    <div class="text-sm text-gray-400 mb-1">CURRENT SELL PRICE</div>
-                    <div id="marketValueDisplay" class="text-5xl font-bold mono text-white tracking-tighter value-text">$0.00</div>
-                    <div id="marketValueSub" class="text-xs text-gray-500 mt-2">Price updates +/- 10% per tick</div>
-                </div>
-            </div>
 
-            <!-- Order Controls -->
-            <div class="panel rounded-xl p-6 flex-1 flex flex-col">
-                <div class="mb-6">
-                    <label class="text-xs text-gray-500 block mb-2 uppercase font-bold">Strategy Tier (Max Target)</label>
-                    <select id="tierSelect" onchange="changeTier(this.value)" class="w-full bg-black border border-gray-700 text-white p-3 rounded text-sm focus:border-green-500 outline-none mono">
-                        <!-- JS Populated -->
-                    </select>
+                <div id="monitor-panel" class="hidden p-6 rounded-xl bg-green-900/5 border border-green-900/20 text-center">
+                    <div class="text-[10px] text-green-500 uppercase font-bold tracking-widest mb-2">Market Liquidity</div>
+                    <div id="ui-live-val" class="text-5xl font-bold mb-4 tracking-tighter">$0.00</div>
+                    <button id="btn-extend" onclick="addTime()" class="w-full text-[10px] bg-blue-600/10 text-blue-400 border border-blue-600/30 hover:bg-blue-600 hover:text-white py-3 rounded-lg uppercase font-bold btn-action">Add 30s ($29)</button>
                 </div>
 
                 <div class="space-y-4 mt-auto">
-                    <!-- Buy Button -->
-                    <div>
-                        <div class="flex justify-between text-xs text-gray-400 mb-1">
-                            <span>BUY ORDER</span>
-                            <span id="costDisplay" class="text-white font-bold">$199.00</span>
-                        </div>
-                        <button id="btnBuy" onclick="payBill()" class="btn-trade w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-green-900/20">
-                            OPEN POSITION
-                        </button>
-                    </div>
-
-                    <!-- Sell Button -->
-                    <div class="pt-4 border-t border-gray-800">
-                        <div class="flex justify-between text-xs text-gray-400 mb-1">
-                            <span>SELL ORDER (MARKET)</span>
-                            <span id="targetDisplay" class="text-gray-500 font-bold">--</span>
-                        </div>
-                        <button id="btnSell" onclick="executeSell()" disabled class="btn-trade w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed">
-                            NO POSITION
-                        </button>
-                    </div>
-
-                    <!-- Liquidate -->
-                    <button id="btnLiquidate" onclick="cashOut()" disabled class="w-full text-xs text-gray-500 hover:text-red-400 py-2 border border-transparent hover:border-red-900/30 rounded transition">
-                        Liquidate Entire Account
-                    </button>
-                </div>
-                
-                <div class="mt-4 text-[10px] text-center text-gray-600 uppercase">
-                    Only 1 position allowed at a time
+                    <button id="btn-buy" onclick="openPosition()" class="w-full bg-green-600 hover:bg-green-500 py-5 rounded-xl font-bold uppercase tracking-[0.2em] text-sm transition shadow-lg shadow-green-900/20">Open Position</button>
+                    <button id="btn-sell" onclick="sellPosition()" disabled class="w-full bg-red-600 hover:bg-red-500 py-5 rounded-xl font-bold uppercase tracking-[0.2em] text-sm transition disabled:bg-gray-800 disabled:text-gray-600 shadow-lg">Market Exit</button>
                 </div>
 
-                <!-- Simulation Tools -->
-                <div class="mt-6 pt-4 border-t border-gray-800">
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" id="hedgeCheck" onchange="toggleHedge()" class="mr-2 accent-green-500" disabled>
-                            <span class="text-xs text-gray-400">Hedge Mode (Paused)</span>
-                        </label>
-                        <button onclick="hardReset()" class="text-[10px] text-gray-600 hover:text-white uppercase">Reset Sim</button>
-                    </div>
+                <div class="flex justify-between items-center pt-6 border-t border-gray-800">
+                    <button onclick="resetTerminal()" class="text-[10px] text-gray-600 hover:text-red-400 transition font-bold uppercase tracking-widest">Reset Terminal</button>
+                    <span class="text-[9px] text-gray-800 font-bold uppercase">v1.1 LITE ENHANCED</span>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modals -->
-    <div id="modalOverlay" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-gray-900 border border-gray-700 rounded-xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-100">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-lg font-bold text-white">Notice</h3>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-white">&times;</button>
-            </div>
-            <div id="modalBody" class="text-gray-300 text-sm mb-6 leading-relaxed"></div>
-            <div id="modalActions" class="flex gap-3">
-                <button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded font-bold">Close</button>
             </div>
         </div>
     </div>
 
 <script>
-    const CONFIG = {
-        STORAGE_KEY: 'MMP_Sim_v7_HouseWins',
-        INITIAL_PREMIUM: 199,
-        TITANIUM_PREMIUM: 349,
-        TITANIUM_PAYOUT: 1000,
-        BASE_PREMIUM_FLOOR: 199, 
-        PREMIUM_DROP: 0,         
-        ACF_PER_MONTH: 30, 
-        ODDS_BOOST: 5,
-        YEAR_ONE_BONUS: 300,
-        M6_BONUS_PERCENT: 0.50,
-        FREEZE_DISCOUNT: 0,      
-        TITANIUM_SIGNING_BONUS: 250,
-        TIERS: [
-            { id: 1, label: 'Micro Cap ($150 Target)', payout: 150, baseOdds: 75 },
-            { id: 2, label: 'Small Cap ($200 Target)', payout: 200, baseOdds: 60 },
-            { id: 3, label: 'Mid Cap ($300 Target)', payout: 300, baseOdds: 40 },
-            { id: 4, label: 'Large Cap ($400 Target)', payout: 400, baseOdds: 30 },
-            { id: 5, label: 'Mega Cap ($500 Target)', payout: 500, baseOdds: 20 },
-            { id: 6, label: 'IPO Access ($1,000 Target)', payout: 1000, baseOdds: 20 }
-        ]
-    };
+    const TIERS = [
+        { id: 0, label: 'MICRO CAP (T: $150)', payout: 150, odds: 75, boost: 5 },
+        { id: 1, label: 'SMALL CAP (T: $200)', payout: 200, odds: 60, boost: 5 },
+        { id: 2, label: 'MID CAP (T: $300)', payout: 300, odds: 40, boost: 5 },
+        { id: 3, label: 'LARGE CAP (T: $400)', payout: 400, odds: 30, boost: 5 },
+        { id: 4, label: 'MEGA CAP (T: $500)', payout: 500, odds: 20, boost: 5 },
+        { id: 5, label: 'INSTITUTIONAL (T: $1k)', payout: 1000, odds: 15, boost: 2.5 }
+    ];
 
     let state = {
-        tierId: 5,
-        premium: CONFIG.INITIAL_PREMIUM,
-        monthsPaid: 0,
-        isPaid: false,
-        acfBalance: 0,
-        m6BonusPaid: false,
-        isFrozen: false,
-        totalPaid: 0,
-        totalReceived: 0,
-        hiddenSavingsFund: 0, 
-        autoSellDeadline: 0, 
-        
-        currentTradeOutcome: null, 
-        currentBaseMax: 0, 
-        tradeStartTime: null,
-        currentTickerValue: 0 
+        wallet: 1000,
+        pot: 0, // Stealth Fund
+        sessionPaid: 0,
+        sessionRec: 0,
+        lifetimePaid: 0,
+        lifetimeRec: 0,
+        streak: 0,
+        tierIdx: 4,
+        active: false,
+        ticker: 250,
+        maxRange: 0,
+        deadline: 0,
+        extUsed: false,
+        win: false,
+        tp: { on: false, val: 0 },
+        sl: { on: false, val: 0 }
     };
 
-    let chart;
-    function initChart() {
-        const ctx = document.getElementById('stockChart').getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.2)');
-        gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+    let chart, series;
 
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Array(40).fill(''),
-                datasets: [{
-                    data: Array(40).fill(0),
-                    borderColor: '#22c55e',
-                    backgroundColor: gradient,
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.4, 
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                scales: { 
-                    x: { display: false }, 
-                    y: { display: false, grid: { display: false }, min: 0 } 
-                },
-                animation: { duration: 600, easing: 'linear' }
-            }
-        });
-        
-        setInterval(updateTicker, 670);
-        setInterval(updateTimer, 100);
-    }
-
-    // --- TIMER & AUTO-SELL LOGIC ---
-    function updateTimer() {
-        const timerEl = document.getElementById('displayTimer');
-        
-        if (!state.isPaid) {
-            timerEl.innerText = "--:--";
-            timerEl.className = "text-3xl font-bold mono timer-normal";
-            return;
-        }
-
-        const now = Date.now();
-        const diff = state.autoSellDeadline - now;
-
-        if (diff <= 0) {
-            timerEl.innerText = "00:00";
-            if(state.isPaid) executeSell(true);
-            return;
-        }
-
-        const secs = Math.ceil(diff / 1000);
-        const mm = Math.floor(secs / 60).toString().padStart(2, '0');
-        const ss = (secs % 60).toString().padStart(2, '0');
-        timerEl.innerText = `${mm}:${ss}`;
-
-        if (secs <= 10) {
-            timerEl.className = "text-3xl font-bold mono timer-critical";
-        } else if (secs <= 30) {
-            timerEl.className = "text-3xl font-bold mono timer-warn";
-        } else {
-            timerEl.className = "text-3xl font-bold mono timer-normal";
-        }
-    }
-
-    // --- MARKET LOGIC ---
-    function updateTicker() {
-        if(!chart) return;
-        
-        const trendEl = document.getElementById('trendIndicator');
-        
-        if (state.isPaid && state.currentTradeOutcome) {
-            
-            const currentCeiling = state.currentBaseMax + state.hiddenSavingsFund;
-            const maxStep = Math.max(1, currentCeiling * 0.10); 
-            let step = (Math.random() * maxStep * 2) - maxStep;
-            let newVal = state.currentTickerValue + step;
-            
-            if(newVal > currentCeiling) newVal = currentCeiling;
-            if(newVal < 0) newVal = 0;
-            
-            state.currentTickerValue = Math.floor(newVal); 
-            
-            if(state.currentTradeOutcome === 'WIN') {
-                trendEl.innerText = "MARKET: BULLISH";
-                trendEl.className = "text-[10px] font-bold mt-1 text-green-400";
-                chart.data.datasets[0].borderColor = '#22c55e'; 
-            } else {
-                trendEl.innerText = "MARKET: BEARISH";
-                trendEl.className = "text-[10px] font-bold mt-1 text-yellow-500";
-                chart.data.datasets[0].borderColor = '#eab308'; 
-            }
-
-        } else {
-            state.currentTickerValue = 0;
-            trendEl.innerText = "MARKET CLOSED";
-            trendEl.className = "text-[10px] font-bold mt-1 text-gray-600";
-            chart.data.datasets[0].borderColor = '#333';
-        }
-
-        const currentData = chart.data.datasets[0].data;
-        currentData.shift();
-        currentData.push(state.currentTickerValue);
-        
-        if (state.isPaid) {
-             const ceiling = state.currentBaseMax + state.hiddenSavingsFund;
-             chart.options.scales.y.max = Math.max(10, ceiling * 1.2); 
-        } else {
-             chart.options.scales.y.max = 10;
-        }
-        
-        chart.update();
-        updatePriceDisplay(state.currentTickerValue);
-    }
-
-    let lastDisplayPrice = 0;
-    function updatePriceDisplay(val) {
-        const el = document.getElementById('chartPrice');
-        const valEl = document.getElementById('marketValueDisplay');
-        const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
-        
-        const txt = fmt.format(val);
-        el.innerText = txt;
-        valEl.innerText = txt;
-        
-        if (val > lastDisplayPrice) {
-            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-up";
-        } else if (val < lastDisplayPrice) {
-            valEl.className = "text-5xl font-bold mono tracking-tighter value-flash-down";
-        } else {
-            valEl.className = "text-5xl font-bold mono tracking-tighter value-neutral";
-        }
-        
-        lastDisplayPrice = val;
-
-        if (state.isPaid) {
-            const secs = Math.floor((Date.now() - state.tradeStartTime)/1000);
-            document.getElementById('holdingTime').innerText = `T+${secs}s`;
-        }
-    }
+    function save() { localStorage.setItem('MMP_LITE_V1_1', JSON.stringify(state)); }
 
     function init() {
-        const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
-        if (saved) state = { ...state, ...JSON.parse(saved) };
-        // Reset old bad states
-        state.isPaid = false; 
-        initChart();
+        const saved = localStorage.getItem('MMP_LITE_V1_1');
+        if(saved) state = { ...state, ...JSON.parse(saved) };
+        state.active = false; 
+
+        const sel = document.getElementById('ui-tier-select');
+        sel.innerHTML = TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join('');
+        sel.value = state.tierIdx;
+
+        const container = document.getElementById('chartContainer');
+        chart = LightweightCharts.createChart(container, {
+            layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#444' },
+            grid: { vertLines: { color: '#111' }, horzLines: { color: '#111' } },
+            handleScroll: false, handleScale: false,
+            priceScale: { autoScale: false, minValue: 0, maxValue: 1500, borderVisible: false },
+            timeScale: { borderVisible: false, timeVisible: true, secondsVisible: true }
+        });
+        series = chart.addAreaSeries({ lineColor: '#22c55e', topColor: 'rgba(34,197,94,0.15)', bottomColor: 'transparent', lineWidth: 2 });
+
+        setInterval(tickPrice, 600);
+        setInterval(updateTimer, 100);
         render();
     }
-    
-    function save() { localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state)); }
 
-    function getOdds() {
-        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        // Bonus only comes from months, which are now reset every round
-        // So odds are basically fixed at baseOdds
-        const bonus = state.monthsPaid * CONFIG.ODDS_BOOST;
-        return Math.min(100, tier.baseOdds + bonus);
-    }
+    function tickPrice() {
+        const step = state.active ? 18 : 2;
+        let change = (Math.random() * step * 2) - step;
 
-    function getBill() {
-        // Strict fixed price
-        return state.tierId === 6 ? CONFIG.TITANIUM_PREMIUM : CONFIG.INITIAL_PREMIUM;
-    }
-
-    window.payBill = () => {
-        if(state.isPaid) return; // Prevent multi-buys
-
-        const cost = getBill();
-        state.totalPaid += cost;
-        state.tradeStartTime = Date.now();
-        
-        // Single Round Timer: 60s
-        state.autoSellDeadline = Date.now() + 60000;
-
-        // Reset to Month 1 Logic every time
-        state.monthsPaid = 1;
-        state.acfBalance = CONFIG.ACF_PER_MONTH; 
-        state.premium = getBill();
-
-        state.isPaid = true;
-        const odds = getOdds();
-        const win = Math.random() * 100 <= odds;
-        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        state.currentTradeOutcome = win ? 'WIN' : 'LOSS';
-        
-        if (win) {
-            state.currentBaseMax = tier.payout;
+        if (state.active) {
+            const bias = state.win ? (state.maxRange * 0.85) : 10;
+            if (state.ticker < bias) change += 8; else change -= 6;
+            if (state.ticker > state.maxRange) change = -20;
+            if (state.ticker < 0) change = 20;
         } else {
-            state.currentBaseMax = state.acfBalance;
+            if (state.ticker > 300) change -= 2;
+            if (state.ticker < 200) change += 2;
         }
 
-        state.currentTickerValue = (state.currentBaseMax + state.hiddenSavingsFund) * 0.5;
+        state.ticker = Math.max(0, Math.min(1500, state.ticker + change));
+        series.update({ time: Math.floor(Date.now()/1000), value: state.ticker });
         
-        state.isFrozen = false;
-        save();
-        render();
-    };
-
-    window.executeSell = (isAuto = false) => {
-        if (!state.isPaid) return;
+        if (state.active) {
+            if (state.tp.on && state.ticker >= state.tp.val) sellPosition('TAKE PROFIT TRIGGERED');
+            if (state.sl.on && state.ticker <= state.sl.val) sellPosition('STOP LOSS TRIGGERED');
+        }
         
-        const capturedPrice = state.currentTickerValue;
-        state.totalReceived += capturedPrice;
-        
-        const totalCeiling = state.currentBaseMax + state.hiddenSavingsFund;
-        const remainder = Math.max(0, totalCeiling - capturedPrice);
-        
-        state.hiddenSavingsFund = remainder;
-        
-        // RESET EVERYTHING ON SELL
-        state.isPaid = false;
-        state.currentTradeOutcome = null;
-        state.tradeStartTime = null;
-        state.premium = getBill();
-        state.monthsPaid = 0; // Back to 0
-        state.acfBalance = 0; 
-        state.m6BonusPaid = false;
-        state.currentBaseMax = 0;
-        state.autoSellDeadline = 0; 
-
-        save();
-        render();
-        
-        const title = isAuto ? "AUTO-SOLD (TIME EXPIRED)" : "ORDER EXECUTED";
-        const note = isAuto ? "<br><span class='text-xs text-yellow-500'>Position closed automatically at deadline.</span>" : "";
-        
-        showModal(title, `Sold at market price.<br><br><span class="text-4xl font-bold text-green-400">$${capturedPrice.toFixed(2)}</span>${note}`);
-    };
-
-    window.cashOut = () => {
-        const currentEquity = state.acfBalance;
-        showModal("LIQUIDATE ACCOUNT", `Close account and withdraw Equity?<br><br>Equity Value: <span class="text-blue-400 font-bold">$${currentEquity.toFixed(2)}</span>`, `<div class="flex gap-2 w-full"><button onclick="closeModal()" class="flex-1 bg-gray-700 p-2 rounded">CANCEL</button><button onclick="confirmLiquidate(${currentEquity})" class="flex-1 bg-red-600 p-2 rounded font-bold">LIQUIDATE</button></div>`);
-    };
-
-    window.confirmLiquidate = (val) => {
-        state.totalReceived += val;
-        hardReset();
-        showModal("ACCOUNT CLOSED", `Funds transferred: $${val.toFixed(2)}`);
-    }
-
-    window.hardReset = () => {
-        localStorage.removeItem(CONFIG.STORAGE_KEY);
-        state = { 
-            tierId: 5, premium: CONFIG.INITIAL_PREMIUM, monthsPaid: 0, isPaid: false, 
-            acfBalance: 0, m6BonusPaid: false, totalPaid: 0, totalReceived: 0, hiddenSavingsFund: 0,
-            autoSellDeadline: 0,
-            currentTradeOutcome: null, tradeStartTime: null 
-        };
-        save();
         render();
     }
 
-    window.showOddsModal = () => {
-        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        const odds = getOdds();
-        showModal("MARKET DATA", 
-            `<b>WIN PROBABILITY:</b> ${odds}%<br>
-            <b>TIER TARGET:</b> $${tier.payout}<br>
-            <span class="text-xs text-gray-400">
-            Unified Fund captures missed value for future trades.
-            </span>`);
-    };
+    function updateTimer() {
+        if (!state.active) return;
+        const remaining = Math.max(0, state.deadline - Date.now());
+        const secs = Math.ceil(remaining/1000);
+        const mm = Math.floor(secs/60).toString().padStart(2,'0');
+        const ss = (secs%60).toString().padStart(2,'0');
+        document.getElementById('ui-timer').innerText = `${mm}:${ss}`;
+        if (remaining <= 0) sellPosition('EXPIRED');
+    }
 
-    window.toggleHedge = () => {
-        state.isFrozen = document.getElementById('hedgeCheck').checked;
-        save();
-        render();
-    };
+    function openPosition() {
+        if (state.wallet < 199) return alert('Wallet balance too low ($199 required).');
+        
+        state.wallet -= 199;
+        state.sessionPaid += 199;
+        state.lifetimePaid += 199;
+        state.active = true;
+        state.deadline = Date.now() + 60000;
+        state.extUsed = false;
 
-    window.changeTier = (id) => {
-        if(state.isPaid) return alert("Cannot change strategy while position is open.");
-        state.tierId = parseInt(id);
+        const tier = TIERS[state.tierIdx];
+        const currentOdds = Math.min(100, tier.odds + (state.streak * tier.boost));
+        state.win = (Math.random() * 100) <= currentOdds;
+
+        const base = state.win ? tier.payout : 30;
+        state.maxRange = base + state.pot;
+
+        state.ticker = state.win ? (199 + Math.random() * 50) : (Math.random() * 25);
+
+        save(); render();
+    }
+
+    function sellPosition(reason = '') {
+        if (!state.active) return;
+
+        const captured = state.ticker;
+        state.wallet += captured;
+        state.sessionRec += captured;
+        state.lifetimeRec += captured;
+
+        state.pot = Math.max(0, state.maxRange - captured);
+
+        if (state.win) state.streak = 0; else state.streak++;
+
+        state.active = false;
+        state.ticker = 250;
+        save(); render();
+        alert(`${reason || 'SELL ORDER EXECUTED'} | Settled at $${captured.toFixed(2)}`);
+    }
+
+    function requestCashout() {
+        if (state.active) return alert('Cannot cashout with an open position.');
+        const pct = 0.5 + (Math.random() * 0.5); // 50% to 100%
+        const cashValue = state.pot * pct;
+        
+        const confirmMsg = `CASHOUT REQUEST:\n\nClosing account will liquidate your stealth fund at a dynamic rate of ${(pct*100).toFixed(0)}%.\n\nLiquidation Value: $${cashValue.toFixed(2)}\n\nProceed?`;
+        
+        if (confirm(confirmMsg)) {
+            state.wallet += cashValue;
+            state.lifetimeRec += cashValue;
+            state.pot = 0;
+            state.streak = 0;
+            state.sessionPaid = 0;
+            state.sessionRec = 0;
+            save(); render();
+            alert(`ACCOUNT CLOSED: $${cashValue.toFixed(2)} has been credited to your wallet.`);
+        }
+    }
+
+    function addTime() {
+        if (!state.active || state.extUsed || state.wallet < 29) return;
+        state.wallet -= 29;
+        state.sessionPaid += 29;
+        state.lifetimePaid += 29;
+        state.deadline += 30000;
+        state.extUsed = true;
+        save(); render();
+    }
+
+    function syncControls() {
+        state.tp.on = document.getElementById('check-tp').checked;
+        state.tp.val = parseFloat(document.getElementById('input-tp').value) || 0;
+        state.sl.on = document.getElementById('check-sl').checked;
+        state.sl.val = parseFloat(document.getElementById('input-sl').value) || 0;
         save();
-        render();
-    };
+    }
+
+    function walletDeposit() {
+        const amt = parseFloat(document.getElementById('deposit-amount').value);
+        if (isNaN(amt) || amt <= 0) return;
+        state.wallet += amt;
+        save(); render();
+    }
+
+    function walletWithdraw() {
+        if (state.wallet <= 0) return;
+        state.lifetimeRec += state.wallet;
+        state.wallet = 0;
+        save(); render();
+        alert("Funds successfully transferred to your external account.");
+    }
+
+    function updateTier(idx) {
+        if (state.active) return;
+        state.tierIdx = parseInt(idx);
+        save(); render();
+    }
+
+    function resetTerminal() {
+        if(confirm("HARD RESET: This will clear all data, including lifetime history and wallet. Continue?")) {
+            localStorage.removeItem('MMP_LITE_V1_1');
+            location.reload();
+        }
+    }
 
     function render() {
-        const tier = CONFIG.TIERS.find(t => t.id === state.tierId);
-        const bill = getBill();
-        const sel = document.getElementById('tierSelect');
-        if(sel.children.length === 0) sel.innerHTML = CONFIG.TIERS.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
-        sel.value = state.tierId;
-        sel.disabled = state.isPaid;
-
-        document.getElementById('displayTotalPaid').innerText = `$${state.totalPaid.toFixed(2)}`;
-        document.getElementById('displayTotalReceived').innerText = `$${state.totalReceived.toFixed(2)}`;
+        const get = (id) => document.getElementById(id);
+        const tier = TIERS[state.tierIdx];
         
-        const net = state.totalReceived - state.totalPaid;
-        const netEl = document.getElementById('displayNetPnL');
-        netEl.innerText = `$${net.toFixed(2)}`;
+        get('ui-wallet').innerText = `$${state.wallet.toFixed(2)}`;
+        get('ui-price').innerText = `$${state.ticker.toFixed(2)}`;
+        get('ui-live-val').innerText = `$${state.ticker.toFixed(2)}`;
         
-        if (net > 0) {
-            netEl.className = "text-xl font-bold mono text-green-400";
-        } else if (net < 0) {
-            netEl.className = "text-xl font-bold mono text-red-500";
-        } else {
-            netEl.className = "text-xl font-bold mono text-gray-400";
-        }
+        const sessionNet = state.sessionRec - state.sessionPaid;
+        get('ui-session-pnl').innerText = `$${sessionNet.toFixed(2)}`;
+        get('ui-session-pnl').className = sessionNet >= 0 ? "text-2xl font-bold text-green-400" : "text-2xl font-bold text-red-500";
         
-        document.getElementById('targetDisplay').innerText = `$${tier.payout}.00`;
-        document.getElementById('costDisplay').innerText = `$${bill}.00`;
+        const lifeNet = state.lifetimeRec - state.lifetimePaid;
+        get('ui-lifetime-pnl').innerText = `$${lifeNet.toFixed(2)}`;
+        get('ui-lifetime-pnl').className = lifeNet >= 0 ? "text-2xl font-bold text-blue-400" : "text-2xl font-bold text-red-500";
         
-        const badge = document.getElementById('rolloverBadge');
-        if (state.hiddenSavingsFund > 0) badge.classList.remove('hidden');
-        else badge.classList.add('hidden');
+        const odds = Math.min(100, tier.odds + (state.streak * tier.boost));
+        get('ui-odds').innerText = `${odds}%`;
 
-        const valuePanel = document.getElementById('valuePanel');
-        const btnBuy = document.getElementById('btnBuy');
-        const btnSell = document.getElementById('btnSell');
-        const btnLiquidate = document.getElementById('btnLiquidate');
+        get('monitor-panel').classList.toggle('hidden', !state.active);
+        get('btn-buy').disabled = state.active || state.wallet < 199;
+        get('btn-buy').innerText = state.active ? 'POSITION ACTIVE' : `OPEN POSITION ($199)`;
+        get('btn-sell').disabled = !state.active;
+        get('btn-extend').disabled = state.extUsed;
 
-        if (state.isPaid) {
-            // TRADE ACTIVE
-            valuePanel.classList.remove('hidden');
-            btnBuy.innerText = `POSITION OPEN (LOCKED)`;
-            btnBuy.className = "btn-trade w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed";
-            btnBuy.disabled = true;
+        // Visual Indicator
+        get('ui-indicator').className = state.active ? "w-2 h-2 rounded-full bg-green-500 animate-ping" : "w-2 h-2 rounded-full bg-gray-600";
+        get('ui-trend').innerText = state.active ? (state.win ? "Bearish Movement" : "Bullish Spike") : "Market Idle";
+        get('ui-trend').className = state.active ? (state.win ? "text-[9px] text-green-500 uppercase font-bold mt-1" : "text-[9px] text-yellow-500 uppercase font-bold mt-1") : "text-[9px] text-gray-600 uppercase font-bold mt-1";
 
-            btnSell.innerText = "SELL NOW (MARKET)";
-            btnSell.disabled = false;
-            btnSell.className = "btn-trade w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-red-900/20 animate-pulse";
-            btnLiquidate.disabled = true;
-        } else {
-            // IDLE
-            valuePanel.classList.add('hidden');
-            btnBuy.innerText = "OPEN POSITION ($199.00)";
-            btnBuy.className = "btn-trade w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-lg uppercase tracking-wider text-sm shadow-lg shadow-green-900/20";
-            btnBuy.disabled = false;
-
-            btnSell.innerText = "NO POSITION";
-            btnSell.disabled = true;
-            btnSell.className = "btn-trade w-full bg-gray-800 text-gray-600 font-bold py-4 rounded-lg uppercase tracking-wider text-sm cursor-not-allowed";
-            btnLiquidate.disabled = false;
-        }
-        
-        document.getElementById('hedgeCheck').disabled = true;
-        document.getElementById('hedgeCheck').parentElement.classList.add('opacity-50');
+        get('input-tp').value = state.tp.val || '';
+        get('check-tp').checked = state.tp.on;
+        get('input-sl').value = state.sl.val || '';
+        get('check-sl').checked = state.sl.on;
     }
 
-    function showModal(title, body, actions = null) {
-        document.getElementById('modalTitle').innerText = title;
-        document.getElementById('modalBody').innerHTML = body;
-        document.getElementById('modalActions').innerHTML = actions || `<button onclick="closeModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded font-bold">Close</button>`;
-        document.getElementById('modalOverlay').classList.remove('hidden');
-    }
-
-    window.closeModal = () => document.getElementById('modalOverlay').classList.add('hidden');
-
-    init();
+    window.onload = init;
 </script>
 </body>
 </html>
